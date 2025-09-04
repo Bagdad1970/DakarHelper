@@ -1,20 +1,26 @@
 package io.github.bagdad1970.dakarhelper.view;
 
+import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelObject;
 import io.github.bagdad1970.dakarhelper.presenter.MainPresenter;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
 
-public class MainController {
+public class MainController implements Initializable {
+
+    @FXML
+    private TableView<ExcelObject> tableView;
 
     @FXML
     private Button findButton;
 
     @FXML
-    private Spinner itemCount;
+    private Spinner<Integer> itemCount;
 
     @FXML
     private TextField itemName;
@@ -38,4 +44,24 @@ public class MainController {
         presenter.processData();
     }
 
+    public String getName() {
+        return itemName.getText();
+    }
+
+    public int getQuantity() {
+        return itemCount.getValue();
+    }
+
+    public void setTableView(List<ExcelObject> excelObjects) {
+        setTableViewHeader();
+    }
+
+    private void setTableViewHeader() {
+
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        itemCount.setEditable(true);
+    }
 }
