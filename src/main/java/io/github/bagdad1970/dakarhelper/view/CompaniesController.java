@@ -1,7 +1,7 @@
 package io.github.bagdad1970.dakarhelper.view;
 
 import io.github.bagdad1970.dakarhelper.datasource.Company;
-import io.github.bagdad1970.dakarhelper.presenter.CompanyListPresenter;
+import io.github.bagdad1970.dakarhelper.presenter.CompaniesPresenter;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,9 +13,9 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CompanyListController implements Initializable {
+public class CompaniesController implements Initializable {
 
-    private CompanyListPresenter presenter;
+    private CompaniesPresenter presenter;
 
     @FXML
     public Button removeButton;
@@ -32,7 +32,7 @@ public class CompanyListController implements Initializable {
     @FXML
     private TextField companyName;
 
-    public void setPresenter(CompanyListPresenter presenter) {
+    public void setPresenter(CompaniesPresenter presenter) {
         this.presenter = presenter;
     }
 

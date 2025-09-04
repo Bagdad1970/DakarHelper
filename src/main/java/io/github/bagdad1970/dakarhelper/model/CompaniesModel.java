@@ -13,21 +13,21 @@ import org.json.JSONTokener;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class CompanyListModel {
+public class CompaniesModel {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private ObservableList<Company> companies;
-    private static CompanyListModel instance;
+    private static CompaniesModel instance;
 
-    private CompanyListModel() {
+    private CompaniesModel() {
         this.companies = FXCollections.observableArrayList();
         loadData();
     }
 
-    public static synchronized CompanyListModel getInstance() {
+    public static synchronized CompaniesModel getInstance() {
         if (instance == null) {
-            return new CompanyListModel();
+            return new CompaniesModel();
         }
         return instance;
     }

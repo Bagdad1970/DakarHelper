@@ -1,16 +1,16 @@
 package io.github.bagdad1970.dakarhelper.presenter;
 
 import io.github.bagdad1970.dakarhelper.datasource.Company;
-import io.github.bagdad1970.dakarhelper.model.CompanyListModel;
-import io.github.bagdad1970.dakarhelper.view.CompanyListController;
+import io.github.bagdad1970.dakarhelper.model.CompaniesModel;
+import io.github.bagdad1970.dakarhelper.view.CompaniesController;
 import javafx.collections.ObservableList;
 
-public class CompanyListPresenter {
+public class CompaniesPresenter {
 
-    private CompanyListController view;
-    private CompanyListModel model;
+    private CompaniesController view;
+    private CompaniesModel model;
 
-    public CompanyListPresenter(CompanyListController view, CompanyListModel model) {
+    public CompaniesPresenter(CompaniesController view, CompaniesModel model) {
         this.view = view;
         this.model = model;
     }
