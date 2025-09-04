@@ -82,7 +82,7 @@
                   <Insets bottom="10.0" />
               </padding>
           </Label>
-          <TableView fx:id="table" prefHeight="661.0" prefWidth="1163.0">
+          <TableView fx:id="tableView" prefHeight="661.0" prefWidth="1163.0">
               <columns>
                   <TableColumn prefWidth="33.0" text="№" />
                   <TableColumn prefWidth="236.0" text="Номер" />
