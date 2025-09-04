@@ -23,20 +23,34 @@ public class EmailHandler {
         put("mail.host", "imap.mail.ru");
     }};
 
-    private Map<String, Path> companyFolders = new HashMap<>();
+    private Map<String, Path> companyDirs = new HashMap<>();
+    private Map<String, Boolean> companyVisits = new HashMap<>();
     private final List<Company> companies;
-    private final String rootFolder;
+    private final String rootDir;
     private Folder emailFolder;
 
-    public EmailHandler(String rootFolder, List<Company> companies) {
-        this.rootFolder = rootFolder;
+    public EmailHandler(String rootDir, List<Company> companies) {
+        this.rootDir = rootDir;
         this.companies = companies;
 
+        initCompanyVisits();
         initConnection();
+    }
+
+    private void initCompanyVisits() {
+        for (Company company : companies) {
+            String companyName = company.getName();
+            companyVisits.put(companyName, false);
+        }
+    }
+
+    public Map<String, Path> getCompanyDirs() {
+        return companyDirs;
     }
 
     private void initConnection() {
         LOGGER.info("connecting to email");
+
         try {
             Session session = Session.getDefaultInstance(props);
             Store store = session.getStore();
@@ -52,45 +66,56 @@ public class EmailHandler {
         }
     }
 
-    private void initFolders() {
-        LOGGER.info("initializing folders");
+    private void initDirectories() {
+        LOGGER.info("initializing directories");
 
-        File directory = new File(rootFolder);
+        File directory = new File(rootDir);
 
         if ( !directory.exists() )
             directory.mkdir();
 
-        createSubjectFolders();
+        createCompanyDirs();
     }
 
-    private void createSubjectFolders() {
+    private void createCompanyDirs() {
         for (Company company : companies) {
             String companyName = company.getName();
 
-            Path filepath = Paths.get(rootFolder, companyName);
-            File subjectFolder = filepath.toFile();
-            if ( !subjectFolder.exists() ) {
-                subjectFolder.mkdir();
+            Path filepath = Paths.get(rootDir, companyName);
+            File companiesDir = filepath.toFile();
+            if ( !companiesDir.exists() ) {
+                companiesDir.mkdir();
             }
 
-            companyFolders.put(companyName, filepath);
+            companyDirs.put(companyName, filepath);
         }
     }
 
     public void readEmail() {
         LOGGER.info("reading email");
 
-        initFolders();
+        initDirectories();
 
         try {
             Message[] messages = emailFolder.search(new FromStringTerm("Отдел продаж Краснодар <sales23@dakar61.ru>"));
 
-            for (Message message : messages) {
+            List<Message> reverseMessages = Arrays.asList(messages);
+            Collections.reverse(reverseMessages);
+
+            for (Message message : reverseMessages) {
                 try {
                     if (message.getContent() instanceof Multipart multipart) {
-                        Path companyFolder = getCompanyFolder(multipart);
+                        Path companyFolder = getCompanyDir(multipart);
 
-                        saveFiles(companyFolder, multipart);
+                        //if ( companyFolder != null && companyVisits.get(companyFolder.toString()) == false ) {
+                        //    companyVisits.put(companyFolder.toString(), true);
+
+                        //}
+                        if ( companyFolder != null ) {
+                            saveFiles(companyFolder, multipart);
+                        }
+
+
                     }
                 }
                 catch (IOException exception) {
@@ -106,7 +131,7 @@ public class EmailHandler {
         }
     }
 
-    private Path getCompanyFolder(Multipart multipart) {
+    private Path getCompanyDir(Multipart multipart) {
         try {
             for (int i = 0; i < multipart.getCount(); i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
@@ -121,9 +146,10 @@ public class EmailHandler {
                         if (nestedContentType.contains("text/plain")) {
                             String content = nestedPart.getContent().toString();
 
-                            for (String key : companyFolders.keySet()) {
-                                if (content.contains(key))
-                                    return companyFolders.get(key);
+                            for (String key : companyDirs.keySet()) {
+                                if ( content.contains(key) ) {
+                                    return companyDirs.get(key);
+                                }
                             }
                         }
                     }
@@ -143,17 +169,17 @@ public class EmailHandler {
         return null;
     }
 
-    private static void saveFiles(Path subjectFolder, Multipart multipart) {
+    private static void saveFiles(Path companyDir, Multipart multipart) {
         try {
             for (int i = 0; i < multipart.getCount(); i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
-                String filename = bodyPart.getFileName();
 
+                String filename = bodyPart.getFileName();
                 if (filename != null) {
                     String decodedFilename = MimeUtility.decodeText(filename);
 
                     if (decodedFilename.endsWith(".xls") || decodedFilename.endsWith(".xlsx")) {
-                        Path filepath = Paths.get(subjectFolder.toString(), decodedFilename);
+                        Path filepath = Paths.get(companyDir.toString(), decodedFilename);
                         saveFile(bodyPart, filepath);
                     }
                 }
