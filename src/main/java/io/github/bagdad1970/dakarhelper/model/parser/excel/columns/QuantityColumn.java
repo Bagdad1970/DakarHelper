@@ -2,14 +2,13 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel.columns;
 
 import io.github.bagdad1970.dakarhelper.model.parser.excel.Aliases;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.PatternFormatting;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CountColumn extends HeaderColumn {
+public class QuantityColumn extends HeaderColumn {
 
     private String storageName;
     private String storageColumnName;
@@ -19,7 +18,7 @@ public class CountColumn extends HeaderColumn {
         addAliases("count", Arrays.asList("остаток", "количество"));
     }};
 
-    public CountColumn(int rowIndex, int columnIndex, List<Cell> cells) {
+    public QuantityColumn(int rowIndex, int columnIndex, List<Cell> cells) {
         super(rowIndex, columnIndex, cells);
     }
 
@@ -73,7 +72,7 @@ public class CountColumn extends HeaderColumn {
     public Object processCellValue(Cell cell) {
         String cellValue = cell.toString().trim();
 
-        if (cellValue.isEmpty()) {
+        if ( cellValue.isEmpty() || cellValue.contains("NULL") ) {
             return null;
         }
 

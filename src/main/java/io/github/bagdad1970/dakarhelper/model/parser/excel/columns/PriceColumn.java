@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 public class PriceColumn extends HeaderColumn {
 
     private static Aliases aliases = new Aliases() {{
-        addAliases("wholesale", Arrays.asList("опт", "оптовый"));
-        addAliases("retail", Arrays.asList("розничный", "розница"));
+        addAliases("wholesale", Arrays.asList("опт", "оптовый", "оптовая"));
+        addAliases("retail", Arrays.asList("розничный", "розница", "розничная"));
         addAliases("internet", Arrays.asList("интернет"));
     }};
 
@@ -42,6 +42,10 @@ public class PriceColumn extends HeaderColumn {
     @Override
     public Object processCellValue(Cell cell) {
         String cellValue = cell.toString().trim();
+
+        if ( cellValue.isEmpty() ) {
+            return null;
+        }
 
         return Double.parseDouble(cellValue);
     }
