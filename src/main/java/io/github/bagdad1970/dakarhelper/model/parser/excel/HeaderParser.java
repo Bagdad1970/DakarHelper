@@ -1,6 +1,6 @@
 package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
-import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.CountColumn;
+import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.QuantityColumn;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.NameColumn;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.PriceColumn;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -15,19 +15,19 @@ public class HeaderParser {
 
     private static Aliases aliases = new Aliases() {{
         addAliases("name", Arrays.asList("номенклатура", "номер"));
-        addAliases("price", Arrays.asList("цена", "стоимость", "опт", "оптовая", "розница", "розничная", "интернет"));
+        addAliases("price", Arrays.asList("цена", "стоимость", "опт", "розница", "розничная", "интернет"));
         addAliases("count", Arrays.asList("остаток", "количество", "склад"));
     }};
-    private Sheet sheet;
-    private int limitRowCount;
+    private final Sheet sheet;
+    private final int limitRowCount;
 
     public HeaderParser(Sheet sheet, int limitRowCount) {
         this.sheet = sheet;
         this.limitRowCount = limitRowCount;
     }
 
-    private Map<String, List<Cell>> findHeaderCells() {
-        Map<String, List<Cell>> indexMap = new HashMap<>();
+    public Map<String, List<Cell>> findHeaderCells() {
+        Map<String, List<Cell>> headerCellsByAlias = new HashMap<>();
 
         for (int i = 0; i < limitRowCount; i++) {
             Row row = sheet.getRow(i);
@@ -37,13 +37,13 @@ public class HeaderParser {
 
                 for (String key : aliases.keySet()) {
                     if (aliases.hasAliasByKey(key, cellValue)) {
-                        if ( !indexMap.containsKey(key) ) {
+                        if ( !headerCellsByAlias.containsKey(key) ) {
                             List<Cell> cells = new ArrayList<>();
                             cells.add(cell);
-                            indexMap.put(key, cells);
+                            headerCellsByAlias.put(key, cells);
                         }
                         else
-                            indexMap.get(key).add(cell);
+                            headerCellsByAlias.get(key).add(cell);
 
                         break;
                     }
@@ -52,8 +52,9 @@ public class HeaderParser {
         }
 
         Map<String, List<Cell>> clearedIndexMap = new HashMap<>();
-        for (String key : indexMap.keySet()) {
-            clearedIndexMap.put(key, leaveCellsOnMaxRowIndexes(indexMap.get(key)));
+        for (String key : headerCellsByAlias.keySet()) {
+            List<Cell> cellsOnMaxRow = findCellsOnMaxRow(headerCellsByAlias.get(key));
+            clearedIndexMap.put(key, cellsOnMaxRow);
         }
 
         return clearedIndexMap;
@@ -71,55 +72,60 @@ public class HeaderParser {
         return groupedMap;
     }
 
-    private static List<Cell> leaveCellsOnMaxRowIndexes(List<Cell> cells) {
+    static int findMaxRowIndex(List<Cell> cells) {
+        return cells.stream()
+                .mapToInt(Cell::getRowIndex)
+                .max()
+                .orElse(-1);
+    }
+
+    static List<Cell> findCellsOnMaxRow(List<Cell> cells) {
         if (cells.isEmpty())
             return new ArrayList<>();
 
         else if (cells.size() == 1)
             return cells;
 
-        int maxRowIndex = cells.stream()
-                .mapToInt(Cell::getRowIndex)
-                .max()
-                .orElse(-1);
+        int maxRowIndex = findMaxRowIndex(cells);
 
-        List<Cell> cellsWithNonMaxRow = getCellsWithNonMaxRow(maxRowIndex, cells);
+        List<Cell> cellsOnNonMaxRow = getCellsWithNonMaxRow(maxRowIndex, cells);
 
-        List<Integer> columnIndexesWithMaxRow = getColumnIndexesWithMaxRow(maxRowIndex, cells);
+        List<Integer> columnIndexesOnMaxRow = getColumnIndexesOnRow(maxRowIndex, cells);
 
-        List<Cell> cellsOnMaxRow = getCellsOnMaxRow(maxRowIndex, cells);
+        List<Cell> cellsOnMaxRow = new ArrayList<>(getCellsOnRow(maxRowIndex, cells));
 
-        for (Cell cell : cellsWithNonMaxRow) {
-            if (columnIndexesWithMaxRow.contains(cell.getColumnIndex()))
+        for (Cell cell : cellsOnNonMaxRow) {
+            int cellColumnIndex = cell.getColumnIndex();
+            if (columnIndexesOnMaxRow.contains(cellColumnIndex))
                 cellsOnMaxRow.add(cell);
         }
 
         return cellsOnMaxRow;
     }
 
-    private static List<Cell> getCellsWithNonMaxRow(int maxRowIndex, List<Cell> cells) {
+    static List<Cell> getCellsWithNonMaxRow(int rowIndex, List<Cell> cells) {
         return cells.stream()
-                .filter(cell -> cell.getRowIndex() != maxRowIndex)
+                .filter(cell -> cell.getRowIndex() != rowIndex)
                 .toList();
     }
 
-    private static List<Integer> getColumnIndexesWithMaxRow(int maxRowIndex, List<Cell> cells) {
+    static List<Integer> getColumnIndexesOnRow(int rowIndex, List<Cell> cells) {
         return cells.stream()
-                .filter(cell -> cell.getRowIndex() == maxRowIndex)
+                .filter(cell -> cell.getRowIndex() == rowIndex)
                 .map(Cell::getColumnIndex)
                 .toList();
     }
 
-    private static List<Cell> getCellsOnMaxRow(int maxRowIndex, List<Cell> cells) {
+    static List<Cell> getCellsOnRow(int rowIndex, List<Cell> cells) {
         return cells.stream()
-                .filter(cell -> cell.getRowIndex() == maxRowIndex)
+                .filter(cell -> cell.getRowIndex() == rowIndex)
                 .toList();
     }
 
     public ExcelHeader parseHeader() {
-        Map<String, List<Cell>> indexMap = findHeaderCells();
+        Map<String, List<Cell>> headerCells = findHeaderCells();
 
-        Map<String, Map<Integer, List<Cell>>> groupedCellsByColumnIndex = HeaderParser.groupByColumns(indexMap);
+        Map<String, Map<Integer, List<Cell>>> groupedCellsByColumnIndex = HeaderParser.groupByColumns(headerCells);
 
         ExcelHeader excelHeader = new ExcelHeader();
         for (String key : groupedCellsByColumnIndex.keySet()) {
@@ -142,8 +148,8 @@ public class HeaderParser {
                         break;
 
                     case "count":
-                        CountColumn countColumn = new CountColumn(maxRowIndex, columnIndex, columnCells);
-                        excelHeader.addHeaderColumn(countColumn);
+                        QuantityColumn quantityColumn = new QuantityColumn(maxRowIndex, columnIndex, columnCells);
+                        excelHeader.addHeaderColumn(quantityColumn);
                         break;
                 }
             }
