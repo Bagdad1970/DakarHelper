@@ -1,6 +1,8 @@
 package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -22,15 +24,25 @@ public class ExcelParser {
 
     private final Map<String, Path> companyDirs;
     private Map<String, String> storages;
-    private List<ExcelObject> excelObjects;
+    private ObservableList<ExcelObject> excelObjects;
+
+    private final static Map<String, String> headerNames = new LinkedHashMap<>() {{
+        put("num", "№");
+        put("name", "Номенклатура");
+        put("price", "Цена");
+        put("retail", "Розничная");
+        put("wholesale", "Оптовая");
+        put("internet", "Интернет");
+        put("count", "Количество");
+    }};
 
     public ExcelParser(Map<String, Path> companyDirs) {
         this.companyDirs = companyDirs;
-        this.excelObjects = new ArrayList<>();
+        this.excelObjects = FXCollections.observableArrayList();
     }
 
     public void parseExcelFiles(SearchConditions conditions) {
-        LOGGER.info("parsing excel file");
+        LOGGER.info("parsing excel files");
 
         for (String companyName : companyDirs.keySet()) {
             Path companyDir = companyDirs.get(companyName);
@@ -41,14 +53,42 @@ public class ExcelParser {
                 }
             }
         }
-        unifyExcelObjects();
+        //unifyExcelObjects();
+        addNums();
+
     }
 
-    public List<ExcelObject> getExcelObjects() {
+    private void addNums() {
+        int excelObjectNum = 1;
+        for (ExcelObject excelObject : excelObjects) {
+            excelObject.addValue("num", excelObjectNum);
+            excelObjectNum++;
+        }
+    }
+
+    public ObservableList<ExcelObject> getExcelObjects() {
         return excelObjects;
     }
 
-    public Map<String, String> getStorages() {
+    public Map<String, String> getTableHeader() {
+        if (excelObjects.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<String, String> tableHeader = new HashMap<>();
+        Set<String> keysOfExcelObject = excelObjects.getFirst().getProps().keySet();
+        for (String propKey : keysOfExcelObject) {
+            if (headerNames.containsKey(propKey)) {
+                String headerValue = headerNames.get(propKey);
+                tableHeader.put(propKey, headerValue);
+            }
+        }
+        //tableHeader.putAll(getStorages());
+
+        return tableHeader;
+    }
+
+    private Map<String, String> getStorages() {
         return storages;
     }
 
@@ -112,6 +152,8 @@ public class ExcelParser {
     }
 
     private void parseExcelFile(File companyFile, SearchConditions conditions) {
+        LOGGER.info("parsing excel file {}", companyFile);
+
         if (companyFile == null || !companyFile.exists() || !companyFile.isFile()) {
             LOGGER.error("File does not exist or is not a file: {}",
                     companyFile != null ? companyFile.getAbsolutePath() : "null");
@@ -160,7 +202,7 @@ public class ExcelParser {
     }
 
     private void replaceStorages(Map<String, String> newStorages) {
-        if (storages.isEmpty() || storages.size() < newStorages.size()) {
+        if (storages == null || storages.isEmpty() || storages.size() < newStorages.size()) {
             storages = newStorages;
         }
     }

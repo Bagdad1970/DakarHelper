@@ -4,10 +4,13 @@ import io.github.bagdad1970.dakarhelper.datasource.Company;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.CompaniesModel;
 import io.github.bagdad1970.dakarhelper.model.parser.EmailHandler;
+import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelObject;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelParser;
 import io.github.bagdad1970.dakarhelper.view.CompaniesController;
 import io.github.bagdad1970.dakarhelper.view.CompaniesView;
 import io.github.bagdad1970.dakarhelper.view.MainController;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
@@ -44,29 +47,40 @@ public class MainPresenter {
     }
 
     public void processData() {
-        List<Company> companyList = companiesModel.getCompanies();
+
+        SearchConditions conditions = new SearchConditions(view.getName(), 0);
 
         Task<Void> startTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 LOGGER.info("reading email in task");
 
-                EmailHandler emailHandler = new EmailHandler("/home/bagdad/Downloads/dakarhhelper-folders", companyList);
+                List<Company> companies = companiesModel.getCompanies();
+
+                EmailHandler emailHandler = new EmailHandler("/home/bagdad/Downloads/dakarhhelper-folders", companies);
                 emailHandler.readEmail();
 
                 Map<String, Path> companyDirs = emailHandler.getCompanyDirs();
 
-
-                SearchConditions conditions = new SearchConditions("", 0);
                 ExcelParser excelParser = new ExcelParser(companyDirs);
 
                 excelParser.parseExcelFiles(conditions);
+
+                Map<String, String> tableHeader = excelParser.getTableHeader();
+
+                Platform.runLater(() -> {
+                    updateTableView(tableHeader, excelParser.getExcelObjects());
+                });
 
                 return null;
             }
         };
 
         new Thread(startTask).start();
+    }
+
+    public void updateTableView(Map<String, String> tableHeader, ObservableList<ExcelObject> excelObjects) {
+        view.updateTableView(tableHeader, excelObjects);
     }
 
     public void saveCompanyList() {

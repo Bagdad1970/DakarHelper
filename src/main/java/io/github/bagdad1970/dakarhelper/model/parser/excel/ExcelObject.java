@@ -13,10 +13,6 @@ public class ExcelObject {
         this.props = new HashMap<>();
     }
 
-    public ExcelObject(Map<String, Object> props) {
-        this.props = props;
-    }
-
     public void addValue(String key, Object value) {
         props.put(key, value);
     }
@@ -34,6 +30,9 @@ public class ExcelObject {
     }
 
     public Map<String, Integer> getCounts() {
+        if (props == null)
+            return new HashMap<>();
+
         return props.keySet().stream()
                 .filter(key -> key.startsWith("count"))
                 .collect(Collectors.toMap(

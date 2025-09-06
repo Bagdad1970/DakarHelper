@@ -3,6 +3,8 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.HeaderColumn;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.QuantityColumn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BodyParser {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final Sheet sheet;
     private final ExcelHeader excelHeader;
@@ -34,25 +38,31 @@ public class BodyParser {
     }
 
     private boolean isRowValid(Row row) {
-        List<HeaderColumn> headerColumns = excelHeader.getHeaderColumns();
-        Map<Class<? extends HeaderColumn>, List<HeaderColumn>> headerColumnsGroupedByClass = headerColumns.stream()
-                .collect(Collectors.groupingBy(HeaderColumn::getClass));
+        try {
+            List<HeaderColumn> headerColumns = excelHeader.getHeaderColumns();
+            Map<Class<? extends HeaderColumn>, List<HeaderColumn>> headerColumnsGroupedByClass = headerColumns.stream()
+                    .collect(Collectors.groupingBy(HeaderColumn::getClass));
 
-        int countHeaderColumnValid = 0;
-        for (Class<? extends HeaderColumn> headerColumnClass : headerColumnsGroupedByClass.keySet()) {
-            List<HeaderColumn> headerColumnsByClass = headerColumnsGroupedByClass.get(headerColumnClass);
+            int countHeaderColumnValid = 0;
+            for (Class<? extends HeaderColumn> headerColumnClass : headerColumnsGroupedByClass.keySet()) {
+                List<HeaderColumn> headerColumnsByClass = headerColumnsGroupedByClass.get(headerColumnClass);
 
-            for (HeaderColumn headerColumn : headerColumnsByClass) {
-                int columnIndex = headerColumn.getColumnIndex();
-                Cell cell = row.getCell(columnIndex);
-                if ( cell != null && cell.getCellType() != CellType.BLANK && !cell.toString().contains("NULL") ) {
-                    countHeaderColumnValid++;
-                    break;
+                for (HeaderColumn headerColumn : headerColumnsByClass) {
+                    int columnIndex = headerColumn.getColumnIndex();
+                    Cell cell = row.getCell(columnIndex);
+                    if (cell != null && cell.getCellType() != CellType.BLANK && !cell.toString().contains("NULL")) {
+                        countHeaderColumnValid++;
+                        break;
+                    }
                 }
             }
-        }
 
-        return countHeaderColumnValid == headerColumnsGroupedByClass.size();
+            return countHeaderColumnValid == headerColumnsGroupedByClass.size();
+        }
+        catch (Exception exc) {
+            LOGGER.error("error while validating row", exc);
+        }
+        return false;
     }
 
     public List<ExcelObject> parse(SearchConditions conditions) {
@@ -65,9 +75,8 @@ public class BodyParser {
             if ( isRowValid(row) ) {
                 ExcelObject excelObject = excelHeader.processRow(row);
 
-                if (excelObject.validateConditions(conditions)) {
+                if (excelObject.validateConditions(conditions))
                     excelObjects.add(excelObject);
-                }
             }
         }
         return excelObjects;
