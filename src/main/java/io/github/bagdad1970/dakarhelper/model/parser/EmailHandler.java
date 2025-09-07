@@ -34,6 +34,7 @@ public class EmailHandler {
         this.companies = companies;
 
         initCompanyVisits();
+        initDirectories();
         initConnection();
     }
 
@@ -94,8 +95,6 @@ public class EmailHandler {
     public void readEmail() {
         LOGGER.info("reading email");
 
-        initDirectories();
-
         try {
             Message[] messages = emailFolder.search(new FromStringTerm("Отдел продаж Краснодар <sales23@dakar61.ru>"));
 
@@ -105,17 +104,17 @@ public class EmailHandler {
             for (Message message : reverseMessages) {
                 try {
                     if (message.getContent() instanceof Multipart multipart) {
-                        Path companyFolder = getCompanyDir(multipart);
+                        Map.Entry<String, Path> companyDir = getCompanyDir(multipart);
 
-                        //if ( companyFolder != null && companyVisits.get(companyFolder.toString()) == false ) {
-                        //    companyVisits.put(companyFolder.toString(), true);
+                        if ( companyDir != null) {
+                            Path companyFolder = companyDir.getValue();
+                            String companyName = companyDir.getKey();
 
-                        //}
-                        if ( companyFolder != null ) {
-                            saveFiles(companyFolder, multipart);
+                            if (companyVisits.get(companyName) == false) {
+                                saveFiles(companyFolder, multipart);
+                                companyVisits.put(companyName, true);
+                            }
                         }
-
-
                     }
                 }
                 catch (IOException exception) {
@@ -131,7 +130,7 @@ public class EmailHandler {
         }
     }
 
-    private Path getCompanyDir(Multipart multipart) {
+    private Map.Entry<String, Path> getCompanyDir(Multipart multipart) {
         try {
             for (int i = 0; i < multipart.getCount(); i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
@@ -146,10 +145,9 @@ public class EmailHandler {
                         if (nestedContentType.contains("text/plain")) {
                             String content = nestedPart.getContent().toString();
 
-                            for (String key : companyDirs.keySet()) {
-                                if ( content.contains(key) ) {
-                                    return companyDirs.get(key);
-                                }
+                            for (Map.Entry<String, Path> entry : companyDirs.entrySet()) {
+                                if ( content.contains(entry.getKey()) )
+                                    return entry;
                             }
                         }
                     }
