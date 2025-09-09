@@ -1,4 +1,4 @@
-package io.github.bagdad1970.dakarhelper.model.parser;
+package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
 import io.github.bagdad1970.dakarhelper.datasource.Company;
 import jakarta.mail.*;
