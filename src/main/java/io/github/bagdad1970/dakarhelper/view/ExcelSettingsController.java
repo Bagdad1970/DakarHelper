@@ -33,12 +33,12 @@ public class ExcelSettingsController {
         File selectedFile = dirChooser.showDialog(stage);
 
         if (selectedFile != null) {
-            presenter.updateRootDir(selectedFile);
+            presenter.setRootDir(selectedFile);
             filePathField.setText(selectedFile.getAbsolutePath());
         }
     }
 
-    public void updateRootDir() {
+    public void setRootDirField() {
         filePathField.setText(presenter.getRootDir());
     }
 

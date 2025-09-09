@@ -5,66 +5,72 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class ExcelSettingsModel {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ExcelSettingsModel.class);
     private static ExcelSettingsModel instance;
     private File rootDir;
+    private File settingsFile;
 
     private ExcelSettingsModel() {
+        initSettingsFile();
         loadData();
     }
 
     public static synchronized ExcelSettingsModel getInstance() {
         if (instance == null) {
-            return new ExcelSettingsModel();
+            instance = new ExcelSettingsModel();
         }
         return instance;
     }
 
+    private void initSettingsFile() {
+        String userHome = System.getProperty("user.home");
+        settingsFile = new File(userHome, ".dakarhelper/settings.json");
+        settingsFile.getParentFile().mkdirs();
+    }
+
     private void loadData() {
-        LOGGER.info("loading excel settings");
-        try (FileReader reader = new FileReader("src/main/resources/settings.json")) {
-            JSONTokener tokener = new JSONTokener(reader);
+        LOGGER.info("Loading settings from: {}", settingsFile.getAbsolutePath());
 
-            JSONObject jsonObject = new JSONObject(tokener);
+        if (!settingsFile.exists()) {
+            createDefaultSettings();
+            return;
+        }
 
-            rootDir = new File((String) jsonObject.get("root-dir"));
+        try (FileReader reader = new FileReader(settingsFile)) {
+            JSONObject jsonObject = new JSONObject(new JSONTokener(reader));
+            rootDir = new File(jsonObject.getString("root-dir"));
+        } catch (Exception e) {
+            LOGGER.error("Failed to load settings", e);
+            createDefaultSettings();
         }
-        catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
-        }
-        catch (Exception exception) {
-            LOGGER.error("failed", exception);
-        }
+    }
+
+    private void createDefaultSettings() {
+        rootDir = new File(System.getProperty("user.home"));
+        saveData();
+        LOGGER.info("Created default settings");
     }
 
     public void saveData() {
-        try (FileWriter writer = new FileWriter("src/main/resources/settings.json")) {
+        try (FileWriter writer = new FileWriter(settingsFile)) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("root-dir", rootDir.toString());
-
+            jsonObject.put("root-dir", rootDir.getAbsolutePath());
             writer.write(jsonObject.toString(4));
-            writer.flush();
-        }
-        catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
-        }
-        catch (Exception exception) {
-            LOGGER.error("failed", exception);
+        } catch (Exception e) {
+            LOGGER.error("Failed to save settings", e);
         }
     }
 
-    public void updateRootDir(File newRootDir) {
+    public void setRootDir(File newRootDir) {
         rootDir = newRootDir;
+        saveData();
     }
 
     public String getRootDir() {
-        return rootDir.toString();
+        return rootDir.getAbsolutePath();
     }
 }
