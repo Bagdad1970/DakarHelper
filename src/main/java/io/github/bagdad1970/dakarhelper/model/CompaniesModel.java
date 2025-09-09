@@ -34,7 +34,7 @@ public class CompaniesModel {
 
     private void loadData() {
         LOGGER.info("loading companies");
-        try (FileReader reader = new FileReader("/home/bagdad/IdeaProjects/DakarHelper/src/main/resources/company-list.json")) {
+        try (FileReader reader = new FileReader("src/main/resources/company-list.json")) {
             JSONTokener tokener = new JSONTokener(reader);
 
             JSONArray companyArray = new JSONArray(tokener);
@@ -64,7 +64,7 @@ public class CompaniesModel {
     }
 
     public void saveData() {
-        try (FileWriter writer = new FileWriter("/home/bagdad/IdeaProjects/DakarHelper/src/main/resources/company-list.json")) {
+        try (FileWriter writer = new FileWriter("src/main/resources/company-list.json")) {
             JSONArray companyArray = new JSONArray();
             for (Company company : companies) {
                 companyArray.put(company.toJson());
