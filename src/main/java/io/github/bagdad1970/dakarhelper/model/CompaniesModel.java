@@ -1,9 +1,5 @@
 package io.github.bagdad1970.dakarhelper.model;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import io.github.bagdad1970.dakarhelper.datasource.Company;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,71 +9,90 @@ import org.json.JSONTokener;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.io.*;
+
+
 public class CompaniesModel {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(CompaniesModel.class);
+    private static CompaniesModel instance;
 
     private ObservableList<Company> companies;
-    private static CompaniesModel instance;
+    private File dataFile;
 
     private CompaniesModel() {
         this.companies = FXCollections.observableArrayList();
+        initDataFile();
         loadData();
     }
 
     public static synchronized CompaniesModel getInstance() {
         if (instance == null) {
-            return new CompaniesModel();
+            instance = new CompaniesModel();
         }
         return instance;
     }
 
+    private void initDataFile() {
+        String userHome = System.getProperty("user.home");
+        dataFile = new File(userHome, ".dakarhelper/company-list.json");
+        dataFile.getParentFile().mkdirs();
+    }
+
     private void loadData() {
-        LOGGER.info("loading companies");
-        try (FileReader reader = new FileReader("src/main/resources/company-list.json")) {
-            JSONTokener tokener = new JSONTokener(reader);
+        LOGGER.info("Loading companies from: {}", dataFile.getAbsolutePath());
 
-            JSONArray companyArray = new JSONArray(tokener);
+        if (!dataFile.exists()) {
+            createDefaultData();
+            return;
+        }
 
-            for (int i=0; i<companyArray.length(); i++) {
+        try (FileReader reader = new FileReader(dataFile)) {
+            JSONArray companyArray = new JSONArray(new JSONTokener(reader));
+
+            for (int i = 0; i < companyArray.length(); i++) {
                 JSONObject company = companyArray.getJSONObject(i);
                 companies.add(new Company(company.getString("name")));
             }
+
+            LOGGER.info("Loaded companies: {}", companies);
         }
-        catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
+        catch (Exception e) {
+            LOGGER.error("Failed to load companies data", e);
+            createDefaultData();
         }
-        catch (Exception exception) {
-            LOGGER.error("failed", exception);
-        }
+    }
+
+    private void createDefaultData() {
+        companies.clear();
+        saveData();
+        LOGGER.info("Created default companies data");
     }
 
     public void addCompany(String name) {
-        LOGGER.info("adding company: {}", name);
-        Company newCompany = new Company(name);
-        companies.add(newCompany);
+        LOGGER.info("Adding company: {}", name);
+        companies.add(new Company(name));
+        saveData();
     }
 
     public void removeCompanies(ObservableList<Company> companiesToRemove) {
-        LOGGER.info("removing companies: {}", companiesToRemove);
+        LOGGER.info("Removing companies: {}", companiesToRemove);
         companies.removeAll(companiesToRemove);
+        saveData();
     }
 
     public void saveData() {
-        try (FileWriter writer = new FileWriter("src/main/resources/company-list.json")) {
+        try (FileWriter writer = new FileWriter(dataFile)) {
             JSONArray companyArray = new JSONArray();
             for (Company company : companies) {
                 companyArray.put(company.toJson());
             }
 
             writer.write(companyArray.toString(4));
-            writer.flush();
+            LOGGER.info("Saved companies to file: {}", companies);
         }
-        catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
-        }
-        catch (Exception exception) {
-            LOGGER.error("failed", exception);
+        catch (Exception e) {
+            LOGGER.error("Failed to save companies data", e);
         }
     }
 
