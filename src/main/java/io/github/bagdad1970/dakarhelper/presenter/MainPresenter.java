@@ -3,12 +3,11 @@ package io.github.bagdad1970.dakarhelper.presenter;
 import io.github.bagdad1970.dakarhelper.datasource.Company;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.CompaniesModel;
-import io.github.bagdad1970.dakarhelper.model.parser.EmailHandler;
+import io.github.bagdad1970.dakarhelper.model.ExcelSettingsModel;
+import io.github.bagdad1970.dakarhelper.model.parser.excel.EmailHandler;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelObject;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelParser;
-import io.github.bagdad1970.dakarhelper.view.CompaniesController;
-import io.github.bagdad1970.dakarhelper.view.CompaniesView;
-import io.github.bagdad1970.dakarhelper.view.MainController;
+import io.github.bagdad1970.dakarhelper.view.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -28,6 +27,7 @@ public class MainPresenter {
 
     private final MainController view;
     private final CompaniesModel companiesModel = CompaniesModel.getInstance();
+    private final ExcelSettingsModel excelSettingsModel = ExcelSettingsModel.getInstance();
 
     public MainPresenter(MainController view) {
         this.view = view;
@@ -46,33 +46,80 @@ public class MainPresenter {
         companiesController.showCompanies();
     }
 
+    public void openExcelSettings() {
+        ExcelSettingsView view = new ExcelSettingsView("excel-settings.fxml", "Настройки обработки Excel", Modality.WINDOW_MODAL);
+        view.getStage().setResizable(false);
+
+        FXMLLoader loader = view.getLoader();
+        ExcelSettingsController excelSettingsController = loader.getController();
+        ExcelSettingsPresenter excelSettingsPresenter = new ExcelSettingsPresenter(excelSettingsController, excelSettingsModel);
+        excelSettingsController.setPresenter(excelSettingsPresenter);
+
+        excelSettingsController.updateRootDir();
+        view.show();
+    }
+
     public void processData() {
+        SearchConditions conditions = new SearchConditions(view.getName(), view.getQuantity());
 
-        SearchConditions conditions = new SearchConditions(view.getName(), 0);
-
-        Task<Void> startTask = new Task<>() {
+        Task<Void> startTask = new Task<Void>() {
             @Override
-            protected Void call() throws Exception {
-                LOGGER.info("reading email in task");
+            protected Void call() {
+                try {
+                    LOGGER.info("reading email in task");
 
-                List<Company> companies = companiesModel.getCompanies();
+                    List<Company> companies = companiesModel.getCompanies();
 
-                EmailHandler emailHandler = new EmailHandler("/home/bagdad/Downloads/dakarhhelper-folders", companies);
-                emailHandler.readEmail();
+                    if (companies.isEmpty()) {
+                        Platform.runLater(() -> {
+                            view.showErrorAlert("Ошибка", "Список компаний пуст. Добавьте компании в список.");
+                        });
+                        return null;
+                    }
 
-                Map<String, Path> companyDirs = emailHandler.getCompanyDirs();
+                    EmailHandler emailHandler = new EmailHandler(excelSettingsModel.getRootDir(), companies);
+                    emailHandler.readEmail();
 
-                ExcelParser excelParser = new ExcelParser(companyDirs);
+                    Map<String, Path> companyDirs = emailHandler.getCompanyDirs();
 
-                excelParser.parseExcelFiles(conditions);
+                    ExcelParser excelParser = new ExcelParser(companyDirs);
+                    excelParser.parseExcelFiles(conditions);
 
-                Map<String, String> tableHeader = excelParser.getTableHeader();
+                    Map<String, String> tableHeader = excelParser.getTableHeader();
+                    ObservableList<ExcelObject> excelObjects = excelParser.getExcelObjects();
 
-                Platform.runLater(() -> {
-                    updateTableView(tableHeader, excelParser.getExcelObjects());
-                });
+                    if (excelObjects.isEmpty()) {
+                        Platform.runLater(() -> {
+                            view.showInfoAlert("Результат поиска", "Товары не найдены по заданным критериям.");
+                        });
+                    }
 
-                return null;
+                    Platform.runLater(() -> {
+                        updateTableView(tableHeader, excelObjects);
+                    });
+
+                    return null;
+
+                }
+                catch (Exception e) {
+                    LOGGER.error("Ошибка при обработке данных", e);
+                    Platform.runLater(() -> {
+                        view.showErrorAlert("Ошибка", "Произошла ошибка при обработке данных: " + e.getMessage());
+                    });
+                    return null;
+                }
+            }
+
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                LOGGER.info("Task completed successfully");
+            }
+
+            @Override
+            protected void failed() {
+                super.failed();
+                LOGGER.error("Task failed", getException());
             }
         };
 
@@ -85,6 +132,10 @@ public class MainPresenter {
 
     public void saveCompanyList() {
         companiesModel.saveData();
+    }
+
+    public void saveRootDir() {
+        excelSettingsModel.saveData();
     }
 
 }
