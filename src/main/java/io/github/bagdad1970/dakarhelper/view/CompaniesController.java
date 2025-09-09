@@ -57,7 +57,6 @@ public class CompaniesController implements Initializable {
 
     public void removeCompanies() {
         ObservableList<Company> companiesToRemove = companyList.getSelectionModel().getSelectedItems();
-        System.out.println(companiesToRemove);
         presenter.removeCompanies(companiesToRemove);
     }
 
