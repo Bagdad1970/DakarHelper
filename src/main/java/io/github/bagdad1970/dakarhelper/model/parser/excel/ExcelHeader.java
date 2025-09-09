@@ -25,7 +25,7 @@ public class ExcelHeader {
 
             Object value = headerColumn.processCellValue(cell);
 
-            excelObject.addValue(key, value);
+            excelObject.addProp(key, value);
         }
 
         return excelObject;
