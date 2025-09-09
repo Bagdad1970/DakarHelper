@@ -7,18 +7,19 @@ import java.util.stream.Collectors;
 
 public class ExcelObject {
 
+    private static List<String> pricesNames = Arrays.asList("price", "retail", "wholesale", "internet");
     private Map<String, Object> props;
 
     public ExcelObject() {
         this.props = new HashMap<>();
     }
 
-    public void addValue(String key, Object value) {
+    public void addProp(String key, Object value) {
         props.put(key, value);
     }
 
-    public void removeValue(String key) {
-        props.remove(key);
+    public boolean containsProp(String key) {
+        return props.containsKey(key);
     }
 
     public Map<String, Object> getProps() {
@@ -37,7 +38,7 @@ public class ExcelObject {
                 .filter(key -> key.startsWith("count"))
                 .collect(Collectors.toMap(
                         key -> key,
-                        key -> (Integer) props.get(key)
+                        key -> (Integer) (props.get(key) == null ? 0 : props.get(key))
                 ));
     }
 
@@ -57,24 +58,32 @@ public class ExcelObject {
         }
     }
 
-    public void replaceQuantityProps(Map<String, Integer> newQuantityProps) {
-        for (String newProp : newQuantityProps.keySet()) {
-            if ( !props.containsKey(newProp) ) {
-                if ( newProp.startsWith("count") )
-                    props.put(newProp, 0);
+    public void replaceQuantityProps(Set<String> newQuantityProps) {
+        for (String newQuantityProp : newQuantityProps) {
+            if ( !props.containsKey(newQuantityProp) ) {
+                if ( newQuantityProp.startsWith("count") )
+                    props.put(newQuantityProp, 0);
             }
         }
     }
 
-    public Map<String, Double> getPrices() {
-        Map<String, Double> prices = new HashMap<>();
+    public Set<String> getQuantityKeys() {
+        Set<String> countProps = new HashSet<>();
+        for (String key : props.keySet()) {
+            if (key.contains("count"))
+                countProps.add(key);
+        }
+        return countProps;
+    }
+
+    public Set<String> getPriceKeys() {
+        Set<String> priceProps = new HashSet<>();
 
         for (String key : props.keySet()) {
-            if (key.equals("price") || key.equals("retail") || key.equals("wholesale") || key.equals("internet")) {
-                prices.put(key, (double) props.get(key));
-            }
+            if (pricesNames.contains(key))
+                priceProps.add(key);
         }
-        return prices;
+        return priceProps;
     }
 
     private boolean validateCount(SearchConditions conditions) {
@@ -83,7 +92,7 @@ public class ExcelObject {
             return true;
         }
 
-        List<Integer> countValues = (List<Integer>) getCounts().values();
+        Collection<Integer> countValues = getCounts().values();
         for (int countValue : countValues) {
             if (countValue >= countCondition)
                 return true;
@@ -97,7 +106,7 @@ public class ExcelObject {
             return true;
         }
 
-        String name = props.get("name").toString();
+        String name = props.get("name").toString().toLowerCase();
         return name.contains(nameCondition);
     }
 
