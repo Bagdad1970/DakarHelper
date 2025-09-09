@@ -26,7 +26,7 @@ public class ExcelParser {
     private Map<String, String> storages;
     private ObservableList<ExcelObject> excelObjects;
 
-    private final static Map<String, String> headerNames = new LinkedHashMap<>() {{
+    private final static Map<String, String> headerNames = new HashMap<>() {{
         put("num", "№");
         put("name", "Номенклатура");
         put("price", "Цена");
@@ -34,6 +34,7 @@ public class ExcelParser {
         put("wholesale", "Оптовая");
         put("internet", "Интернет");
         put("count", "Количество");
+        put("company", "Компания");
     }};
 
     public ExcelParser(Map<String, Path> companyDirs) {
@@ -44,25 +45,48 @@ public class ExcelParser {
     public void parseExcelFiles(SearchConditions conditions) {
         LOGGER.info("parsing excel files");
 
+        Set<String> maxQuantityKeys = new HashSet<>();
+        Set<String> maxPriceKeys = new HashSet<>();
+
         for (String companyName : companyDirs.keySet()) {
             Path companyDir = companyDirs.get(companyName);
             File[] companyFiles = companyDir.toFile().listFiles();
             if (companyFiles != null) {
                 for (File companyFile : companyFiles) {
-                    parseExcelFile(companyFile, conditions);
+                    List<ExcelObject> excelObjectsInFile = parseExcelFile(companyFile, conditions);
+                    addCompanyName(excelObjectsInFile, companyName);
+                    excelObjects.addAll(excelObjectsInFile);
+
+                    if ( !excelObjectsInFile.isEmpty() ) {
+                        Set<String> currentPriceKeys = excelObjectsInFile.getFirst().getPriceKeys();
+                        if (currentPriceKeys.size() > maxPriceKeys.size())
+                            maxPriceKeys = currentPriceKeys;
+
+                        Set<String> currentQuantityKeys = excelObjectsInFile.getFirst().getQuantityKeys();
+                        if (currentQuantityKeys.size() > maxQuantityKeys.size())
+                            maxQuantityKeys = currentQuantityKeys;
+                    }
                 }
             }
         }
-        //unifyExcelObjects();
         addNums();
-
+        unifyExcelObjects(maxQuantityKeys, maxPriceKeys);
     }
 
     private void addNums() {
+        LOGGER.info("adding nums to excel objects");
+
         int excelObjectNum = 1;
         for (ExcelObject excelObject : excelObjects) {
-            excelObject.addValue("num", excelObjectNum);
+            excelObject.addProp("num", excelObjectNum);
             excelObjectNum++;
+        }
+    }
+
+    private static void addCompanyName(List<ExcelObject> excelObjects, String companyName) {
+        for (ExcelObject excelObject : excelObjects) {
+            if ( !excelObject.containsProp("company") )
+                excelObject.addProp("company", companyName);
         }
     }
 
@@ -83,7 +107,7 @@ public class ExcelParser {
                 tableHeader.put(propKey, headerValue);
             }
         }
-        //tableHeader.putAll(getStorages());
+        tableHeader.putAll(getStorages());
 
         return tableHeader;
     }
@@ -92,40 +116,13 @@ public class ExcelParser {
         return storages;
     }
 
-    private void unifyExcelObjects() {
-        Map<String, Integer> maxCountColumns = findMaxCountColumns();
-        Set<String> maxPrices = findExcelObjectWithMaxPriceColumns();
+    private void unifyExcelObjects(Set<String> maxQuantityKeys, Set<String> maxPriceKeys) {
+        LOGGER.info("unification excel objects");
 
         for (ExcelObject excelObject : excelObjects) {
-            excelObject.replacePriceProps(maxPrices);
-            excelObject.replaceQuantityProps(maxCountColumns);
+            excelObject.replaceQuantityProps(maxQuantityKeys);
+            excelObject.replacePriceProps(maxPriceKeys);
         }
-    }
-
-    private Map<String, Integer> findMaxCountColumns() {
-        int maxCountQuantityColumn = -1;
-        Map<String, Integer> maxCounts = new HashMap<>();
-        for (ExcelObject excelObject : excelObjects) {
-            int currentCountQuantityColumn = excelObject.getCounts().size();
-            if (currentCountQuantityColumn > maxCountQuantityColumn) {
-                maxCountQuantityColumn = currentCountQuantityColumn;
-                maxCounts.putAll(excelObject.getCounts());
-            }
-        }
-        return maxCounts;
-    }
-
-    private Set<String> findExcelObjectWithMaxPriceColumns() {
-        int maxCountPriceColumn = -1;
-        Set<String> prices = new HashSet<>();
-        for (ExcelObject excelObject : excelObjects) {
-            int currentCountPriceColumn = excelObject.getPrices().size();
-            if (currentCountPriceColumn > maxCountPriceColumn) {
-                maxCountPriceColumn = currentCountPriceColumn;
-                prices.addAll( excelObject.getPrices().keySet() );
-            }
-        }
-        return prices;
     }
 
     private Workbook loadWorkbook(File companyFile) {
@@ -151,25 +148,25 @@ public class ExcelParser {
         return workbook;
     }
 
-    private void parseExcelFile(File companyFile, SearchConditions conditions) {
+    private List<ExcelObject> parseExcelFile(File companyFile, SearchConditions conditions) {
         LOGGER.info("parsing excel file {}", companyFile);
 
         if (companyFile == null || !companyFile.exists() || !companyFile.isFile()) {
             LOGGER.error("File does not exist or is not a file: {}",
                     companyFile != null ? companyFile.getAbsolutePath() : "null");
-            return;
+            return new ArrayList<>();
         }
 
         Workbook workbook = loadWorkbook(companyFile);
         if (workbook == null) {
             LOGGER.error("Failed to load workbook from file: {}", companyFile.getAbsolutePath());
-            return;
+            return new ArrayList<>();
         }
 
         if (workbook.getNumberOfSheets() == 0) {
             LOGGER.error("Workbook contains no sheets");
             closeWorkbook(workbook);
-            return;
+            return new ArrayList<>();
         }
 
         Sheet sheet = workbook.getSheetAt(0);
@@ -177,7 +174,7 @@ public class ExcelParser {
         if (sheet == null || sheet.getLastRowNum() <= 0) {
             LOGGER.warn("Sheet is empty or contains no data");
             closeWorkbook(workbook);
-            return;
+            return new ArrayList<>();
         }
 
         try {
@@ -188,13 +185,14 @@ public class ExcelParser {
             BodyParser bodyParser = new BodyParser(sheet, excelHeader);
 
             List<ExcelObject> parsedExcelObjects = bodyParser.parse(conditions);
-            if ( !parsedExcelObjects.isEmpty() ) {
-                excelObjects.addAll(parsedExcelObjects);
+            if ( !parsedExcelObjects.isEmpty() )
                 replaceStorages(excelHeader.getStorages());
-            }
+
+            return parsedExcelObjects;
         }
         catch (Exception exc) {
             LOGGER.error("Error parsing Excel file: {}", companyFile.getAbsolutePath(), exc);
+            return new ArrayList<>();
         }
         finally {
             closeWorkbook(workbook);
@@ -203,7 +201,11 @@ public class ExcelParser {
 
     private void replaceStorages(Map<String, String> newStorages) {
         if (storages == null || storages.isEmpty() || storages.size() < newStorages.size()) {
-            storages = newStorages;
+            Map<String, String> countColumns = new HashMap<>();
+            for (String storageKey : newStorages.keySet()) {
+                countColumns.put(storageKey.replace("storage", "count"), newStorages.get(storageKey));
+            }
+            storages = countColumns;
         }
     }
 
