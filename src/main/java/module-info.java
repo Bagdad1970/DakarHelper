@@ -1,14 +1,19 @@
 module io.github.bagdad1970.dakarhelper {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
+    requires javafx.base;
     requires org.apache.poi.poi;
     requires org.json;
     requires jxls.jexcel;
     requires jakarta.mail;
     requires org.apache.xmlbeans;
-    requires javafx.base;
     requires org.apache.logging.log4j;
     requires log4j;
+    requires org.apache.poi.ooxml;
+    requires commons.collections;
+    requires java.desktop;
+
 
     exports io.github.bagdad1970.dakarhelper.datasource;
 
