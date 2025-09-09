@@ -24,7 +24,10 @@ public class App extends Application {
         MainPresenter mainPresenter = new MainPresenter(mainController);
         mainController.setPresenter(mainPresenter);
 
-        stage.setOnCloseRequest(event -> mainPresenter.saveCompanyList());
+        stage.setOnCloseRequest(event -> {
+            mainPresenter.saveCompanyList();
+            mainPresenter.saveRootDir();
+        });
 
         stage.show();
     }
