@@ -20,7 +20,7 @@ import java.util.*;
 
 public class ExcelParser {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ExcelParser.class);
 
     private final Map<String, Path> companyDirs;
     private Map<String, String> storages;

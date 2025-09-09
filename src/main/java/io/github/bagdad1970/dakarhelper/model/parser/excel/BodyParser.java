@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class BodyParser {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(BodyParser.class);
 
     private final Sheet sheet;
     private final ExcelHeader excelHeader;

@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class MainPresenter {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(MainPresenter.class);
 
     private final MainController view;
     private final CompaniesModel companiesModel = CompaniesModel.getInstance();
@@ -55,14 +55,14 @@ public class MainPresenter {
         ExcelSettingsPresenter excelSettingsPresenter = new ExcelSettingsPresenter(excelSettingsController, excelSettingsModel);
         excelSettingsController.setPresenter(excelSettingsPresenter);
 
-        excelSettingsController.updateRootDir();
+        excelSettingsController.setRootDirField();
         view.show();
     }
 
     public void processData() {
         SearchConditions conditions = new SearchConditions(view.getName(), view.getQuantity());
 
-        Task<Void> startTask = new Task<Void>() {
+        Task<Void> startTask = new Task<>() {
             @Override
             protected Void call() {
                 try {
