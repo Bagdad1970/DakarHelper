@@ -2,13 +2,11 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.HeaderColumn;
-import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.QuantityColumn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,7 +67,7 @@ public class BodyParser {
         List<ExcelObject> excelObjects = new ArrayList<>();
 
         int startRowIndex = getFirstValidRow();
-        for (int i = startRowIndex; i < sheet.getLastRowNum(); i++) {
+        for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 
             if ( isRowValid(row) ) {

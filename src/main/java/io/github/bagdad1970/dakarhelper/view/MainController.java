@@ -13,9 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class MainController implements Initializable {
@@ -33,7 +31,7 @@ public class MainController implements Initializable {
     private TextField itemName;
 
     @FXML
-    private Button companies;
+    private MenuItem companies, excelSettings;
 
     private MainPresenter presenter;
 
@@ -44,6 +42,11 @@ public class MainController implements Initializable {
     @FXML
     private void openCompanyList() {
         presenter.openCompanyList();
+    }
+
+    @FXML
+    private void openExcelSettings() {
+        presenter.openExcelSettings();
     }
 
     @FXML
@@ -72,6 +75,10 @@ public class MainController implements Initializable {
 
     private void updateTableViewHeader(Map<String, String> tableHeader) {
         if (tableHeader != null && !tableHeader.isEmpty()) {
+            String[] desiredOrder = {"num", "name", "price", "retail", "wholesale", "internet", "count1", "count2"};
+
+            Map<String, TableColumn<ExcelObject, ?>> columnsMap = new HashMap<>();
+
             for (String key : tableHeader.keySet()) {
                 String tableName = tableHeader.get(key);
                 TableColumn<ExcelObject, ?> tableColumn = new TableColumn<>(tableName);
@@ -84,7 +91,7 @@ public class MainController implements Initializable {
                             return new SimpleDoubleProperty(value != null ? Double.parseDouble(value.toString()) : 0).asObject();
                         });
                         break;
-                    case "num", "count1", "count2": // очень плохо
+                    case "num":
                         TableColumn<ExcelObject, Integer> integerColumn = (TableColumn<ExcelObject, Integer>) tableColumn;
                         integerColumn.setCellValueFactory(cellData -> {
                             Object value = cellData.getValue().getProp(key);
@@ -100,9 +107,34 @@ public class MainController implements Initializable {
                         });
                         break;
                 }
-                tableView.getColumns().add(tableColumn);
+
+                columnsMap.put(key, tableColumn);
+            }
+
+            for (String key : desiredOrder) {
+                if (columnsMap.containsKey(key))
+                    tableView.getColumns().add(columnsMap.get(key));
+            }
+
+            for (String key : columnsMap.keySet()) {
+                if (!Arrays.asList(desiredOrder).contains(key))
+                    tableView.getColumns().add(columnsMap.get(key));
             }
         }
+    }
+
+    public void showErrorAlert(String headerMessage, String contentMessage) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(headerMessage);
+        alert.setContentText(contentMessage);
+        alert.show();
+    }
+
+    public void showInfoAlert(String headerMessage, String contentMessage) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(headerMessage);
+        alert.setContentText(contentMessage);
+        alert.show();
     }
 
     @Override
