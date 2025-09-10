@@ -1,4 +1,4 @@
-package io.github.bagdad1970.dakarhelper.model.parser.excel;
+package io.github.bagdad1970.dakarhelper.model.email;
 
 import io.github.bagdad1970.dakarhelper.datasource.Company;
 import jakarta.mail.*;
@@ -101,15 +101,25 @@ public class EmailHandler {
             Collections.reverse(reverseMessages);
 
             for (Message message : reverseMessages) {
-                String companyNameInMessage = whichCompanyNameInText(message.getSubject());
-                if ( companyNameInMessage.isEmpty() && message.getContent() instanceof Multipart multipart ) {
-                    BodyPart textBodyPart = getTextInBody(multipart);
+                String companyName = whichCompanyNameInText(message.getSubject());
+                if ( message.getContent() instanceof Multipart multipart ) {
+                    if (companyName.isEmpty()) {
+                        BodyPart textBodyPart = getTextInBody(multipart);
 
-                    if (textBodyPart != null) {
-                        String textContent = textBodyPart.getContent().toString();
+                        if (textBodyPart != null) {
+                            String textContent = textBodyPart.getContent().toString();
 
-                        String companyName = whichCompanyNameInText(textContent);
-                        if ( !companyName.isEmpty() && !companyVisits.get(companyName) ) {
+                            companyName = whichCompanyNameInText(textContent);
+                            if (!companyName.isEmpty() && !companyVisits.get(companyName)) {
+                                Path companyFolder = companyDirs.get(companyName);
+
+                                saveFiles(companyFolder, multipart);
+                                companyVisits.put(companyName, true);
+                            }
+                        }
+                    }
+                    else {
+                        if ( !companyVisits.get(companyName) ) {
                             Path companyFolder = companyDirs.get(companyName);
 
                             saveFiles(companyFolder, multipart);
@@ -174,11 +184,14 @@ public class EmailHandler {
                 }
             }
         }
-        catch (MessagingException exception) {
-            LOGGER.error("messaging failed", exception);
+        catch (MessagingException e) {
+            LOGGER.error("messaging failed", e);
         }
-        catch (UnsupportedEncodingException exception) {
-            LOGGER.error("encoding failed", exception);
+        catch (UnsupportedEncodingException e) {
+            LOGGER.error("encoding failed", e);
+        }
+        catch (Exception e) {
+            LOGGER.error("failed", e);
         }
     }
 
@@ -192,11 +205,11 @@ public class EmailHandler {
                 fileOutput.write(buf, 0, bytesRead);
             }
         }
-        catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
+        catch (IOException e) {
+            LOGGER.error("input/output failed", e);
         }
-        catch (Exception exception) {
-            LOGGER.error("failed", exception);
+        catch (Exception e) {
+            LOGGER.error("failed", e);
         }
     }
 
