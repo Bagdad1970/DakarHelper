@@ -16,7 +16,7 @@ import java.util.*;
 
 public class EmailHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(EmailHandler.class);
 
     private static final Properties props = new Properties() {{
         put("mail.store.protocol", "imaps");
@@ -63,7 +63,6 @@ public class EmailHandler {
         }
         catch (MessagingException exception) {
             LOGGER.error("messing failed", exception);
-            System.out.println(exception.getMessage());
         }
     }
 
@@ -102,53 +101,19 @@ public class EmailHandler {
             Collections.reverse(reverseMessages);
 
             for (Message message : reverseMessages) {
-                try {
-                    if (message.getContent() instanceof Multipart multipart) {
-                        Map.Entry<String, Path> companyDir = getCompanyDir(multipart);
+                String companyNameInMessage = whichCompanyNameInText(message.getSubject());
+                if ( companyNameInMessage.isEmpty() && message.getContent() instanceof Multipart multipart ) {
+                    BodyPart textBodyPart = getTextInBody(multipart);
 
-                        if ( companyDir != null) {
-                            Path companyFolder = companyDir.getValue();
-                            String companyName = companyDir.getKey();
+                    if (textBodyPart != null) {
+                        String textContent = textBodyPart.getContent().toString();
 
-                            if (companyVisits.get(companyName) == false) {
-                                saveFiles(companyFolder, multipart);
-                                companyVisits.put(companyName, true);
-                            }
-                        }
-                    }
-                }
-                catch (IOException exception) {
-                    LOGGER.error("input/output failed", exception);
-                }
-                catch (Exception exception) {
-                    LOGGER.error("failed", exception);
-                }
-            }
-        }
-        catch (MessagingException exception) {
-            LOGGER.error("messaging failed", exception);
-        }
-    }
+                        String companyName = whichCompanyNameInText(textContent);
+                        if ( !companyName.isEmpty() && !companyVisits.get(companyName) ) {
+                            Path companyFolder = companyDirs.get(companyName);
 
-    private Map.Entry<String, Path> getCompanyDir(Multipart multipart) {
-        try {
-            for (int i = 0; i < multipart.getCount(); i++) {
-                BodyPart bodyPart = multipart.getBodyPart(i);
-                String contentType = bodyPart.getContentType();
-
-                if (contentType.contains("multipart/alternative")) {
-                    Multipart nestedMultipart = (Multipart) bodyPart.getContent();
-                    for (int j = 0; j < nestedMultipart.getCount(); j++) {
-                        BodyPart nestedPart = nestedMultipart.getBodyPart(j);
-                        String nestedContentType = nestedPart.getContentType();
-
-                        if (nestedContentType.contains("text/plain")) {
-                            String content = nestedPart.getContent().toString();
-
-                            for (Map.Entry<String, Path> entry : companyDirs.entrySet()) {
-                                if ( content.contains(entry.getKey()) )
-                                    return entry;
-                            }
+                            saveFiles(companyFolder, multipart);
+                            companyVisits.put(companyName, true);
                         }
                     }
                 }
@@ -163,9 +128,35 @@ public class EmailHandler {
         catch (Exception exception) {
             LOGGER.error("failed", exception);
         }
+    }
 
+    private String whichCompanyNameInText(String text) {
+        for (String companyName : companyDirs.keySet()) {
+            if (text.contains(companyName))
+                return companyName;
+        }
+        return "";
+    }
+
+    private BodyPart getTextInBody(Multipart multipart) throws IOException, MessagingException {
+        for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            String contentType = bodyPart.getContentType();
+
+            if (contentType.contains("multipart/alternative")) {
+                Multipart nestedMultipart = (Multipart) bodyPart.getContent();
+                for (int j = 0; j < nestedMultipart.getCount(); j++) {
+                    BodyPart nestedPart = nestedMultipart.getBodyPart(j);
+                    String nestedContentType = nestedPart.getContentType();
+
+                    if (nestedContentType.contains("text/plain"))
+                        return nestedPart;
+                }
+            }
+        }
         return null;
     }
+
 
     private static void saveFiles(Path companyDir, Multipart multipart) {
         try {

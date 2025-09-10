@@ -4,7 +4,7 @@ import io.github.bagdad1970.dakarhelper.datasource.Company;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.CompaniesModel;
 import io.github.bagdad1970.dakarhelper.model.ExcelSettingsModel;
-import io.github.bagdad1970.dakarhelper.model.parser.excel.EmailHandler;
+import io.github.bagdad1970.dakarhelper.model.email.EmailHandler;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelObject;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelParser;
 import io.github.bagdad1970.dakarhelper.view.*;

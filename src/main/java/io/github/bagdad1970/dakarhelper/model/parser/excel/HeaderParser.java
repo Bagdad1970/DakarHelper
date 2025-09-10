@@ -3,6 +3,7 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.QuantityColumn;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.NameColumn;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.PriceColumn;
+import io.github.bagdad1970.dakarhelper.utils.Aliases;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;

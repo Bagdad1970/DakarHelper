@@ -1,11 +1,10 @@
 package io.github.bagdad1970.dakarhelper.model.parser.excel.columns;
 
-import io.github.bagdad1970.dakarhelper.model.parser.excel.Aliases;
+import io.github.bagdad1970.dakarhelper.utils.Aliases;
 import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class PriceColumn extends HeaderColumn {
 
