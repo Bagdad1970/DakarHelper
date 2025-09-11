@@ -10,7 +10,7 @@ public class Config {
     private static Properties properties = new Properties();
 
     static {
-        try (InputStream fileConfig = Config.class.getClassLoader().getResourceAsStream("config.properties")) {
+        try (InputStream fileConfig = Config.class.getClassLoader().getResourceAsStream("email.key")) {
             properties.load(fileConfig);
         }
         catch (IOException exp) {
