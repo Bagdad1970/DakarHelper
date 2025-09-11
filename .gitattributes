@@ -1,1 +1,1 @@
-*.key filter=git-crypt diff=git-crypt
+email.key filter=git-crypt diff=git-crypt
