@@ -6,7 +6,6 @@ target/
 logs/
 
 src/main/resources/company-list.json
-src/main/resources/config.properties
 
 
 ### IntelliJ IDEA ###
