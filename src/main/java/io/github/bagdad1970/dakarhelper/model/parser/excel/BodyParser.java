@@ -2,8 +2,8 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.columns.HeaderColumn;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class BodyParser {
 
-    private static final Logger LOGGER = LogManager.getLogger(BodyParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BodyParser.class);
 
     private final Sheet sheet;
     private final ExcelHeader excelHeader;

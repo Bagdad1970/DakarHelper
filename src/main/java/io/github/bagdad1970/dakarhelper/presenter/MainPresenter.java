@@ -13,8 +13,9 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.eclipse.angus.mail.util.MailConnectException;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class MainPresenter {
 
-    private static final Logger LOGGER = LogManager.getLogger(MainPresenter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainPresenter.class);
 
     private final MainController view;
     private final CompaniesModel companiesModel = CompaniesModel.getInstance();
@@ -66,7 +67,7 @@ public class MainPresenter {
             @Override
             protected Void call() {
                 try {
-                    LOGGER.info("reading email in task");
+                    LOGGER.info("Reading email in task");
 
                     List<Company> companies = companiesModel.getCompanies();
 
@@ -101,10 +102,17 @@ public class MainPresenter {
                     return null;
 
                 }
-                catch (Exception e) {
-                    LOGGER.error("Ошибка при обработке данных", e);
+                catch (MailConnectException e) {
+                    LOGGER.error("Connection error", e);
                     Platform.runLater(() -> {
-                        view.showErrorAlert("Ошибка", "Произошла ошибка при обработке данных: " + e.getMessage());
+                        view.showErrorAlert("Ошибка", "Не удалось подключиться к почте: " + e.getMessage());
+                    });
+                    return null;
+                }
+                catch (Exception e) {
+                    LOGGER.error("Error:", e);
+                    Platform.runLater(() -> {
+                        view.showErrorAlert("Ошибка", "Непредвиденная ошибка: " + e.getMessage());
                     });
                     return null;
                 }

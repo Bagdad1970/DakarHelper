@@ -139,18 +139,15 @@ public class HeaderParser {
 
                 switch (key) {
                     case "name":
-                        NameColumn nameColumn = new NameColumn(maxRowIndex, columnIndex, columnCells);
-                        excelHeader.addHeaderColumn(nameColumn);
+                        excelHeader.addHeaderColumn(new NameColumn(maxRowIndex, columnIndex, columnCells));
                         break;
 
                     case "price":
-                        PriceColumn priceColumn = new PriceColumn(maxRowIndex, columnIndex, columnCells);
-                        excelHeader.addHeaderColumn(priceColumn);
+                        excelHeader.addHeaderColumn(new PriceColumn(maxRowIndex, columnIndex, columnCells));
                         break;
 
                     case "count":
-                        QuantityColumn quantityColumn = new QuantityColumn(maxRowIndex, columnIndex, columnCells);
-                        excelHeader.addHeaderColumn(quantityColumn);
+                        excelHeader.addHeaderColumn(new QuantityColumn(maxRowIndex, columnIndex, columnCells));
                         break;
                 }
             }

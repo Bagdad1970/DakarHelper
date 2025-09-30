@@ -27,7 +27,7 @@ public class ExcelSettingsController {
     @FXML
     public void openFileChooser() {
         DirectoryChooser dirChooser = new DirectoryChooser();
-        dirChooser.setTitle("Выберите файл");
+        dirChooser.setTitle("Выберите папку");
 
         Stage stage = (Stage) dirChooserButton.getScene().getWindow();
         File selectedFile = dirChooser.showDialog(stage);

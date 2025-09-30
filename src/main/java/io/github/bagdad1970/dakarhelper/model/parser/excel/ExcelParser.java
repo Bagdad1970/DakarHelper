@@ -3,13 +3,12 @@ package io.github.bagdad1970.dakarhelper.model.parser.excel;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,7 +19,7 @@ import java.util.*;
 
 public class ExcelParser {
 
-    private static final Logger LOGGER = LogManager.getLogger(ExcelParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelParser.class);
 
     private final Map<String, Path> companyDirs;
     private Map<String, String> storages;
@@ -43,7 +42,7 @@ public class ExcelParser {
     }
 
     public void parseExcelFiles(SearchConditions conditions) {
-        LOGGER.info("parsing excel files");
+        LOGGER.info("Parsing excel files");
 
         Set<String> maxQuantityKeys = new HashSet<>();
         Set<String> maxPriceKeys = new HashSet<>();
@@ -74,13 +73,11 @@ public class ExcelParser {
     }
 
     private void addNums() {
-        LOGGER.info("adding nums to excel objects");
+        LOGGER.info("Adding nums to excel objects");
 
         int excelObjectNum = 1;
-        for (ExcelObject excelObject : excelObjects) {
-            excelObject.addProp("num", excelObjectNum);
-            excelObjectNum++;
-        }
+        for (ExcelObject excelObject : excelObjects)
+            excelObject.addProp("num", excelObjectNum++);
     }
 
     private static void addCompanyName(List<ExcelObject> excelObjects, String companyName) {
@@ -117,7 +114,7 @@ public class ExcelParser {
     }
 
     private void unifyExcelObjects(Set<String> maxQuantityKeys, Set<String> maxPriceKeys) {
-        LOGGER.info("unification excel objects");
+        LOGGER.info("Unification excel objects");
 
         for (ExcelObject excelObject : excelObjects) {
             excelObject.replaceQuantityProps(maxQuantityKeys);
@@ -140,16 +137,16 @@ public class ExcelParser {
             }
         }
         catch (FileNotFoundException exc) {
-            LOGGER.error("file not found", exc);
+            LOGGER.error("File not found", exc);
         }
         catch (Exception exc) {
-            LOGGER.error("fatal", exc);
+            LOGGER.error("Error", exc);
         }
         return workbook;
     }
 
     private List<ExcelObject> parseExcelFile(File companyFile, SearchConditions conditions) {
-        LOGGER.info("parsing excel file {}", companyFile);
+        LOGGER.info("Parsing excel file {}", companyFile);
 
         if (companyFile == null || !companyFile.exists() || !companyFile.isFile()) {
             LOGGER.error("File does not exist or is not a file: {}",

@@ -6,13 +6,20 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 public class App extends Application {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
     @Override
     public void start(Stage stage) throws IOException {
+        initLogDir();
+
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("app-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("DakarHelper");
@@ -30,6 +37,16 @@ public class App extends Application {
         });
 
         stage.show();
+
+        LOGGER.info("Application started");
+    }
+
+    private void initLogDir(){
+        String logDir = System.getenv("LOCALAPPDATA") + "/dakarhelper/logs";
+        new File(logDir).mkdirs();
+        System.setProperty("log.dir", logDir);
+
+        System.out.println("Logs will be written to: " + logDir);
     }
 
     public static void main(String[] args) {

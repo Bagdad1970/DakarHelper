@@ -1,7 +1,7 @@
 package io.github.bagdad1970.dakarhelper.model;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -9,7 +9,7 @@ import java.io.*;
 
 public class ExcelSettingsModel {
 
-    private static final Logger LOGGER = LogManager.getLogger(ExcelSettingsModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelSettingsModel.class);
     private static ExcelSettingsModel instance;
     private File rootDir;
     private File settingsFile;

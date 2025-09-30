@@ -8,12 +8,13 @@ module io.github.bagdad1970.dakarhelper {
     requires jxls.jexcel;
     requires jakarta.mail;
     requires org.apache.xmlbeans;
-    requires org.apache.logging.log4j;
-    requires log4j;
     requires org.apache.poi.ooxml;
-    requires commons.collections;
-    requires java.desktop;
+    requires org.eclipse.angus.activation;
+    requires org.eclipse.angus.mail;
+    requires org.slf4j;
+    requires ch.qos.logback.classic;
 
+    exports io.github.bagdad1970.dakarhelper;
 
     exports io.github.bagdad1970.dakarhelper.datasource;
 
@@ -25,7 +26,4 @@ module io.github.bagdad1970.dakarhelper {
 
     exports io.github.bagdad1970.dakarhelper.view;
     opens io.github.bagdad1970.dakarhelper.view to javafx.fxml;
-
-    opens io.github.bagdad1970.dakarhelper to javafx.fxml;
-    exports io.github.bagdad1970.dakarhelper;
 }

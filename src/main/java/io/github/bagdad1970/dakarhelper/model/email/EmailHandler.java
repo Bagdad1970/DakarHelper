@@ -1,14 +1,12 @@
 package io.github.bagdad1970.dakarhelper.model.email;
 
 import io.github.bagdad1970.dakarhelper.datasource.Company;
+import io.github.bagdad1970.dakarhelper.config.Config;
 import jakarta.mail.*;
 import jakarta.mail.internet.MimeUtility;
-
-import io.github.bagdad1970.dakarhelper.config.Config;
 import jakarta.mail.search.FromStringTerm;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +14,7 @@ import java.util.*;
 
 public class EmailHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger(EmailHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailHandler.class);
 
     private static final Properties props = new Properties() {{
         put("mail.store.protocol", "imaps");
@@ -50,24 +48,27 @@ public class EmailHandler {
     }
 
     private void initConnection() {
-        LOGGER.info("connecting to email");
+        LOGGER.info("Сonnecting to email");
 
         try {
             Session session = Session.getDefaultInstance(props);
             Store store = session.getStore();
-            store.connect(Config.getProperty("login"),
-                    Config.getProperty("password"));
+            store.connect(Config.getProperty("login"), Config.getProperty("password"));
 
             emailFolder = store.getFolder("INBOX");
             emailFolder.open(Folder.READ_ONLY);
         }
-        catch (MessagingException exception) {
-            LOGGER.error("messing failed", exception);
+        catch (MessagingException e) {
+            LOGGER.error("Messaging failed", e);
         }
+        catch (Exception e) {
+            LOGGER.error("Failed", e);
+        }
+
     }
 
     private void initDirectories() {
-        LOGGER.info("initializing directories");
+        LOGGER.info("Initializing directories");
 
         File directory = new File(rootDir);
 
@@ -91,8 +92,8 @@ public class EmailHandler {
         }
     }
 
-    public void readEmail() {
-        LOGGER.info("reading email");
+    public void readEmail() throws Exception {
+        LOGGER.info("Reading email");
 
         try {
             Message[] messages = emailFolder.search(new FromStringTerm("Отдел продаж Краснодар <sales23@dakar61.ru>"));
@@ -130,13 +131,13 @@ public class EmailHandler {
             }
         }
         catch (MessagingException exception) {
-            LOGGER.error("messaging failed", exception);
+            LOGGER.error("Messaging failed", exception);
         }
         catch (IOException exception) {
-            LOGGER.error("input/output failed", exception);
+            LOGGER.error("I/O failed", exception);
         }
         catch (Exception exception) {
-            LOGGER.error("failed", exception);
+            LOGGER.error("Failed", exception);
         }
     }
 
@@ -185,13 +186,13 @@ public class EmailHandler {
             }
         }
         catch (MessagingException e) {
-            LOGGER.error("messaging failed", e);
+            LOGGER.error("Messaging failed", e);
         }
         catch (UnsupportedEncodingException e) {
-            LOGGER.error("encoding failed", e);
+            LOGGER.error("Encoding failed", e);
         }
         catch (Exception e) {
-            LOGGER.error("failed", e);
+            LOGGER.error("Failed", e);
         }
     }
 
@@ -206,10 +207,10 @@ public class EmailHandler {
             }
         }
         catch (IOException e) {
-            LOGGER.error("input/output failed", e);
+            LOGGER.error("I/O failed", e);
         }
         catch (Exception e) {
-            LOGGER.error("failed", e);
+            LOGGER.error("Failed", e);
         }
     }
 

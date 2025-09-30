@@ -6,15 +6,15 @@ import javafx.collections.ObservableList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 
 public class CompaniesModel {
 
-    private static final Logger LOGGER = LogManager.getLogger(CompaniesModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompaniesModel.class);
     private static CompaniesModel instance;
 
     private ObservableList<Company> companies;
