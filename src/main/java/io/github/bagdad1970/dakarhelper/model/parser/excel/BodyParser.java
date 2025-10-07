@@ -48,7 +48,7 @@ public class BodyParser {
                 for (HeaderColumn headerColumn : headerColumnsByClass) {
                     int columnIndex = headerColumn.getColumnIndex();
                     Cell cell = row.getCell(columnIndex);
-                    if (cell != null && cell.getCellType() != CellType.BLANK && !cell.toString().contains("NULL")) {
+                    if (cell != null && cell.getCellType() != CellType.BLANK && cell.getCellType() != CellType.ERROR) {
                         countHeaderColumnValid++;
                         break;
                     }
@@ -64,7 +64,7 @@ public class BodyParser {
     }
 
     public List<ExcelObject> parse(SearchConditions conditions) {
-        List<ExcelObject> excelObjects = new ArrayList<>();
+        List<ExcelObject> parsedExcelObjects = new ArrayList<>();
 
         int startRowIndex = getFirstValidRow();
         for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
@@ -74,10 +74,10 @@ public class BodyParser {
                 ExcelObject excelObject = excelHeader.processRow(row);
 
                 if (excelObject.validateConditions(conditions))
-                    excelObjects.add(excelObject);
+                    parsedExcelObjects.add(excelObject);
             }
         }
-        return excelObjects;
+        return parsedExcelObjects;
     }
 
 }

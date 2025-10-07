@@ -22,7 +22,8 @@ public class CompaniesModel {
 
     private CompaniesModel() {
         this.companies = FXCollections.observableArrayList();
-        initDataFile();
+        this.dataFile = new File(System.getProperty("app.config"), "/company-list.json");
+
         loadData();
     }
 
@@ -33,40 +34,27 @@ public class CompaniesModel {
         return instance;
     }
 
-    private void initDataFile() {
-        String userHome = System.getProperty("user.home");
-        dataFile = new File(userHome, ".dakarhelper/company-list.json");
-        dataFile.getParentFile().mkdirs();
-    }
-
     private void loadData() {
-        LOGGER.info("Loading companies from: {}", dataFile.getAbsolutePath());
+        LOGGER.info("Loading companies from {}", dataFile.getAbsolutePath());
 
-        if (!dataFile.exists()) {
-            createDefaultData();
-            return;
+        if ( !dataFile.exists() ) {
+            companies = FXCollections.observableArrayList();
         }
+        else {
+            try (FileReader reader = new FileReader(dataFile)) {
+                JSONArray companyArray = new JSONArray(new JSONTokener(reader));
 
-        try (FileReader reader = new FileReader(dataFile)) {
-            JSONArray companyArray = new JSONArray(new JSONTokener(reader));
+                for (int i = 0; i < companyArray.length(); i++) {
+                    JSONObject company = companyArray.getJSONObject(i);
+                    companies.add(new Company(company.getString("name")));
+                }
 
-            for (int i = 0; i < companyArray.length(); i++) {
-                JSONObject company = companyArray.getJSONObject(i);
-                companies.add(new Company(company.getString("name")));
+                LOGGER.info("Loaded companies: {}", companies);
             }
-
-            LOGGER.info("Loaded companies: {}", companies);
+            catch (Exception e) {
+                LOGGER.error("Failed to load companies data", e);
+            }
         }
-        catch (Exception e) {
-            LOGGER.error("Failed to load companies data", e);
-            createDefaultData();
-        }
-    }
-
-    private void createDefaultData() {
-        companies.clear();
-        saveData();
-        LOGGER.info("Created default companies data");
     }
 
     public void addCompany(String name) {
@@ -82,6 +70,8 @@ public class CompaniesModel {
     }
 
     public void saveData() {
+        LOGGER.info("Saving companies");
+
         try (FileWriter writer = new FileWriter(dataFile)) {
             JSONArray companyArray = new JSONArray();
             for (Company company : companies) {
@@ -89,10 +79,10 @@ public class CompaniesModel {
             }
 
             writer.write(companyArray.toString(4));
-            LOGGER.info("Saved companies to file: {}", companies);
+            LOGGER.info("Companies {} saved to file", companies);
         }
         catch (Exception e) {
-            LOGGER.error("Failed to save companies data", e);
+            LOGGER.error("Failed to save companies", e);
         }
     }
 

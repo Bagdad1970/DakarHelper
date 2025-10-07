@@ -1,7 +1,6 @@
 package io.github.bagdad1970.dakarhelper.model.parser.excel;
 
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,7 +86,7 @@ public class ExcelObject {
     }
 
     private boolean validateCount(SearchConditions conditions) {
-        int countCondition = conditions.getCount();
+        int countCondition = conditions.count();
         if (countCondition == 0) {
             return true;
         }
@@ -101,7 +100,7 @@ public class ExcelObject {
     }
 
     private boolean validateName(SearchConditions conditions) {
-        String nameCondition = conditions.getName();
+        String nameCondition = conditions.name();
         if (nameCondition == null || nameCondition.isEmpty()) {
             return true;
         }

@@ -68,12 +68,12 @@ public class ExcelParser {
                 }
             }
         }
-        addNums();
+        addRowNumbers();
         unifyExcelObjects(maxQuantityKeys, maxPriceKeys);
     }
 
-    private void addNums() {
-        LOGGER.info("Adding nums to excel objects");
+    private void addRowNumbers() {
+        LOGGER.info("Adding numbers to excel objects");
 
         int excelObjectNum = 1;
         for (ExcelObject excelObject : excelObjects)
@@ -146,17 +146,16 @@ public class ExcelParser {
     }
 
     private List<ExcelObject> parseExcelFile(File companyFile, SearchConditions conditions) {
-        LOGGER.info("Parsing excel file {}", companyFile);
+        LOGGER.info("Parsing excel file \"{}\"", companyFile.toString());
 
-        if (companyFile == null || !companyFile.exists() || !companyFile.isFile()) {
-            LOGGER.error("File does not exist or is not a file: {}",
-                    companyFile != null ? companyFile.getAbsolutePath() : "null");
+        if ( !companyFile.exists() || !companyFile.isFile() ) {
+            LOGGER.error("File does not exist or is not a file: \"{}\"", companyFile.getAbsolutePath());
             return new ArrayList<>();
         }
 
         Workbook workbook = loadWorkbook(companyFile);
         if (workbook == null) {
-            LOGGER.error("Failed to load workbook from file: {}", companyFile.getAbsolutePath());
+            LOGGER.error("Failed to load workbook from file: \"{}\"", companyFile.getAbsolutePath());
             return new ArrayList<>();
         }
 
@@ -188,7 +187,7 @@ public class ExcelParser {
             return parsedExcelObjects;
         }
         catch (Exception exc) {
-            LOGGER.error("Error parsing Excel file: {}", companyFile.getAbsolutePath(), exc);
+            LOGGER.error("Error parsing Excel file: \"{}\"", companyFile.getAbsolutePath(), exc);
             return new ArrayList<>();
         }
         finally {

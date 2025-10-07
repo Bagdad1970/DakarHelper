@@ -3,7 +3,6 @@ package io.github.bagdad1970.dakarhelper.presenter;
 import io.github.bagdad1970.dakarhelper.datasource.Company;
 import io.github.bagdad1970.dakarhelper.datasource.SearchConditions;
 import io.github.bagdad1970.dakarhelper.model.CompaniesModel;
-import io.github.bagdad1970.dakarhelper.model.ExcelSettingsModel;
 import io.github.bagdad1970.dakarhelper.model.email.EmailHandler;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelObject;
 import io.github.bagdad1970.dakarhelper.model.parser.excel.ExcelParser;
@@ -15,8 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.angus.mail.util.MailConnectException;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +25,6 @@ public class MainPresenter {
 
     private final MainController view;
     private final CompaniesModel companiesModel = CompaniesModel.getInstance();
-    private final ExcelSettingsModel excelSettingsModel = ExcelSettingsModel.getInstance();
 
     public MainPresenter(MainController view) {
         this.view = view;
@@ -47,19 +43,6 @@ public class MainPresenter {
         companiesController.showCompanies();
     }
 
-    public void openExcelSettings() {
-        ExcelSettingsView view = new ExcelSettingsView("excel-settings.fxml", "Настройки обработки Excel", Modality.WINDOW_MODAL);
-        view.getStage().setResizable(false);
-
-        FXMLLoader loader = view.getLoader();
-        ExcelSettingsController excelSettingsController = loader.getController();
-        ExcelSettingsPresenter excelSettingsPresenter = new ExcelSettingsPresenter(excelSettingsController, excelSettingsModel);
-        excelSettingsController.setPresenter(excelSettingsPresenter);
-
-        excelSettingsController.setRootDirField();
-        view.show();
-    }
-
     public void processData() {
         SearchConditions conditions = new SearchConditions(view.getName(), view.getQuantity());
 
@@ -67,8 +50,6 @@ public class MainPresenter {
             @Override
             protected Void call() {
                 try {
-                    LOGGER.info("Reading email in task");
-
                     List<Company> companies = companiesModel.getCompanies();
 
                     if (companies.isEmpty()) {
@@ -78,7 +59,7 @@ public class MainPresenter {
                         return null;
                     }
 
-                    EmailHandler emailHandler = new EmailHandler(excelSettingsModel.getRootDir(), companies);
+                    EmailHandler emailHandler = new EmailHandler(companies);
                     emailHandler.readEmail();
 
                     Map<String, Path> companyDirs = emailHandler.getCompanyDirs();
@@ -102,13 +83,6 @@ public class MainPresenter {
                     return null;
 
                 }
-                catch (MailConnectException e) {
-                    LOGGER.error("Connection error", e);
-                    Platform.runLater(() -> {
-                        view.showErrorAlert("Ошибка", "Не удалось подключиться к почте: " + e.getMessage());
-                    });
-                    return null;
-                }
                 catch (Exception e) {
                     LOGGER.error("Error:", e);
                     Platform.runLater(() -> {
@@ -122,12 +96,18 @@ public class MainPresenter {
             protected void succeeded() {
                 super.succeeded();
                 LOGGER.info("Task completed successfully");
+                Platform.runLater(() -> {
+                    view.enableButton();
+                });
             }
 
             @Override
             protected void failed() {
                 super.failed();
                 LOGGER.error("Task failed", getException());
+                Platform.runLater(() -> {
+                    view.enableButton();
+                });
             }
         };
 
@@ -140,10 +120,6 @@ public class MainPresenter {
 
     public void saveCompanyList() {
         companiesModel.saveData();
-    }
-
-    public void saveRootDir() {
-        excelSettingsModel.saveData();
     }
 
 }

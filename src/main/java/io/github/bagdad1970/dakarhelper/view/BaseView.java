@@ -1,6 +1,6 @@
 package io.github.bagdad1970.dakarhelper.view;
 
-import io.github.bagdad1970.dakarhelper.App;
+import io.github.bagdad1970.dakarhelper.DakarHelperApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -16,7 +16,7 @@ public abstract class BaseView {
     BaseView(String fxmlpath, String title, Modality modality) {
         try {
             stage = new Stage();
-            loader = new FXMLLoader(App.class.getResource(fxmlpath));
+            loader = new FXMLLoader(DakarHelperApplication.class.getResource(fxmlpath));
             stage.setTitle(title);
             Scene scene = new Scene(loader.load());
             stage.setScene(scene);

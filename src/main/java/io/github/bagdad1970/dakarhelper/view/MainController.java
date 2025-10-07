@@ -45,13 +45,23 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void openExcelSettings() {
-        presenter.openExcelSettings();
+    public void processData() {
+        disableButton();
+        presenter.processData();
     }
 
-    @FXML
-    private void processData() {
-        presenter.processData();
+    private void disableButton() {
+        findButton.setDisable(true);
+        findButton.setStyle("-fx-background-color: #ff3333;");
+    }
+
+    public void enableButton() {
+        findButton.setDisable(false);
+        findButton.setStyle("-fx-background-color: #00FFFF;");
+    }
+
+    public void saveCompanyList() {
+        presenter.saveCompanyList();
     }
 
     public String getName() {

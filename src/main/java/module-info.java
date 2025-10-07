@@ -3,14 +3,16 @@ module io.github.bagdad1970.dakarhelper {
     requires javafx.fxml;
     requires javafx.graphics;
     requires javafx.base;
+
     requires org.apache.poi.poi;
-    requires org.json;
-    requires jxls.jexcel;
-    requires jakarta.mail;
-    requires org.apache.xmlbeans;
     requires org.apache.poi.ooxml;
+
+    requires org.json;
+
+    requires jakarta.mail;
     requires org.eclipse.angus.activation;
     requires org.eclipse.angus.mail;
+
     requires org.slf4j;
     requires ch.qos.logback.classic;
 

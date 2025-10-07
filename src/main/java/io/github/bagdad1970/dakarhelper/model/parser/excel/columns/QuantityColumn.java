@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class QuantityColumn extends HeaderColumn {
 
     private String storageName;
-    private String storageColumnName;
+    private String storageKey;
     private static Aliases aliases = new Aliases() {{
         addAliases("extra-storage", Arrays.asList("резервный склад", "ожидаемый"));
         addAliases("main-storage", Arrays.asList("основной склад"));
@@ -26,43 +26,45 @@ public class QuantityColumn extends HeaderColumn {
         return storageName;
     }
 
-    public String getStorageColumnName() {
-        return storageColumnName;
+    public String getStorageKey() {
+        return storageKey;
     }
 
     @Override
     protected void initializeByCells(List<Cell> cells) {
-        if ( !cells.isEmpty() ) {
-            Pattern storagePattern = Pattern.compile("склад \\d+");
+        if (cells.isEmpty()) {
+            return;
+        }
 
-            for (Cell cell : cells) {
-                String cellValue = cell.toString().toLowerCase().trim();
+        Pattern storagePattern = Pattern.compile("склад \\d+");
 
-                Matcher matcher = storagePattern.matcher(cellValue);
-                if (matcher.find()) {
-                    String foundedSubstring = cellValue.substring(matcher.start(), matcher.end());
-                    int storageNumber = Integer.parseInt(foundedSubstring.split(" ")[1]);
+        for (Cell cell : cells) {
+            String cellValue = cell.toString().toLowerCase().trim();
 
-                    storageName = "Склад " + storageNumber;
-                    storageColumnName = "storage" + storageNumber;
-                    columnName = "count" + storageNumber;
+            Matcher matcher = storagePattern.matcher(cellValue);
+            if (matcher.find()) {
+                String foundedSubstring = cellValue.substring(matcher.start(), matcher.end());
+                int storageNumber = Integer.parseInt(foundedSubstring.split(" ")[1]);
+
+                storageName = "Склад " + storageNumber;
+                storageKey = "storage" + storageNumber;
+                columnName = "count" + storageNumber;
+            }
+            else {
+                if (aliases.hasAliasByKey("extra-storage", cellValue)) {
+                    storageName = "Резервный склад";
+                    storageKey = "storage2";
+                    columnName = "count2";
                 }
-                else {
-                    if (aliases.hasAliasByKey("extra-storage", cellValue)) {
-                        storageName = "Резервный склад";
-                        storageColumnName = "storage2";
-                        columnName = "count2";
-                    }
-                    else if (aliases.hasAliasByKey("main-storage", cellValue)) {
-                        storageName = "Основной склад";
-                        storageColumnName = "storage1";
-                        columnName = "count1";
-                    }
-                    else if (aliases.hasAliasByKey("count", cellValue)) {
-                        columnName = "count1";
-                        storageName = "Основной склад";
-                        storageColumnName = "storage1";
-                    }
+                else if (aliases.hasAliasByKey("main-storage", cellValue)) {
+                    storageName = "Основной склад";
+                    storageKey = "storage1";
+                    columnName = "count1";
+                }
+                else if (aliases.hasAliasByKey("count", cellValue)) {
+                    columnName = "count1";
+                    storageName = "Основной склад";
+                    storageKey = "storage1";
                 }
             }
         }
@@ -72,7 +74,7 @@ public class QuantityColumn extends HeaderColumn {
     public Object processCellValue(Cell cell) {
         String cellValue = cell.toString().trim();
 
-        if ( cellValue.isEmpty() || cellValue.contains("NULL") ) {
+        if ( isCellEmpty(cellValue) ) {
             return null;
         }
 
@@ -90,8 +92,10 @@ public class QuantityColumn extends HeaderColumn {
 
     @Override
     public String toString() {
-        return "CountColumn{" +
+        return "QuantityColumn{" +
                 "columnIndex = " + columnIndex +
+                "columnName = " + columnName +
+                "storageName = " + storageName +
                 '}';
     }
 
