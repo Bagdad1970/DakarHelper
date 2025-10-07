@@ -41,36 +41,30 @@ public class DakarHelperApplication extends Application {
     private static void initAppDir() {
         String osName = System.getProperty("os.name");
 
-        String appDir;
-        switch (osName) {
-            case "Linux":
-                appDir = System.getProperty("user.home") + "/.dakarhelper";
-                new File(appDir).mkdirs();
+        if (osName.contains("Linux")) {
+            String appDir = System.getProperty("user.home") + "/.dakarhelper";
+            new File(appDir).mkdirs();
 
-                System.setProperty("company.dir", appDir + "/company_dirs");
-                new File(System.getProperty("company.dir")).mkdirs();
+            System.setProperty("company.dir", appDir + "/company_dirs");
+            new File(System.getProperty("company.dir")).mkdirs();
 
-                System.setProperty("log.dir", appDir + "/logs");
-                new File(System.getProperty("log.dir")).mkdirs();
+            System.setProperty("log.dir", appDir + "/logs");
+            new File(System.getProperty("log.dir")).mkdirs();
 
-                System.setProperty("app.config", appDir + "/config");
-                new File(System.getProperty("app.config")).mkdirs();
+            System.setProperty("app.config", appDir + "/config");
+            new File(System.getProperty("app.config")).mkdirs();
+        }
+        else if (osName.contains("Windows")) {
+            String appDir = System.getenv("LOCALAPPDATA") + "\\DakarHelper";
 
-                break;
+            System.setProperty("company.dir", appDir + "\\company_dirs");
+            new File(System.getProperty("company.dir")).mkdirs();
 
-            case "Windows":
-                appDir = System.getenv("LOCALAPPDATA") + "/DakarHelper";
+            System.setProperty("log.dir", appDir + "\\logs");
+            new File(System.getProperty("log.dir")).mkdirs();
 
-                System.setProperty("company.dir", appDir + "/company_dirs");
-                new File(System.getProperty("company.dir")).mkdirs();
-
-                System.setProperty("log.dir", appDir + "/logs");
-                new File(System.getProperty("log.dir")).mkdirs();
-
-                System.setProperty("app.config", appDir + "/config");
-                new File(System.getProperty("app.config")).mkdirs();
-
-                break;
+            System.setProperty("app.config", appDir + "\\config");
+            new File(System.getProperty("app.config")).mkdirs();
         }
     }
 
