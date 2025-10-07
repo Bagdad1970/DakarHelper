@@ -5,22 +5,18 @@ import io.github.bagdad1970.dakarhelper.view.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 
-public class App extends Application {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+public class DakarHelperApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        initLogDir();
+        initAppDir();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("app-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(DakarHelperApplication.class.getResource("app-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("DakarHelper");
         stage.setScene(scene);
@@ -31,26 +27,51 @@ public class App extends Application {
         MainPresenter mainPresenter = new MainPresenter(mainController);
         mainController.setPresenter(mainPresenter);
 
-        stage.setOnCloseRequest(event -> {
-            mainPresenter.saveCompanyList();
-            mainPresenter.saveRootDir();
+        stage.setOnCloseRequest(event -> mainController.saveCompanyList());
+
+        scene.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                mainController.processData();
+            }
         });
 
         stage.show();
-
-        LOGGER.info("Application started");
     }
 
-    private void initLogDir(){
-        String logDir = System.getenv("LOCALAPPDATA") + "/dakarhelper/logs";
-        new File(logDir).mkdirs();
-        System.setProperty("log.dir", logDir);
+    private static void initAppDir() {
+        String osName = System.getProperty("os.name");
 
-        System.out.println("Logs will be written to: " + logDir);
-    }
+        String appDir;
+        switch (osName) {
+            case "Linux":
+                appDir = System.getProperty("user.home") + "/.dakarhelper";
+                new File(appDir).mkdirs();
 
-    public static void main(String[] args) {
-        launch(args);
+                System.setProperty("company.dir", appDir + "/company_dirs");
+                new File(System.getProperty("company.dir")).mkdirs();
+
+                System.setProperty("log.dir", appDir + "/logs");
+                new File(System.getProperty("log.dir")).mkdirs();
+
+                System.setProperty("app.config", appDir + "/config");
+                new File(System.getProperty("app.config")).mkdirs();
+
+                break;
+
+            case "Windows":
+                appDir = System.getenv("LOCALAPPDATA") + "/DakarHelper";
+
+                System.setProperty("company.dir", appDir + "/company_dirs");
+                new File(System.getProperty("company.dir")).mkdirs();
+
+                System.setProperty("log.dir", appDir + "/logs");
+                new File(System.getProperty("log.dir")).mkdirs();
+
+                System.setProperty("app.config", appDir + "/config");
+                new File(System.getProperty("app.config")).mkdirs();
+
+                break;
+        }
     }
 
 }
