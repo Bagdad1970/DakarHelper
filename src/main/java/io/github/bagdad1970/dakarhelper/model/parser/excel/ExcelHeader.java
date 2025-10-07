@@ -33,13 +33,13 @@ public class ExcelHeader {
 
     public Map<String, String> getStorages() {
         List<QuantityColumn> quantityColumns = headerColumns.stream()
-                .filter(quanity -> quanity instanceof QuantityColumn)
+                .filter(quantity -> quantity instanceof QuantityColumn)
                 .map(quantity -> (QuantityColumn) quantity)
                 .toList();
 
         return quantityColumns.stream()
                 .collect(Collectors.toMap(
-                        QuantityColumn::getStorageColumnName,
+                        QuantityColumn::getStorageKey,
                         QuantityColumn::getStorageName
                 ));
     }

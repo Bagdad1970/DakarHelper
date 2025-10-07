@@ -42,7 +42,7 @@ public class PriceColumn extends HeaderColumn {
     public Object processCellValue(Cell cell) {
         String cellValue = cell.toString().trim();
 
-        if ( cellValue.isEmpty() ) {
+        if ( isCellEmpty(cellValue) ) {
             return null;
         }
 

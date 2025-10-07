@@ -1,7 +1,6 @@
 package io.github.bagdad1970.dakarhelper.model.parser.excel.columns;
 
 import org.apache.poi.ss.usermodel.Cell;
-
 import java.util.List;
 
 public abstract class HeaderColumn {
@@ -19,6 +18,10 @@ public abstract class HeaderColumn {
     protected abstract void initializeByCells(List<Cell> cells);
 
     public abstract Object processCellValue(Cell cell);
+
+    protected boolean isCellEmpty(String cellValue) {
+        return cellValue.isEmpty() || cellValue.toLowerCase().contains("null");
+    }
 
     public int getColumnIndex() {
         return columnIndex;
