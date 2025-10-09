@@ -14,7 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Path;
+
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +62,7 @@ public class MainPresenter {
                     EmailHandler emailHandler = new EmailHandler(companies);
                     emailHandler.readEmail();
 
-                    Map<String, Path> companyDirs = emailHandler.getCompanyDirs();
-
-                    ExcelParser excelParser = new ExcelParser(companyDirs);
+                    ExcelParser excelParser = new ExcelParser(emailHandler.getCompanyDirs());
                     excelParser.parseExcelFiles(conditions);
 
                     Map<String, String> tableHeader = excelParser.getTableHeader();
