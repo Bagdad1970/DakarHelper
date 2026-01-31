@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d dakar_helper_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "5433:5432"
+
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - FLYWAY_URL=${FLYWAY_URL}
+      - FLYWAY_USER=${FLYWAY_USER}
+      - FLYWAY_PASSWORD=${FLYWAY_PASSWORD}
+      - FLYWAY_JDBC_DRIVERS=${FLYWAY_JDBC_DRIVERS}
+      - FLYWAY_LOCATIONS=${FLYWAY_LOCATIONS}
+    command: migrate
+    volumes:
+      - ./DakarHelperService/src/main/resources/db/migration:/flyway/sql
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+
+#  app:
+#    container_name: app
+#    build:
+#      context: .
+#      dockerfile: DakarHelperService/Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SAVE_DIR=${APP_SAVE_DATA}
+#      - MONGODB_URI=${MONGODB_URI}
+#      - POSTGRES_URL=${POSTGRES_URL}
+#      - POSTGRES_USER=${POSTGRES_USER}
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#    volumes:
+#      - vendor_data:/app/data
+#    depends_on:
+#      - postgres
+#      - mongodb
+
+
+volumes:
+  pgdata:
+  vendor_data:
+  mongodata:
