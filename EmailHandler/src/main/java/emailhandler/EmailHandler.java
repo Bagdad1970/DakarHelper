@@ -10,16 +10,13 @@ import java.util.*;
 public class EmailHandler {
 
     private EmailConfig config;
-
-    private final String saveDir;
     private final List<String> vendors;
     private Folder folder;
 
     private final Map<String, List<String>> vendorFilepaths;
 
-    public EmailHandler(EmailConfig config, String saveDir, List<String> vendors) {
+    public EmailHandler(EmailConfig config, List<String> vendors) {
         this.config = config;
-        this.saveDir = saveDir;
         this.vendors = vendors;
         vendorFilepaths = new HashMap<>();
     }
@@ -61,7 +58,7 @@ public class EmailHandler {
             log.info("Found {} messages from '{}'", messages != null ? messages.length : 0, config.getFromTerm());
 
             if (messages != null && messages.length > 0) {
-                FileHandler fileHandler = new FileHandler(vendors, saveDir);
+                FileHandler fileHandler = new FileHandler(vendors, config.getSaveDir());
 
                 MessageHandler messageHandler = new MessageHandler(vendors, fileHandler);
                 messageHandler.processMessages(messages);

@@ -1,5 +1,8 @@
 package io.github.bagdad.dakarhelperservice.service.implementation;
 
+import emailhandler.EmailConfig;
+import emailhandler.EmailHandler;
+import io.github.bagdad.dakarhelperservice.helper.EmailHelper;
 import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
 import io.github.bagdad.dakarhelperservice.model.*;
 import io.github.bagdad.dakarhelperservice.service.interfaces.*;
@@ -17,13 +20,30 @@ import java.util.List;
 @Service
 public class ExcelParserServiceImpl implements ExcelParserService {
 
+    private final EmailConfig emailConfig;
+
+    private final VendorServiceImpl vendorService;
+
     private final VendorFileService vendorFileService;
+
     private final ExcelHeaderCellService excelHeaderCellService;
+
     private final ExcelProductService excelProductService;
+
     private final ExcelStorageService excelStorageService;
+
     private final ExcelHeaderSubcategoryService excelHeaderSubcategoryService;
 
-    public ExcelParserServiceImpl(VendorFileService vendorFileService, ExcelHeaderCellService excelHeaderCellService, ExcelProductService excelProductService, ExcelStorageService excelStorageService, ExcelHeaderSubcategoryService excelHeaderSubcategoryService) {
+    public ExcelParserServiceImpl(EmailConfig emailConfig,
+                                  VendorServiceImpl vendorService,
+                                  VendorFileService vendorFileService,
+                                  ExcelHeaderCellService excelHeaderCellService,
+                                  ExcelProductService excelProductService,
+                                  ExcelStorageService excelStorageService,
+                                  ExcelHeaderSubcategoryService excelHeaderSubcategoryService
+    ) {
+        this.emailConfig = emailConfig;
+        this.vendorService = vendorService;
         this.vendorFileService = vendorFileService;
         this.excelHeaderCellService = excelHeaderCellService;
         this.excelProductService = excelProductService;
@@ -31,7 +51,34 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         this.excelHeaderSubcategoryService = excelHeaderSubcategoryService;
     }
 
-    public void parseFiles() {
+    @Override
+    public void runExcelParser() {
+        synchronizeExcelFiles();
+
+        parseExcelFiles();
+    }
+
+    private void synchronizeExcelFiles() {
+        List<Vendor> vendors = vendorService.findAll();
+
+        List<String> vendorTitles = vendors.stream()
+                .map(Vendor::getTitle)
+                .toList();
+
+        if (vendorTitles.isEmpty()) {
+            return;
+        }
+
+        EmailHandler emailHandler = new EmailHandler(emailConfig, vendorTitles);
+
+        emailHandler.run();
+
+        List<VendorFile> vendorFiles = EmailHelper.mapVendorFilesAndVendors(emailHandler, vendors);
+
+        vendorFileService.batchInsert(vendorFiles);
+    }
+
+    private void parseExcelFiles() {
         List<ExcelHeaderCell> excelHeaderCellsWithNameCategory = excelHeaderCellService.findAllByCategory(Category.NAME);
         List<ExcelHeaderCell> excelHeaderCellsWithPriceCategory = excelHeaderCellService.findAllByCategory(Category.PRICE);
         List<ExcelHeaderCell> excelHeaderCellsWithQuantityCategory = excelHeaderCellService.findAllByCategory(Category.QUANTITY);

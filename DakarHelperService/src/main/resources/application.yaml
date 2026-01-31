@@ -20,5 +20,6 @@ app:
     host: ${EMAIL_HOST}
     folder-name: ${EMAIL_FOLDER_NAME}
     from-term: ${EMAIL_FROM_TERM}
+    save-dir: ${SAVE_DIR}
 
 

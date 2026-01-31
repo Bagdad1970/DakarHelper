@@ -26,6 +26,9 @@ public class EmailHandlerConfig {
     @Value("${app.email.from-term}")
     private String fromTerm;
 
+    @Value("${app.email.save-dir}")
+    private String saveDir;
+
     @Bean
     public EmailConfig emailConfig() {
         EmailConfig config = new EmailConfig();
@@ -36,6 +39,7 @@ public class EmailHandlerConfig {
         config.setHost(host);
         config.setFolderName(folderName);
         config.setFromTerm(fromTerm);
+        config.setSaveDir(saveDir);
 
         return config;
     }

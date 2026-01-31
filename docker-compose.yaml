@@ -51,7 +51,7 @@ services:
 #    ports:
 #      - "8080:8080"
 #    environment:
-#      - SAVE_DIR=${APP_SAVE_DATA}
+#      - SAVE_DIR=${SAVE_DIR}
 #      - MONGODB_URI=${MONGODB_URI}
 #      - POSTGRES_URL=${POSTGRES_URL}
 #      - POSTGRES_USER=${POSTGRES_USER}

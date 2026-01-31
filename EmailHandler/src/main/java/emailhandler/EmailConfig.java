@@ -23,4 +23,6 @@ public class EmailConfig {
 
     private String fromTerm;
 
+    private String saveDir;
+
 }
