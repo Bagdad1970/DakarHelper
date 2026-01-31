@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: "DakarHelperService"
+
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  mongodb:
+    uri: ${MONGODB_URI}
+
+
+app:
+  email:
+    login: ${EMAIL_LOGIN}
+    password: ${EMAIL_PASSWORD}
+    protocol: ${EMAIL_PROTOCOL}
+    host: ${EMAIL_HOST}
+    folder-name: ${EMAIL_FOLDER_NAME}
+    from-term: ${EMAIL_FROM_TERM}
+
+

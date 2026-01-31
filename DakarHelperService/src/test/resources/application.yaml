@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${POSTGRES_TEST_URL}
+    username: ${POSTGRES_TEST_USER}
+    password: ${POSTGRES_TEST_USER}
+    driver-class-name: org.postgresql.Driver
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
