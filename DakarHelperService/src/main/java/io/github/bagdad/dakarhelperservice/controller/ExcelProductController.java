@@ -27,6 +27,12 @@ public class ExcelProductController {
     public List<ExcelProduct> query(@RequestBody ExcelProductQueryRequest request) {
         ExcelProductQuery query = new ExcelProductQuery();
 
+        query.setVendorIds(request.getVendorIds());
+        query.setName(request.getName());
+        query.setPrice(request.getPrice());
+        query.setPriceSubcategoryIds(request.getPriceSubcategoryIds());
+        query.setQuantity(request.getQuantity());
+        query.setQuantitySubcategoryIds(request.getQuantitySubcategoryIds());
 
         return service.query(query);
     }

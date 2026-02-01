@@ -1,4 +1,4 @@
-package io.github.bagdad.models.request.excelheadercell;
+package io.github.bagdad.models.request.headercell;
 
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
@@ -7,13 +7,13 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExcelHeaderCellUpdateRequest {
+public class HeaderCellUpdateRequest {
 
     private Long id;
 
-    private Long excelHeaderSubcategoryId;
+    private Long subcategoryId;
 
-    private String originName;
+    private String originalName;
 
     private String normalizedName;
 

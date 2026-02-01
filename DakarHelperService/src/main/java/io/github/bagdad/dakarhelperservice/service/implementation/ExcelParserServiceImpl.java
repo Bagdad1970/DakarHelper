@@ -11,7 +11,7 @@ import io.github.bagdad.excelparser.model.Product;
 import io.github.bagdad.excelparser.headerparser.ParserFactory;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
 import org.springframework.stereotype.Service;
 
@@ -26,29 +26,29 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
     private final VendorFileService vendorFileService;
 
-    private final ExcelHeaderCellService excelHeaderCellService;
+    private final HeaderCellService headerCellService;
 
     private final ExcelProductService excelProductService;
 
     private final ExcelStorageService excelStorageService;
 
-    private final ExcelHeaderSubcategoryService excelHeaderSubcategoryService;
+    private final SubcategoryService subcategoryService;
 
     public ExcelParserServiceImpl(EmailConfig emailConfig,
                                   VendorServiceImpl vendorService,
                                   VendorFileService vendorFileService,
-                                  ExcelHeaderCellService excelHeaderCellService,
+                                  HeaderCellService headerCellService,
                                   ExcelProductService excelProductService,
                                   ExcelStorageService excelStorageService,
-                                  ExcelHeaderSubcategoryService excelHeaderSubcategoryService
+                                  SubcategoryService subcategoryService
     ) {
         this.emailConfig = emailConfig;
         this.vendorService = vendorService;
         this.vendorFileService = vendorFileService;
-        this.excelHeaderCellService = excelHeaderCellService;
+        this.headerCellService = headerCellService;
         this.excelProductService = excelProductService;
         this.excelStorageService = excelStorageService;
-        this.excelHeaderSubcategoryService = excelHeaderSubcategoryService;
+        this.subcategoryService = subcategoryService;
     }
 
     @Override
@@ -79,18 +79,18 @@ public class ExcelParserServiceImpl implements ExcelParserService {
     }
 
     private void parseExcelFiles() {
-        List<ExcelHeaderCell> excelHeaderCellsWithNameCategory = excelHeaderCellService.findAllByCategory(Category.NAME);
-        List<ExcelHeaderCell> excelHeaderCellsWithPriceCategory = excelHeaderCellService.findAllByCategory(Category.PRICE);
-        List<ExcelHeaderCell> excelHeaderCellsWithQuantityCategory = excelHeaderCellService.findAllByCategory(Category.QUANTITY);
+        List<HeaderCell> headerCellsWithNameCategory = headerCellService.findAllByCategory(Category.NAME);
+        List<HeaderCell> headerCellsWithPriceCategory = headerCellService.findAllByCategory(Category.PRICE);
+        List<HeaderCell> headerCellsWithQuantityCategory = headerCellService.findAllByCategory(Category.QUANTITY);
 
-        List<ExcelHeaderSubcategory> excelHeaderSubcategories = excelHeaderSubcategoryService.findAll();
+        List<Subcategory> excelHeaderSubcategories = subcategoryService.findAll();
 
-        SubcategoryMapping nameMapping = ExcelParserHelper.createCategoryMapping(excelHeaderCellsWithNameCategory, excelHeaderSubcategories);
-        SubcategoryMapping priceMapping = ExcelParserHelper.createCategoryMapping(excelHeaderCellsWithPriceCategory, excelHeaderSubcategories);
-        SubcategoryMapping quantityMapping = ExcelParserHelper.createCategoryMapping(excelHeaderCellsWithQuantityCategory, excelHeaderSubcategories);
+        SubcategoryMapping nameMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithNameCategory, excelHeaderSubcategories);
+        SubcategoryMapping priceMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithPriceCategory, excelHeaderSubcategories);
+        SubcategoryMapping quantityMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithQuantityCategory, excelHeaderSubcategories);
         ParserFactory parserFactory = new ParserFactory(nameMapping, priceMapping, quantityMapping);
 
-        List<ExcelHeaderCellDto> excelHeaderCellsWithSubcategory = ExcelParserHelper.mapToExcelHeaderCellDtos(excelHeaderCellService.findAllWithSubcategory());
+        List<HeaderCellDto> excelHeaderCellsWithSubcategory = ExcelParserHelper.mapToExcelHeaderCellDtos(headerCellService.findAllWithSubcategory());
         ExcelHeaderCellsHandler excelHeaderCellsHandler = new ExcelHeaderCellsHandler(excelHeaderCellsWithSubcategory);
 
         List<VendorFile> vendorFiles = vendorFileService.findAll(); // find not processed yet
@@ -106,11 +106,11 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         boolean containsUnprocessableHeaderCells = excelParser.tryToParse();
 
         if (containsUnprocessableHeaderCells) {
-            List<ExcelHeaderCellDto> unprocessableHeaderCellDtos = excelParser.getUnprocessableHeaderCells();
+            List<HeaderCellDto> unprocessableHeaderCellDtos = excelParser.getUnprocessableHeaderCells();
             if (!unprocessableHeaderCellDtos.isEmpty()) {
-                List<ExcelHeaderCell> unprocessableExcelHeaderCells = ExcelParserHelper.mapToExcelHeaderCells(unprocessableHeaderCellDtos);
+                List<HeaderCell> unprocessableHeaderCells = ExcelParserHelper.mapToExcelHeaderCells(unprocessableHeaderCellDtos);
 
-                excelHeaderCellService.batchInsert(unprocessableExcelHeaderCells);
+                headerCellService.batchInsert(unprocessableHeaderCells);
 
                 // send to a user
 
@@ -125,7 +125,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         List<Product> foundedProducts = excelParser.parse();
 
         if (!foundedProducts.isEmpty()) {
-            List<io.github.bagdad.dakarhelperservice.model.ExcelProduct> excelProducts = ExcelParserHelper.mapToExcelProducts(vendorFile, foundedProducts);
+            List<ExcelProduct> excelProducts = ExcelParserHelper.mapToExcelProducts(vendorFile, foundedProducts);
 
             excelProductService.saveAll(excelProducts);
 

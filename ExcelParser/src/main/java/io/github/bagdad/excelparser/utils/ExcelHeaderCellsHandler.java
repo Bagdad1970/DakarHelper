@@ -3,7 +3,7 @@ package io.github.bagdad.excelparser.utils;
 import io.github.bagdad.excelparser.headerparser.CellFindStatus;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,19 +15,19 @@ import java.util.List;
 @Setter
 public class ExcelHeaderCellsHandler {
 
-    private final List<ExcelHeaderCellDto> excelHeaderCellDtos;
+    private final List<HeaderCellDto> headerCellDtos;
 
-    public ExcelHeaderCellsHandler(List<ExcelHeaderCellDto> excelHeaderCellDtos) {
-        this.excelHeaderCellDtos = excelHeaderCellDtos;
+    public ExcelHeaderCellsHandler(List<HeaderCellDto> headerCellDtos) {
+        this.headerCellDtos = headerCellDtos;
     }
 
-    public CellFindStatus getHeaderCellFindStatus(String cellValue) {
+    public CellFindStatus findHeaderCellFindStatus(String cellValue) {
         if (cellValue.isEmpty()) {
             return CellFindStatus.ABSENTS;
         }
 
-        for (ExcelHeaderCellDto dto : excelHeaderCellDtos) {
-            String originName = dto.getOriginName();
+        for (HeaderCellDto dto : headerCellDtos) {
+            String originName = dto.getOriginalName();
 
             if (cellValue.startsWith(originName)) {
                 if (dto.getCellStatus() == CellStatus.IGNORED) {
@@ -45,17 +45,25 @@ public class ExcelHeaderCellsHandler {
         return CellFindStatus.ABSENTS;
     }
 
-    public Category getHeaderCellCategory(String cellValue) {
+    public Category findHeaderCellCategory(String cellValue) {
         if (cellValue.isEmpty()) {
             return null;
         }
 
-        for (ExcelHeaderCellDto dto : excelHeaderCellDtos) {
-            if (cellValue.startsWith(dto.getOriginName())) {
+        for (HeaderCellDto dto : headerCellDtos) {
+            if (cellValue.startsWith(dto.getOriginalName())) {
                 return dto.getCategory();
             }
         }
         return null;
+    }
+
+    public void add(HeaderCellDto newHeaderCellDto) {
+        headerCellDtos.add(newHeaderCellDto);
+    }
+
+    public void addAll(List<HeaderCellDto> newHeaderCellDtos) {
+        headerCellDtos.addAll(newHeaderCellDtos);
     }
 
 }

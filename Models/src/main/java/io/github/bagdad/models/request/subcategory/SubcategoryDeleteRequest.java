@@ -1,4 +1,4 @@
-package io.github.bagdad.models.request.excelheadercell;
+package io.github.bagdad.models.request.subcategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExcelHeaderCellDeleteRequest {
+public class SubcategoryDeleteRequest {
 
     private Long id;
 

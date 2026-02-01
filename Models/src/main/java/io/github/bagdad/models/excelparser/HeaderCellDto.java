@@ -7,9 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ExcelHeaderCellDto {
+public class HeaderCellDto {
 
-    private String originName;
+    private String originalName;
 
     private Category category;
 
@@ -19,11 +19,11 @@ public class ExcelHeaderCellDto {
 
     private CellStatus cellStatus;
 
-    public ExcelHeaderCellDto(String originName, Category category, String subcategoryName, CellStatus cellStatus) {
-        this.originName = originName;
+    public HeaderCellDto(String originalName, Category category, String subcategoryName, CellStatus cellStatus) {
+        this.originalName = originalName;
         this.category = category;
         this.subcategoryName = subcategoryName;
-        this.normalizedName = originName;
+        this.normalizedName = originalName;
         this.cellStatus = cellStatus;
     }
 

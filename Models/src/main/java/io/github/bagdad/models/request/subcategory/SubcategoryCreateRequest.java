@@ -1,4 +1,4 @@
-package io.github.bagdad.models.request.excelheadersubcategory;
+package io.github.bagdad.models.request.subcategory;
 
 import io.github.bagdad.models.excelparser.Category;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ExcelHeaderSubcategoryCreateRequest {
+public class SubcategoryCreateRequest {
 
-    private String subcategoryName;
+    private Category category;
+
+    private String name;
 
 }

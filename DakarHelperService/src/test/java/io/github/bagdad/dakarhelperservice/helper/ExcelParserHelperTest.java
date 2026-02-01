@@ -1,13 +1,13 @@
 package io.github.bagdad.dakarhelperservice.helper;
 
-import io.github.bagdad.dakarhelperservice.model.ExcelHeaderCell;
+import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.ExcelHeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.ExcelProduct;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.excelparser.model.Product;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -109,18 +109,18 @@ class ExcelParserHelperTest {
         List<ExcelHeaderCellWithSubcategory> input = List.of(cell1, cell2);
 
         // act
-        List<ExcelHeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
+        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
 
         // assert
         assertThat(result).isNotNull().hasSize(2);
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(result.get(0).getOriginName()).isEqualTo("originalName1");
+            softly.assertThat(result.get(0).getOriginalName()).isEqualTo("originalName1");
             softly.assertThat(result.get(0).getCategory()).isEqualTo(Category.NAME);
             softly.assertThat(result.get(0).getSubcategoryName()).isEqualTo("subcategory_name1");
             softly.assertThat(result.get(0).getNormalizedName()).isEqualTo("normalized_name1");
             softly.assertThat(result.get(0).getCellStatus()).isEqualTo(CellStatus.PROCESSED);
 
-            softly.assertThat(result.get(1).getOriginName()).isEqualTo("original_name2");
+            softly.assertThat(result.get(1).getOriginalName()).isEqualTo("original_name2");
             softly.assertThat(result.get(1).getCategory()).isEqualTo(Category.PRICE);
             softly.assertThat(result.get(1).getSubcategoryName()).isEqualTo("subcategory_name2");
             softly.assertThat(result.get(1).getNormalizedName()).isEqualTo("normalized_name2");
@@ -132,7 +132,7 @@ class ExcelParserHelperTest {
     void mapToExcelHeaderCellDtos_shouldReturnEmptyList_whenInputIsEmpty() {
         List<ExcelHeaderCellWithSubcategory> excelHeaderCellWithSubcategories = new ArrayList<>();
 
-        List<ExcelHeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(excelHeaderCellWithSubcategories);
+        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(excelHeaderCellWithSubcategories);
 
         assertThat(result).isNotNull().isEmpty();
     }
@@ -144,14 +144,14 @@ class ExcelParserHelperTest {
         List<ExcelHeaderCellWithSubcategory> input = List.of(cell);
 
         // act
-        List<ExcelHeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
+        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
 
         // assert
         assertThat(result).isNotNull().hasSize(1);
-        ExcelHeaderCellDto dto = result.get(0);
+        HeaderCellDto dto = result.get(0);
 
         assertThat(dto).isNotNull();
-        assertThat(dto.getOriginName()).isNull();
+        assertThat(dto.getOriginalName()).isNull();
         assertThat(dto.getCategory()).isNull();
         assertThat(dto.getSubcategoryName()).isNull();
         assertThat(dto.getNormalizedName()).isNull();
@@ -160,9 +160,9 @@ class ExcelParserHelperTest {
 
     @Test
     void creating_Subcategory_Mapping_Without_Subcategories_Returns_Empty_Subcategory_Mapping() {
-        List<ExcelHeaderCell> excelHeaderCells = new ArrayList<>();
+        List<HeaderCell> headerCells = new ArrayList<>();
 
-        ExcelHeaderCell excelHeaderCell1 = new ExcelHeaderCell();
+        HeaderCell headerCell1 = new HeaderCell();
         //excelHeaderCell1.setId();
 
 

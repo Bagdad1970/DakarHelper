@@ -8,7 +8,7 @@ import io.github.bagdad.excelparser.headerparser.HeaderParser;
 import io.github.bagdad.excelparser.headerparser.ParserFactory;
 import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
 import io.github.bagdad.excelparser.utils.ExcelWorkbookHandler;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -33,7 +33,7 @@ public class ExcelParser {
         this.headerParser = new HeaderParser(headerExtractor, excelHeaderCellsHandler, parserFactory);
     }
 
-    public List<ExcelHeaderCellDto> getUnprocessableHeaderCells() {
+    public List<HeaderCellDto> getUnprocessableHeaderCells() {
         return headerParser.getUnprocessableHeaderCells();
     }
 

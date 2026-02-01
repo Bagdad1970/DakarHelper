@@ -21,7 +21,6 @@ public class VendorFileMapper implements RowMapper<VendorFile> {
         String fileStatusStr = rs.getString("file_status");
         vendorFile.setFileStatus(fileStatusStr != null ? FileStatus.valueOf(fileStatusStr.trim().toUpperCase()) : null);
 
-        vendorFile.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
         vendorFile.setUpdatedAt(rs.getObject("updated_at", OffsetDateTime.class));
 
         return vendorFile;

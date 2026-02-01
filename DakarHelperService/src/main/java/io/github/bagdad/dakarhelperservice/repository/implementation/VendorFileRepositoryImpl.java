@@ -31,15 +31,13 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             vendor_id,
             filepath,
             file_status,
-            created_at,
             updated_at
-        ) VALUES (?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?)
         RETURNING
             id,
             vendor_id,
             filepath,
             file_status,
-            created_at,
             updated_at
         """;
 
@@ -49,7 +47,6 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 vendorFile.getVendorId(),
                 vendorFile.getFilepath(),
                 vendorFile.getFileStatus().name(),
-                vendorFile.getCreatedAt(),
                 vendorFile.getUpdatedAt()
         );
     }
@@ -62,9 +59,8 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             vendor_id,
             filepath,
             file_status,
-            created_at,
             updated_at
-        ) VALUES (?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?)
         """;
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -74,8 +70,7 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 ps.setLong(1, vendorFile.getVendorId());
                 ps.setString(2, vendorFile.getFilepath());
                 ps.setString(3, vendorFile.getFileStatus() != null ? vendorFile.getFileStatus().name() : null);
-                ps.setObject(4, vendorFile.getCreatedAt());
-                ps.setObject(5, vendorFile.getUpdatedAt());
+                ps.setObject(4, vendorFile.getUpdatedAt());
             }
 
             @Override
@@ -99,7 +94,6 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 vendor_id,
                 filepath,
                 file_status,
-                created_at,
                 updated_at
         """;
 
@@ -127,7 +121,6 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 vendor_id,
                 filepath,
                 file_status,
-                created_at,
                 updated_at
             FROM vendor_files
         """;
@@ -146,7 +139,6 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 vendor_id,
                 filepath,
                 file_status,
-                created_at,
                 updated_at
             FROM vendor_files
             WHERE id = ?

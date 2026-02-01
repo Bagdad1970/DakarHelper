@@ -108,19 +108,12 @@ public class VendorFileRepositoryTest {
         Vendor savedVendor = vendorRepository.save(vendor);
 
         VendorFile vendorFile = createVendorFileForTesting(savedVendor);
-        vendorFileRepository.save(vendorFile);
+        VendorFile savedVendorFile = vendorFileRepository.save(vendorFile);
 
         List<VendorFile> files = vendorFileRepository.findAll();
 
         assertThat(files).isNotEmpty();
-        assertThat(files).allMatch(
-                f -> f.getId() != null &&
-                f.getFilepath() != null &&
-                f.getVendorId() != null &&
-                f.getFileStatus() != null &&
-                f.getCreatedAt() != null &&
-                f.getUpdatedAt() != null
-        );
+        assertThat(files).isEqualTo(List.of(savedVendorFile));
     }
 
     @Test

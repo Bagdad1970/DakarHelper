@@ -3,7 +3,7 @@ package io.github.bagdad.dakarhelperservice.helper;
 import io.github.bagdad.dakarhelperservice.model.*;
 import io.github.bagdad.excelparser.model.Product;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 
 import java.util.*;
 
@@ -26,28 +26,28 @@ public class ExcelParserHelper {
         }).toList();
     }
 
-    public static List<ExcelHeaderCell> mapToExcelHeaderCells(List<ExcelHeaderCellDto> excelHeaderCellDtos) {
-        if (excelHeaderCellDtos.isEmpty()) {
+    public static List<HeaderCell> mapToExcelHeaderCells(List<HeaderCellDto> headerCellDtos) {
+        if (headerCellDtos.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return excelHeaderCellDtos.stream()
+        return headerCellDtos.stream()
                 .map(unprocessableHeaderCellString -> {
-                    ExcelHeaderCell unprocessableColumn = new ExcelHeaderCell();
-                    unprocessableColumn.setOriginName(unprocessableHeaderCellString.getOriginName());
+                    HeaderCell unprocessableColumn = new HeaderCell();
+                    unprocessableColumn.setOriginalName(unprocessableHeaderCellString.getOriginalName());
                     return unprocessableColumn;
                 }).toList();
     }
 
-    public static List<ExcelHeaderCellDto> mapToExcelHeaderCellDtos(List<ExcelHeaderCellWithSubcategory> excelHeaderCellWithSubcategories) {
+    public static List<HeaderCellDto> mapToExcelHeaderCellDtos(List<ExcelHeaderCellWithSubcategory> excelHeaderCellWithSubcategories) {
         if (excelHeaderCellWithSubcategories.isEmpty()) {
             return Collections.emptyList();
         }
 
         return excelHeaderCellWithSubcategories.stream()
                 .map(excelHeaderCellWithSubcategory -> {
-                    ExcelHeaderCellDto dto = new ExcelHeaderCellDto();
-                    dto.setOriginName(excelHeaderCellWithSubcategory.getOriginName());
+                    HeaderCellDto dto = new HeaderCellDto();
+                    dto.setOriginalName(excelHeaderCellWithSubcategory.getOriginName());
                     dto.setCategory(excelHeaderCellWithSubcategory.getCategory());
                     dto.setSubcategoryName(excelHeaderCellWithSubcategory.getSubcategoryName());
                     dto.setNormalizedName(excelHeaderCellWithSubcategory.getNormalizedName());
@@ -56,14 +56,14 @@ public class ExcelParserHelper {
                 }).toList();
     }
 
-    public static SubcategoryMapping createCategoryMapping(List<ExcelHeaderCell> excelHeaderCells, List<ExcelHeaderSubcategory> excelHeaderSubcategories) {
+    public static SubcategoryMapping createCategoryMapping(List<HeaderCell> headerCells, List<Subcategory> excelHeaderSubcategories) {
         Map<String, List<String>> subcategoryMapping = new HashMap<>();
-        for (ExcelHeaderSubcategory subcategory : excelHeaderSubcategories) {
+        for (Subcategory subcategory : excelHeaderSubcategories) {
             Long subcategoryId = subcategory.getId();
 
-            for (ExcelHeaderCell excelHeaderCell : excelHeaderCells) {
-                if (excelHeaderCell.getExcelHeaderSubcategoryId().equals(subcategoryId)) {
-                    subcategoryMapping.computeIfAbsent(subcategory.getSubcategoryName(), excelHeaderCell1 -> new ArrayList<>()).add(excelHeaderCell.getOriginName());
+            for (HeaderCell headerCell : headerCells) {
+                if (headerCell.getSubcategoryId().equals(subcategoryId)) {
+                    subcategoryMapping.computeIfAbsent(subcategory.getName(), excelHeaderCell1 -> new ArrayList<>()).add(headerCell.getOriginalName());
                 }
             }
         }

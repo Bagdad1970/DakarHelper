@@ -12,14 +12,14 @@ import org.springframework.data.relational.core.mapping.Table;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class ExcelHeaderCell {
+public class HeaderCell {
 
     @Id
     private Long id;
 
-    private Long excelHeaderSubcategoryId;
+    private Long subcategoryId;
 
-    private String originName;
+    private String originalName;
 
     private String normalizedName;
 
