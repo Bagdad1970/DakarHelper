@@ -1,8 +1,8 @@
 package io.github.bagdad.dakarhelperservice.controller;
 
-import io.github.bagdad.dakarhelperservice.model.ExcelProduct;
-import io.github.bagdad.dakarhelperservice.model.ExcelProductQuery;
-import io.github.bagdad.dakarhelperservice.service.interfaces.ExcelProductService;
+import io.github.bagdad.dakarhelperservice.model.Product;
+import io.github.bagdad.dakarhelperservice.model.ProductQuery;
+import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
 import io.github.bagdad.models.request.excelproduct.ExcelProductQueryRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,20 +12,20 @@ import java.util.List;
 @RequestMapping("/api/excel-products")
 public class ExcelProductController {
 
-    private final ExcelProductService service;
+    private final ProductService service;
 
-    public ExcelProductController(ExcelProductService service) {
+    public ExcelProductController(ProductService service) {
         this.service = service;
     }
 
     @GetMapping("/all")
-    public List<ExcelProduct> findAll() {
+    public List<Product> findAll() {
         return service.findAll();
     }
 
     @PostMapping("/query")
-    public List<ExcelProduct> query(@RequestBody ExcelProductQueryRequest request) {
-        ExcelProductQuery query = new ExcelProductQuery();
+    public List<Product> query(@RequestBody ExcelProductQueryRequest request) {
+        ProductQuery query = new ProductQuery();
 
         query.setVendorIds(request.getVendorIds());
         query.setName(request.getName());

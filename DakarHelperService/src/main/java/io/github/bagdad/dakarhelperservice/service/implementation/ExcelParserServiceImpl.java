@@ -7,7 +7,7 @@ import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
 import io.github.bagdad.dakarhelperservice.model.*;
 import io.github.bagdad.dakarhelperservice.service.interfaces.*;
 import io.github.bagdad.excelparser.ExcelParser;
-import io.github.bagdad.excelparser.model.Product;
+import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.ParserFactory;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.Category;
@@ -28,9 +28,9 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
     private final HeaderCellService headerCellService;
 
-    private final ExcelProductService excelProductService;
+    private final ProductService productService;
 
-    private final ExcelStorageService excelStorageService;
+    private final StorageService storageService;
 
     private final SubcategoryService subcategoryService;
 
@@ -38,16 +38,16 @@ public class ExcelParserServiceImpl implements ExcelParserService {
                                   VendorServiceImpl vendorService,
                                   VendorFileService vendorFileService,
                                   HeaderCellService headerCellService,
-                                  ExcelProductService excelProductService,
-                                  ExcelStorageService excelStorageService,
+                                  ProductService productService,
+                                  StorageService storageService,
                                   SubcategoryService subcategoryService
     ) {
         this.emailConfig = emailConfig;
         this.vendorService = vendorService;
         this.vendorFileService = vendorFileService;
         this.headerCellService = headerCellService;
-        this.excelProductService = excelProductService;
-        this.excelStorageService = excelStorageService;
+        this.productService = productService;
+        this.storageService = storageService;
         this.subcategoryService = subcategoryService;
     }
 
@@ -122,17 +122,17 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
         excelParser.processUnprocessedCells();
 
-        List<Product> foundedProducts = excelParser.parse();
+        List<ExcelProduct> foundedExcelProducts = excelParser.parse();
 
-        if (!foundedProducts.isEmpty()) {
-            List<ExcelProduct> excelProducts = ExcelParserHelper.mapToExcelProducts(vendorFile, foundedProducts);
+        if (!foundedExcelProducts.isEmpty()) {
+            List<Product> excelProducts = ExcelParserHelper.mapToExcelProducts(vendorFile, foundedExcelProducts);
 
-            excelProductService.saveAll(excelProducts);
+            productService.saveAll(excelProducts);
 
-            ExcelStorage excelStorage = new ExcelStorage();
-            excelStorage.setVendorFileId(vendorFile.getId());
-            excelStorage.setStorages(excelParser.getStorages());
-            excelStorageService.save(excelStorage);
+            Storage storage = new Storage();
+            storage.setVendorFileId(vendorFile.getId());
+            storage.setStorages(excelParser.getStorages());
+            storageService.save(storage);
         }
 
         vendorFile.setFileStatus(FileStatus.PARSED);

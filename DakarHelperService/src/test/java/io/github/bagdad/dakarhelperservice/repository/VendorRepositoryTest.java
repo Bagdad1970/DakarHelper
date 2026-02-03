@@ -134,4 +134,5 @@ class VendorRepositoryTest {
         assertThatThrownBy(() -> repository.delete(id))
                 .isInstanceOf(VendorNotFoundException.class);
     }
+
 }

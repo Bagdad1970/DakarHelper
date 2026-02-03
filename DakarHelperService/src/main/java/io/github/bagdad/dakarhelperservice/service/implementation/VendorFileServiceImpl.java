@@ -3,7 +3,7 @@ package io.github.bagdad.dakarhelperservice.service.implementation;
 import io.github.bagdad.dakarhelperservice.exception.VendorFileNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
-import io.github.bagdad.dakarhelperservice.repository.implementation.VendorFileRepositoryImpl;
+import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorFileRepository;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorFileService;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +13,9 @@ import java.util.List;
 @Service
 public class VendorFileServiceImpl implements VendorFileService {
 
-    private final VendorFileRepositoryImpl repository;
+    private final VendorFileRepository repository;
 
-    public VendorFileServiceImpl(VendorFileRepositoryImpl repository) {
+    public VendorFileServiceImpl(VendorFileRepository repository) {
         this.repository = repository;
     }
 
@@ -41,7 +41,6 @@ public class VendorFileServiceImpl implements VendorFileService {
         for (VendorFile vendorFile : vendorFiles) {
             vendorFile.setFileStatus(FileStatus.CREATED);
 
-            vendorFile.setCreatedAt(now);
             vendorFile.setUpdatedAt(now);
         }
 

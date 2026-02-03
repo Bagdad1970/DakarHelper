@@ -8,6 +8,8 @@ public interface VendorService {
 
     Vendor create(Vendor vendor);
 
+    void batchInsert(List<Vendor> vendors);
+
     Vendor update(Vendor vendor);
 
     List<Vendor> findAll();

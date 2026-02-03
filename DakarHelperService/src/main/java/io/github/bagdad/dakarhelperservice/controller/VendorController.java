@@ -3,6 +3,7 @@ package io.github.bagdad.dakarhelperservice.controller;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
 import io.github.bagdad.models.request.vendor.VendorDeleteRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import io.github.bagdad.models.request.vendor.VendorCreateRequest;
 import io.github.bagdad.models.request.vendor.VendorUpdateRequest;
@@ -20,7 +21,7 @@ public class VendorController {
     }
 
     @PostMapping("/create")
-    public Vendor create(@RequestBody VendorCreateRequest request) {
+    public Vendor create(@Valid @RequestBody VendorCreateRequest request) {
         Vendor vendor = new Vendor();
 
         vendor.setTitle(request.getTitle());

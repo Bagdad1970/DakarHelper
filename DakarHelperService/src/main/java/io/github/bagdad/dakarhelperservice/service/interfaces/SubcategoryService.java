@@ -16,7 +16,7 @@ public interface SubcategoryService {
 
     List<Subcategory> findAll();
 
-    void deleteById(Long id);
+    void delete(Long id);
 
     List<Subcategory> findAllByCategory(Category category);
 

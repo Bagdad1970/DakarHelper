@@ -4,17 +4,22 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class DakarHelperTestConfiguration {
 
-    private static final String POSTGRES_CONTAINER_NAME = "postgres:18";
-
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresSQLDBContainer() {
-        return new PostgreSQLContainer(DockerImageName.parse(POSTGRES_CONTAINER_NAME));
+        return new PostgreSQLContainer(DockerImageName.parse("postgres:18"));
+    }
+
+    @Bean
+    @ServiceConnection
+    MongoDBContainer mongoDBContainer() {
+        return new MongoDBContainer(DockerImageName.parse("mongo:8"));
     }
 
 }

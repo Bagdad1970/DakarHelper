@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/excel-header-cell")
+@RequestMapping("/api/header-cell")
 public class HeaderCellController {
 
     private final HeaderCellService service;

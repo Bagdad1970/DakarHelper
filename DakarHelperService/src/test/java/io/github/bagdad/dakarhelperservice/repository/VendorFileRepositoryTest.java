@@ -9,7 +9,6 @@ import io.github.bagdad.dakarhelperservice.repository.implementation.VendorFileR
 import io.github.bagdad.dakarhelperservice.repository.implementation.VendorRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorFileRepository;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorRepository;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,6 @@ public class VendorFileRepositoryTest {
         vendorFile.setVendorId(vendor.getId());
         vendorFile.setFilepath("filepath");
         vendorFile.setFileStatus(FileStatus.CREATED);
-        vendorFile.setCreatedAt(now);
         vendorFile.setUpdatedAt(now);
 
         return vendorFile;

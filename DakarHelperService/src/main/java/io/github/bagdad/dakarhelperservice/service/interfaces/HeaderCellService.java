@@ -1,7 +1,7 @@
 package io.github.bagdad.dakarhelperservice.service.interfaces;
 
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
-import io.github.bagdad.dakarhelperservice.model.ExcelHeaderCellWithSubcategory;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.models.excelparser.Category;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface HeaderCellService {
 
     void delete(Long id);
 
-    List<ExcelHeaderCellWithSubcategory> findAllWithSubcategory();
+    List<HeaderCellWithSubcategory> findAllWithSubcategory();
 
     List<HeaderCell> findAllByCategory(Category category);
 

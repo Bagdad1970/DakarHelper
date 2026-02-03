@@ -5,6 +5,10 @@ spring:
     password: ${POSTGRES_TEST_USER}
     driver-class-name: org.postgresql.Driver
 
+
+  mongodb:
+    uri: ${MONGODB_TEST_URI}
+
   sql:
     init:
       mode: always

@@ -1,7 +1,7 @@
 package io.github.bagdad.dakarhelperservice.helper;
 
 import io.github.bagdad.dakarhelperservice.model.*;
-import io.github.bagdad.excelparser.model.Product;
+import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 
@@ -9,13 +9,13 @@ import java.util.*;
 
 public class ExcelParserHelper {
 
-    public static List<ExcelProduct> mapToExcelProducts(VendorFile vendorFile, List<Product> products) {
-        if (products.isEmpty()) {
+    public static List<Product> mapToExcelProducts(VendorFile vendorFile, List<ExcelProduct> excelProducts) {
+        if (excelProducts.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return products.stream().map(product -> {
-            ExcelProduct excelProduct = new ExcelProduct();
+        return excelProducts.stream().map(product -> {
+            Product excelProduct = new Product();
 
             excelProduct.setVendorFileId(vendorFile.getId());
             excelProduct.setNames(product.getNames());
@@ -39,7 +39,7 @@ public class ExcelParserHelper {
                 }).toList();
     }
 
-    public static List<HeaderCellDto> mapToExcelHeaderCellDtos(List<ExcelHeaderCellWithSubcategory> excelHeaderCellWithSubcategories) {
+    public static List<HeaderCellDto> mapToExcelHeaderCellDtos(List<HeaderCellWithSubcategory> excelHeaderCellWithSubcategories) {
         if (excelHeaderCellWithSubcategories.isEmpty()) {
             return Collections.emptyList();
         }

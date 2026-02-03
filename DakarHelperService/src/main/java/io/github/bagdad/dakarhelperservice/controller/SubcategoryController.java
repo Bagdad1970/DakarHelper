@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/excel-header-subcategory")
+@RequestMapping("/api/subcategory")
 @RestController
 public class SubcategoryController {
 
@@ -47,7 +47,7 @@ public class SubcategoryController {
 
     @DeleteMapping("/delete")
     public void deleteById(@RequestBody SubcategoryDeleteRequest request) {
-        service.deleteById(request.getId());
+        service.delete(request.getId());
     }
 
 }

@@ -1,7 +1,7 @@
 package io.github.bagdad.dakarhelperservice.service.implementation;
 
 import io.github.bagdad.dakarhelperservice.exception.HeaderCellNotFoundException;
-import io.github.bagdad.dakarhelperservice.model.ExcelHeaderCellWithSubcategory;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
 import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
 import io.github.bagdad.models.excelparser.Category;
@@ -54,7 +54,7 @@ public class HeaderCellServiceImpl implements HeaderCellService {
     }
 
     @Override
-    public List<ExcelHeaderCellWithSubcategory> findAllWithSubcategory() {
+    public List<HeaderCellWithSubcategory> findAllWithSubcategory() {
         return repository.findAllWithSubcategory();
     }
 

@@ -48,7 +48,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         repository.delete(id);
     }
 

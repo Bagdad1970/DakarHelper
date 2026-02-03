@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExcelHeaderCellWithSubcategory {
+public class HeaderCellWithSubcategory {
 
     private Long id;
 

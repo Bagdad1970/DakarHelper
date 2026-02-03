@@ -2,7 +2,7 @@ package io.github.bagdad.dakarhelperservice.repository.implementation;
 
 import io.github.bagdad.dakarhelperservice.exception.HeaderCellNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
-import io.github.bagdad.dakarhelperservice.model.ExcelHeaderCellWithSubcategory;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
 import io.github.bagdad.dakarhelperservice.repository.mapper.HeaderCellMapper;
 import io.github.bagdad.dakarhelperservice.repository.mapper.HeaderCellWithSubcategoryMapper;
@@ -171,7 +171,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         }
     }
 
-    public List<ExcelHeaderCellWithSubcategory> findAllWithSubcategory() {
+    public List<HeaderCellWithSubcategory> findAllWithSubcategory() {
         String sql = """
             SELECT
                 c.id,

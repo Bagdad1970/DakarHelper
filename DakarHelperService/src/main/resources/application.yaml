@@ -11,6 +11,9 @@ spring:
   mongodb:
     uri: ${MONGODB_URI}
 
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
 
 app:
   email:

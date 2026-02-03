@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 @JdbcTest
 @ContextConfiguration(classes = DakarHelperTestConfiguration.class)
-class SubcategoryTest {
+class SubcategoryRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
