@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.config;
 
-import emailhandler.EmailConfig;
+import io.github.bagdad.emailhandler.EmailConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package emailhandler;
+package io.github.bagdad.emailhandler;
 
 import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
@@ -11,49 +11,44 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class FileHandler {
 
     private final Map<String, Path> vendorDirs;
+
     private final String saveDir;
 
-    FileHandler(List<String> vendors, String saveDir) {
+    FileHandler(String saveDir) {
         this.vendorDirs = new HashMap<>();
         this.saveDir = saveDir;
-
-        createVendorDirs(vendors);
     }
 
-    private void createVendorDirs(List<String> vendors) {
-        for (String vendor : vendors) {
-            Path vendorDirPath = Paths.get(saveDir, vendor);
-            try {
-                Files.createDirectories(vendorDirPath);
-                vendorDirs.put(vendor, vendorDirPath);
-                log.info("Directory created for vendor '{}': {}", vendor, vendorDirPath);
-            }
-            catch (IOException e) {
-                log.error("Failed to create directory for vendor '{}': {}", vendor, vendorDirPath, e);
-                throw new RuntimeException("Failed to create vendor directories", e);
-            }
-            catch (Exception e) {
-                log.error("Unexpected error creating directory for '{}'", vendor, e);
-            }
+    public void createVendorDir(String vendorTitle) {
+        Path vendorDirPath = Paths.get(saveDir, vendorTitle);
+        try {
+            Files.createDirectories(vendorDirPath);
+            vendorDirs.put(vendorTitle, vendorDirPath);
+            log.info("Directory created for vendor '{}': {}", vendorTitle, vendorDirPath);
+        }
+        catch (IOException e) {
+            log.error("Failed to create directory for vendor '{}': {}", vendorTitle, vendorDirPath, e);
+            throw new RuntimeException("Failed to create vendor directories", e);
+        }
+        catch (Exception e) {
+            log.error("Unexpected error creating directory for '{}'", vendorTitle, e);
         }
     }
 
     public Path saveExcelFile(String vendorTitle, String filename, BodyPart bodyPart) {
-        Path vendorDir = vendorDirs.get(vendorTitle);
-        if (vendorDir == null) {
-            log.error("No directory registered for company '{}'", vendorTitle);
-            return null;
+        if (!vendorDirs.containsKey(vendorTitle)) {
+            createVendorDir(vendorTitle);
         }
 
+        Path vendorDir = vendorDirs.get(vendorTitle);
         Path filepath = vendorDir.resolve(filename);
-        log.info("Saving Excel file: {}/{}", vendorTitle, filename);
+        log.info("Saving Excel file: {}", filepath);
         saveFile(filepath, bodyPart);
         return filepath;
     }

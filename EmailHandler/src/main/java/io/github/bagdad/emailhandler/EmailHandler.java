@@ -1,5 +1,7 @@
-package emailhandler;
+package io.github.bagdad.emailhandler;
 
+import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
+import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import jakarta.mail.*;
 import jakarta.mail.search.FromStringTerm;
 import lombok.extern.slf4j.Slf4j;
@@ -9,20 +11,15 @@ import java.util.*;
 @Slf4j
 public class EmailHandler {
 
-    private EmailConfig config;
-    private final List<String> vendors;
+    private final EmailConfig config;
+
+    private final List<VendorWithMaxFileDateTime> vendors;
+
     private Folder folder;
 
-    private final Map<String, List<String>> vendorFilepaths;
-
-    public EmailHandler(EmailConfig config, List<String> vendors) {
+    public EmailHandler(EmailConfig config, List<VendorWithMaxFileDateTime> vendors) {
         this.config = config;
         this.vendors = vendors;
-        vendorFilepaths = new HashMap<>();
-    }
-
-    public Map<String, List<String>> getVendorFilepaths() {
-        return new HashMap<>(vendorFilepaths);
     }
 
     private void initConnection() {
@@ -49,31 +46,35 @@ public class EmailHandler {
         }
     }
 
-    public void run() {
+    public List<VendorWithFilepathes> readEmail() {
         initConnection();
 
         try {
+            List<VendorWithFilepathes> vendorsWithFilepathes = new ArrayList<>();
+
             FromStringTerm term = new FromStringTerm(config.getFromTerm());
+
             Message[] messages = folder.search(term);
-            log.info("Found {} messages from '{}'", messages != null ? messages.length : 0, config.getFromTerm());
 
             if (messages != null && messages.length > 0) {
-                FileHandler fileHandler = new FileHandler(vendors, config.getSaveDir());
+                FileHandler fileHandler = new FileHandler(config.getSaveDir());
 
                 MessageHandler messageHandler = new MessageHandler(vendors, fileHandler);
                 messageHandler.processMessages(messages);
 
-                vendorFilepaths.clear();
-                for (String vendor : vendors) {
-                    List<String> paths = messageHandler.getCollectedFiles().get(vendor);
-                    vendorFilepaths.put(vendor, paths);
+                for (VendorWithMaxFileDateTime vendor : vendors) {
+                    List<String> paths = messageHandler.getVendorFiles().get(vendor.getTitle());
+                    VendorWithFilepathes vendorWithFilepathes = new VendorWithFilepathes(vendor.getId(), vendor.getTitle(), paths);
+                    vendorsWithFilepathes.add(vendorWithFilepathes);
                 }
 
-                log.info("Final vendorFilepaths: {}", vendorFilepaths);
+                log.info("Final vendor filepaths: {}", vendorsWithFilepathes);
             }
             else {
                 log.info("No messages to process");
             }
+
+            return vendorsWithFilepathes;
 
         }
         catch (MessagingException e) {
@@ -85,6 +86,8 @@ public class EmailHandler {
         finally {
             close();
         }
+
+        return Collections.emptyList();
     }
 
     public void close() {
@@ -105,4 +108,5 @@ public class EmailHandler {
             log.debug("Folder was not open");
         }
     }
+
 }

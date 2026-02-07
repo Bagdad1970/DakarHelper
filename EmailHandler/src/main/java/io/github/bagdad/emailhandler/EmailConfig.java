@@ -1,4 +1,4 @@
-package emailhandler;
+package io.github.bagdad.emailhandler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
