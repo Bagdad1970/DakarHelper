@@ -2,7 +2,7 @@ package io.github.bagdad.excelparser;
 
 import io.github.bagdad.excelparser.bodyparser.BodyParser;
 import io.github.bagdad.excelparser.headerparser.HeaderExtractor;
-import io.github.bagdad.excelparser.model.Product;
+import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.ExcelHeader;
 import io.github.bagdad.excelparser.headerparser.HeaderParser;
 import io.github.bagdad.excelparser.headerparser.ParserFactory;
@@ -26,7 +26,7 @@ public class ExcelParser {
     private ExcelHeader excelHeader;
 
     public ExcelParser(String filepath, ExcelHeaderCellsHandler excelHeaderCellsHandler, ParserFactory parserFactory) {
-        this.sheet = getSheetFromFile(filepath);
+        this.sheet = getFirstSheetFromFile(filepath);
 
         HeaderExtractor headerExtractor = new HeaderExtractor(sheet);
 
@@ -41,14 +41,14 @@ public class ExcelParser {
         return excelHeader.getStorages();
     }
 
-    private Sheet getSheetFromFile(String filepath) {
+    private Sheet getFirstSheetFromFile(String filepath) {
         Workbook workbook = ExcelWorkbookHandler.loadWorkbook(filepath);
 
         if (workbook == null) {
             return null;
         }
 
-        return ExcelWorkbookHandler.getSheets(workbook).getFirst();
+        return ExcelWorkbookHandler.getFirstSheet(workbook);
     }
 
     public boolean tryToParse() {
@@ -61,7 +61,7 @@ public class ExcelParser {
         headerParser.processUnprocessedHeaderCells();
     }
 
-    public List<Product> parse() {
+    public List<ExcelProduct> parse() {
         excelHeader = headerParser.processFoundedHeaderCells();
 
         BodyParser bodyParser = new BodyParser(sheet, excelHeader);

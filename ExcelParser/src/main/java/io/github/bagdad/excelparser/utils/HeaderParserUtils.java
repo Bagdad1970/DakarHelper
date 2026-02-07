@@ -8,6 +8,16 @@ import java.util.stream.Collectors;
 
 public class HeaderParserUtils {
 
+    public static boolean isFoundHeaderValid(Map<Category, List<Cell>> groupedCells) {
+        for (Category category : Category.values()) {
+            if (!groupedCells.containsKey(category)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static Map<Category, Integer> findMaxRowIndexInGroups(Map<Category, List<Cell>> cells) {
         if (cells.isEmpty()) {
             return Map.of();

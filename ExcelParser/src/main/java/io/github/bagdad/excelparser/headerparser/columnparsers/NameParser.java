@@ -4,7 +4,6 @@ import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -21,12 +20,13 @@ public class NameParser implements Parser {
 
     @Override
     public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
+        log.info("Parsing name columns");
+
         if (cellsByClass.isEmpty()) {
-            return new HashSet<>();
+            return Collections.emptySet();
         }
 
         Set<Column> columns = new HashSet<>();
-
         for (int columnIndex : cellsByClass.keySet()) {
             List<Cell> columnCells = cellsByClass.get(columnIndex);
 
@@ -38,24 +38,6 @@ public class NameParser implements Parser {
                 }
             }
         }
-
-//        if (cellsByClass.size() == 1) {
-//            int columnIndex = cellsByClass.keySet().iterator().next();
-//            columns.add(new NameColumn(columnIndex, "name"));
-//        }
-//        else {
-//            cellsByClass.keySet().stream()
-//                    .sorted()
-//                    .forEach(columnIndex -> {
-//                        List<Cell> cellsByColumn = cellsByClass.get(columnIndex);
-//                        for (Cell cell : cellsByColumn) {
-//                            String cellValue = ExcelCellProcessor.getNormalizedCellValue(cell);
-//                            if (nameValues.contains(cellValue)) {
-//                                columns.add(new NameColumn(columnIndex, "name"));
-//                            }
-//                        }
-//                    });
-//        }
 
         return columns;
     }

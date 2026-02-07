@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
-import io.github.bagdad.excelparser.headerparser.Storage;
+import io.github.bagdad.excelparser.model.Storage;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.*;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QuantityParserTest {
@@ -46,23 +47,25 @@ public class QuantityParserTest {
         quantityParser = new QuantityParser(quantityMapping);
     }
 
-//    @Test
-//    void groupCellsBySubcategory() {
-//        Map<Integer, List<Cell>> cellsByClass = Map.of(
-//                0, List.of(sheet.getRow(0).getCell(0)),
-//                1, List.of(sheet.getRow(0).getCell(1)),
-//                2, List.of(sheet.getRow(0).getCell(2))
-//        );
-//
-//        Map<String, List<Cell>> res = quantityParser.groupCellsBySubcategory(cellsByClass);
-//
-//        Map<String, List<Cell>> expected = Map.of(
-//                "склад", List.of(sheet.getRow(0).getCell(0), sheet.getRow(0).getCell(1)),
-//                "магаз", List.of(sheet.getRow(0).getCell(2))
-//        );
-//
-//        assertEquals(expected, res);
-//    }
+    @Test
+    void groupCellsBySubcategory() {
+        Map<Integer, List<Cell>> cellsByClass = Map.of(
+                0, List.of(sheet.getRow(0).getCell(0)),
+                1, List.of(sheet.getRow(0).getCell(1)),
+                2, List.of(sheet.getRow(0).getCell(2))
+        );
+
+        Map<String, List<Cell>> res = quantityParser.groupCellsBySubcategory(cellsByClass);
+
+        Map<String, List<Cell>> expected = Map.of(
+                "склад", List.of(sheet.getRow(0).getCell(0), sheet.getRow(0).getCell(1)),
+                "магазин", List.of(sheet.getRow(0).getCell(2))
+        );
+        assertThat(res)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expected);
+    }
 
     @Test
     void arrangeSubcategoryValuesWithOneCell() {
@@ -72,7 +75,7 @@ public class QuantityParserTest {
         Set<Column> res = quantityParser.arrangeSubcategoryValues("магазин", cells);
 
         Set<Column> expected = Set.of(
-                new QuantityColumn(1, "магазин1", new Storage("магазин1", "магазин 1"))
+                new QuantityColumn(2, "магазин1", new Storage("магазин1", "магазин 1"))
         );
 
         assertEquals(expected, res);

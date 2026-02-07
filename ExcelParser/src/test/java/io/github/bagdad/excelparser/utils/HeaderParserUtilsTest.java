@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HeaderParserUtilsTest {
 
@@ -154,6 +154,32 @@ public class HeaderParserUtilsTest {
         );
 
         assertEquals(expected, result);
+    }
+
+
+    @Test
+    void Header_is_valid_with_full_enums_in_cells() {
+        Map<Category, List<Cell>> groupedCells = Map.of(
+                Category.NAME, List.of(),
+                Category.PRICE, List.of(),
+                Category.QUANTITY, List.of()
+        );
+
+        boolean result = HeaderParserUtils.isFoundHeaderValid(groupedCells);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void Header_is_valid_with_not_full_enums_in_cells() {
+        Map<Category, List<Cell>> groupedCells = Map.of(
+                Category.NAME, List.of(),
+                Category.PRICE, List.of()
+        );
+
+        boolean result = HeaderParserUtils.isFoundHeaderValid(groupedCells);
+
+        assertFalse(result);
     }
 
 

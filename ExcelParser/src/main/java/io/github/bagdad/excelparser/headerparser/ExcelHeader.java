@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser;
 
-import io.github.bagdad.excelparser.model.Product;
+import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
@@ -31,8 +31,8 @@ public class ExcelHeader {
         this.headerColumns = headerColumns;
     }
 
-    public Product processRow(Row row) {
-        Product product = new Product();
+    public ExcelProduct processRow(Row row) {
+        ExcelProduct excelProduct = new ExcelProduct();
 
         for (Category category : headerColumns.keySet()) {
             Set<Column> columnsByCategory = headerColumns.get(category);
@@ -47,25 +47,25 @@ public class ExcelHeader {
                 if (category == Category.NAME) {
                     String value = ExcelCellProcessor.processNameCell(cell);
                     if (value != null) {
-                        product.addName(column.getColumnKey(), value);
+                        excelProduct.addName(column.getColumnKey(), value);
                     }
                 }
                 else if (category == Category.PRICE) {
                     BigDecimal value = ExcelCellProcessor.processPriceCell(cell);
                     if (value != null) {
-                        product.addPrice(column.getColumnKey(), value);
+                        excelProduct.addPrice(column.getColumnKey(), value);
                     }
                 }
                 else if (category == Category.QUANTITY) {
                     Integer value = ExcelCellProcessor.processQuantityCell(cell);
                     if (value != null) {
-                        product.addQuantity(column.getColumnKey(), value);
+                        excelProduct.addQuantity(column.getColumnKey(), value);
                     }
                 }
             }
         }
 
-        return product;
+        return excelProduct;
     }
 
     public Map<String, String> getStorages() {

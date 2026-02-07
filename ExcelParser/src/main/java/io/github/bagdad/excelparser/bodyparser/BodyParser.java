@@ -2,9 +2,10 @@ package io.github.bagdad.excelparser.bodyparser;
 
 import io.github.bagdad.excelparser.headerparser.ExcelHeader;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
-import io.github.bagdad.excelparser.model.Product;
+import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
 import io.github.bagdad.models.excelparser.Category;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class BodyParser {
 
     private final Sheet sheet;
@@ -34,47 +36,45 @@ public class BodyParser {
     }
 
     boolean isRowValid(Row row) {
-        try {
-            Map<Category, Set<Column>> headerColumns = excelHeader.getHeaderColumns();
+        Map<Category, Set<Column>> headerColumns = excelHeader.getHeaderColumns();
 
-            if (headerColumns == null || headerColumns.isEmpty()) {
-                return false;
-            }
+        if (headerColumns.isEmpty()) {
+            return false;
+        }
 
-            int countCategoryValid = 0;
-            for (Category category : headerColumns.keySet()) {
-                for (Column column : headerColumns.get(category)) {
-                    int columnIndex = column.getColumnIndex();
-                    Cell cell = row.getCell(columnIndex);
-                    if (ExcelCellProcessor.isCellValid(cell)) {
-                        countCategoryValid++;
-                        break;
-                    }
+        int providedCategoryCounter = 0;
+        for (Category category : headerColumns.keySet()) {
+            for (Column column : headerColumns.get(category)) {
+                int columnIndex = column.getColumnIndex();
+                Cell cell = row.getCell(columnIndex);
+                if (ExcelCellProcessor.isCellValid(cell)) {
+                    providedCategoryCounter++;
+                    break;
                 }
             }
-
-            return countCategoryValid == headerColumns.size();
         }
-        catch (Exception exc) {
 
-        }
-        return false;
+        return providedCategoryCounter == headerColumns.size();
     }
 
-    public List<Product> parse() {
-        List<Product> parsedProducts = new ArrayList<>();
+    public List<ExcelProduct> parse() {
+        log.info("Parsing body cells");
+
+        List<ExcelProduct> parsedExcelProducts = new ArrayList<>();
 
         int startRowIndex = getFirstValidRow();
         for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 
             if (isRowValid(row)) {
-                Product product = excelHeader.processRow(row);
-
-                parsedProducts.add(product);
+                ExcelProduct excelProduct = excelHeader.processRow(row);
+                
+                if (!excelProduct.isEmpty()) {
+                    parsedExcelProducts.add(excelProduct);
+                }
             }
         }
-        return parsedProducts;
+        return parsedExcelProducts;
     }
 
 }

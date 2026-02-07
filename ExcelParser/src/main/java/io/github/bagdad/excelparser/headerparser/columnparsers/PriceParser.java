@@ -4,6 +4,7 @@ import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
+import io.github.bagdad.models.excelparser.Category;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,7 +31,7 @@ public class PriceParser implements Parser {
         for (int columnIndex : cellsByClass.keySet()) {
             List<Cell> columnCells = cellsByClass.get(columnIndex);
 
-            String columnName = DEFAULT_COLUMN_NAME;
+            String columnName = Category.PRICE.getName();
             for (Cell cell : columnCells) {
                 String cellValue = ExcelCellProcessor.getNormalizedCellValue(cell);
                 String foundedColumnName = subcategoryMapping.getKeyByValue(cellValue);

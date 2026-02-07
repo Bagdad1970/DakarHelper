@@ -11,7 +11,7 @@ import java.util.*;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class Product {
+public class ExcelProduct {
 
     private Map<String, String> names = new HashMap<>();
 
@@ -29,6 +29,10 @@ public class Product {
 
     public void addQuantity(String key, Integer quantity) {
         quantities.put(key, quantity);
+    }
+
+    public boolean isEmpty() {
+        return names.isEmpty() || prices.isEmpty() || quantities.isEmpty();
     }
 
 }

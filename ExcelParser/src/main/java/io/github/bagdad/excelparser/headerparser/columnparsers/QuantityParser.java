@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
-import io.github.bagdad.excelparser.headerparser.Storage;
+import io.github.bagdad.excelparser.model.Storage;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.*;
-import java.util.function.Function;
 
 @Slf4j
 @AllArgsConstructor
@@ -58,7 +57,7 @@ public class QuantityParser implements Parser {
     }
 
     Set<Column> arrangeSubcategoryValues(String subcategory, List<Cell> cells) {
-        if (cells == null || cells.isEmpty()) {
+        if (cells.isEmpty()) {
             return new HashSet<>();
         }
 

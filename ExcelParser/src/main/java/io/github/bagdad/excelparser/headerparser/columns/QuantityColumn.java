@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columns;
 
-import io.github.bagdad.excelparser.headerparser.Storage;
+import io.github.bagdad.excelparser.model.Storage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

@@ -1,6 +1,7 @@
 package io.github.bagdad.excelparser.headerparser;
 
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -9,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class HeaderExtractor {
 
     private final Sheet sheet;
@@ -18,6 +20,8 @@ public class HeaderExtractor {
     }
 
     public List<Row> extractHeader() {
+        log.info("Extracting header of sheet");
+
         List<Row> header = new ArrayList<>();
 
         int i = 0;
@@ -32,9 +36,7 @@ public class HeaderExtractor {
                         continue;
                     }
 
-                    String cellValue = ExcelCellProcessor.getRawCellValue(cell);
-
-                    if (cell.getCellType() == CellType.NUMERIC || ExcelCellProcessor.canConvertToNumber(cellValue)) {
+                    if (cell.getCellType() == CellType.NUMERIC || ExcelCellProcessor.canConvertToNumber(cell)) {
                         counterNumberValues++;
                     }
                 }

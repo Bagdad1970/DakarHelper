@@ -46,7 +46,7 @@ public class ExcelWorkbookHandler {
         return workbook;
     }
 
-    public static List<Sheet> getSheets(Workbook vendorFileWorkbook) {
+    public static Sheet getFirstSheet(Workbook vendorFileWorkbook) {
         if (vendorFileWorkbook == null) {
             return null;
         }
@@ -57,12 +57,7 @@ public class ExcelWorkbookHandler {
             return null;
         }
 
-        List<Sheet> sheets = new ArrayList<>();
-        for (int i = 0; i < vendorFileWorkbook.getNumberOfSheets(); i++) {
-            sheets.add(vendorFileWorkbook.getSheetAt(i));
-        }
-
-        return sheets;
+        return vendorFileWorkbook.getSheetAt(0);
     }
 
     public static void closeWorkbook(Workbook workbook) {

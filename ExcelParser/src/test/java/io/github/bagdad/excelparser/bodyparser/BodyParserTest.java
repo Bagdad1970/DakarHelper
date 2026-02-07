@@ -1,7 +1,7 @@
 package io.github.bagdad.excelparser.bodyparser;
 
 import io.github.bagdad.excelparser.headerparser.ExcelHeader;
-import io.github.bagdad.excelparser.headerparser.Storage;
+import io.github.bagdad.excelparser.model.Storage;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;

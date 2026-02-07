@@ -56,14 +56,18 @@ public class ExcelCellProcessor {
         }
     }
 
-    public static boolean canConvertToNumber(String cellValue) {
-        if (cellValue == null || cellValue.trim().isEmpty()) {
+    public static boolean canConvertToNumber(Cell cell) {
+        String cellValue = getNormalizedCellValue(cell);
+
+        if (cellValue.isBlank()) {
             return false;
         }
+
         try {
-            Double.parseDouble(cellValue.trim());
+            Double.parseDouble(cellValue);
             return true;
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             return false;
         }
     }

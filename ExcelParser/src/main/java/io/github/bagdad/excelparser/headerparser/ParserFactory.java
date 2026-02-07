@@ -14,10 +14,6 @@ public class ParserFactory {
 
     private final Map<Category, Parser> parserMap;
 
-    public ParserFactory(Map<Category, Parser> parserMap) {
-        this.parserMap = parserMap;
-    }
-
     public ParserFactory(SubcategoryMapping nameMapping, SubcategoryMapping priceMapping, SubcategoryMapping quantityMapping) {
         this.parserMap = new HashMap<>();
         this.parserMap.put(Category.NAME, new NameParser(nameMapping));

@@ -5,7 +5,7 @@ import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
 import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
 import io.github.bagdad.excelparser.utils.HeaderParserUtils;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.ExcelHeaderCellDto;
+import io.github.bagdad.models.excelparser.HeaderCellDto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -28,7 +28,7 @@ public class HeaderParser {
     private final List<Cell> unprocessedHeaderCells;
 
     @Getter
-    private final List<ExcelHeaderCellDto> unprocessableHeaderCells;
+    private final List<HeaderCellDto> unprocessableHeaderCells;
 
     public HeaderParser(HeaderExtractor headerExtractor, ExcelHeaderCellsHandler excelHeaderCellsHandler, ParserFactory parserFactory) {
         this.headerExtractor = headerExtractor;
@@ -52,18 +52,18 @@ public class HeaderParser {
 
                 if (cellValue.isEmpty()) continue;
 
-                CellFindStatus cellFindStatus = excelHeaderCellsHandler.getHeaderCellFindStatus(cellValue);
+                CellFindStatus cellFindStatus = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
 
                 if (cellFindStatus == CellFindStatus.STARTS) {
-                    Category category = excelHeaderCellsHandler.getHeaderCellCategory(cellValue);
+                    Category category = excelHeaderCellsHandler.findHeaderCellCategory(cellValue);
                     if (category == null) continue;
 
                     cellsGroupedByCategory.computeIfAbsent(category, _ -> new ArrayList<>()).add(cell);
                 }
                 else if (cellFindStatus == CellFindStatus.CONTAINS) {
-                    ExcelHeaderCellDto excelHeaderCellDto = new ExcelHeaderCellDto();
-                    excelHeaderCellDto.setOriginName(cellValue);
-                    unprocessableHeaderCells.add(excelHeaderCellDto);
+                    HeaderCellDto headerCellDto = new HeaderCellDto();
+                    headerCellDto.setOriginalName(cellValue);
+                    unprocessableHeaderCells.add(headerCellDto);
 
                     unprocessedHeaderCells.add(cell);
                 }
@@ -81,10 +81,10 @@ public class HeaderParser {
 
             if (cellValue.isEmpty()) continue;
 
-            CellFindStatus cellFindStatus = excelHeaderCellsHandler.getHeaderCellFindStatus(cellValue);
+            CellFindStatus cellFindStatus = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
 
             if (cellFindStatus == CellFindStatus.STARTS) {
-                Category category = excelHeaderCellsHandler.getHeaderCellCategory(cellValue);
+                Category category = excelHeaderCellsHandler.findHeaderCellCategory(cellValue);
 
                 if (category == null) continue;
 
@@ -94,12 +94,9 @@ public class HeaderParser {
     }
 
     public ExcelHeader processFoundedHeaderCells() {
-        log.info("Parsing header cells");
+        log.info("Parsing found header cells");
 
-        if (!cellsGroupedByCategory.containsKey(Category.NAME) ||
-            !cellsGroupedByCategory.containsKey(Category.PRICE) ||
-            !cellsGroupedByCategory.containsKey(Category.QUANTITY)
-        ) {
+        if (!HeaderParserUtils.isFoundHeaderValid(cellsGroupedByCategory)) {
             return null;
         }
 

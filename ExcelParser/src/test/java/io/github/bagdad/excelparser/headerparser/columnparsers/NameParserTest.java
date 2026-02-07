@@ -40,7 +40,6 @@ public class NameParserTest {
         );
         SubcategoryMapping subcategoryMapping = new SubcategoryMapping(nameMap);
         NameParser sut = new NameParser(subcategoryMapping);
-
         Map<Integer, List<Cell>> columns = Map.of(
                 0, List.of(sheet.getRow(0).getCell(0)),
                 1, List.of(sheet.getRow(0).getCell(1))
