@@ -19,9 +19,11 @@ import java.util.Map;
 public class Product {
 
     @Id
+    @EqualsAndHashCode.Exclude
     private String id;
 
     @Field(name="vendor_file_id")
+    @EqualsAndHashCode.Exclude
     private Long vendorFileId;
 
     @Field(name="names")

@@ -2,9 +2,9 @@ package io.github.bagdad.dakarhelperservice.repository.implementation;
 
 import io.github.bagdad.dakarhelperservice.exception.VendorNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
-import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorRepository;
 import io.github.bagdad.dakarhelperservice.repository.mapper.VendorMapper;
+import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,9 +136,33 @@ public class VendorRepositoryImpl implements VendorRepository {
                 id
         );
 
-        if (count == 0) {
-            throw new VendorNotFoundException(id);
-        }
+//        if (count == 0) {
+//            throw new VendorNotFoundException(id);
+//        }
     }
+
+    @Override
+    public List<VendorWithMaxFileDateTime> findVendorsWithLastFileTimestamp() {
+        String sql = """
+            SELECT
+            v.id,
+            v.title,
+            MAX(vf.updated_at) AS latest_updated_at
+            FROM vendors v
+            LEFT JOIN vendor_files vf ON v.id = vf.vendor_id
+            GROUP BY v.id, v.title;
+        """;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new VendorWithMaxFileDateTime(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getObject("latest_updated_at", OffsetDateTime.class) == null ? OffsetDateTime.MIN : rs.getObject("latest_updated_at", OffsetDateTime.class)
+                )
+        );
+    }
+
+
 
 }

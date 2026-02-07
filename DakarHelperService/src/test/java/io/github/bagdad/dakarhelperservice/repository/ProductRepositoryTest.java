@@ -2,6 +2,7 @@ package io.github.bagdad.dakarhelperservice.repository;
 
 import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.model.Product;
+import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.repository.implementation.ProductRepositoryImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -102,6 +103,46 @@ public class ProductRepositoryTest {
         List<Product> found = repository.findAll();
 
         List<Product> expected = List.of(product3);
+
+        assertThat(found).isNotEmpty();
+        assertThat(found).isEqualTo(expected);
+    }
+
+    @Test
+    void Query_to_excel_products() {
+        Product product1 = Product.builder()
+                .vendorFileId(1L)
+                .names(Map.of("номенклатура", "BC 12"))
+                .prices(Map.of("опт", BigDecimal.valueOf(10.00), "розница", BigDecimal.valueOf(15.00)))
+                .quantities(Map.of("склад1", 3, "склад2", 2))
+                .build();
+
+        Product product2 = Product.builder()
+                .vendorFileId(2L)
+                .names(Map.of("номенклатура", "ABC 1"))
+                .prices(Map.of("опт", BigDecimal.valueOf(18.00), "розница", BigDecimal.valueOf(25.00)))
+                .quantities(Map.of("склад1", 5))
+                .build();
+
+        Product product3 = Product.builder()
+                .vendorFileId(3L)
+                .names(Map.of("номенклатура", "ABD 12/6"))
+                .prices(Map.of("опт", BigDecimal.valueOf(19.00), "розница", BigDecimal.valueOf(30.00)))
+                .quantities(Map.of("склад1", 4, "склад2", 10))
+                .build();
+
+        List<Product> products = List.of(product1, product2, product3);
+
+        repository.saveAll(products);
+
+        ProductQuery query = new ProductQuery();
+        query.setName("BC 1");
+        query.setPrice(BigDecimal.valueOf(25.00));
+        query.setQuantity(5);
+
+        List<Product> found = repository.query(query);
+
+        List<Product> expected = List.of(product1, product2);
 
         assertThat(found).isNotEmpty();
         assertThat(found).isEqualTo(expected);

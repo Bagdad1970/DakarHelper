@@ -3,7 +3,7 @@ package io.github.bagdad.dakarhelperservice.controller;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
-import io.github.bagdad.models.request.excelproduct.ExcelProductQueryRequest;
+import io.github.bagdad.models.request.product.ProductQueryRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class ExcelProductController {
     }
 
     @PostMapping("/query")
-    public List<Product> query(@RequestBody ExcelProductQueryRequest request) {
+    public List<Product> query(@RequestBody ProductQueryRequest request) {
         ProductQuery query = new ProductQuery();
 
         query.setVendorIds(request.getVendorIds());

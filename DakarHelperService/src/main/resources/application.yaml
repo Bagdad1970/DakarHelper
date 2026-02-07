@@ -26,3 +26,7 @@ app:
     save-dir: ${SAVE_DIR}
 
 
+logging:
+  level:
+    root: INFO
+

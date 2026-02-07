@@ -1,6 +1,8 @@
 package io.github.bagdad.dakarhelperservice.repository.implementation;
 
 import io.github.bagdad.dakarhelperservice.exception.VendorFileNotFoundException;
+import io.github.bagdad.dakarhelperservice.exception.VendorNotFoundException;
+import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorFileRepository;
 import io.github.bagdad.dakarhelperservice.repository.mapper.VendorFileMapper;
@@ -54,6 +56,10 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
 
     @Override
     public void batchInsert(List<VendorFile> vendorFiles) {
+        if (vendorFiles.isEmpty()) {
+            return;
+        }
+
         String sql = """
         INSERT INTO vendor_files (
             vendor_id,
@@ -61,6 +67,33 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             file_status,
             updated_at
         ) VALUES (?, ?, ?, ?)
+        """;
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                VendorFile vendorFile = vendorFiles.get(i);
+                ps.setLong(1, vendorFile.getVendorId());
+                ps.setString(2, vendorFile.getFilepath());
+                ps.setString(3, vendorFile.getFileStatus() != null ? vendorFile.getFileStatus().name() : null);
+                ps.setObject(4, vendorFile.getUpdatedAt());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return vendorFiles.size();
+            }
+        });
+    }
+
+    public void batchUpdate(List<VendorFile> vendorFiles) {
+        String sql = """
+            UPDATE vendor_files SET
+                vendor_id = ?,
+                filepath = ?,
+                file_status = ?,
+                updated_at = ?
+            WHERE id = ?
         """;
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -132,6 +165,26 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
     }
 
     @Override
+    public List<VendorFile> findByFileStatus(FileStatus fileStatus) {
+        String sql = """
+            SELECT
+                id,
+                vendor_id,
+                filepath,
+                file_status,
+                updated_at
+            FROM vendor_files
+            WHERE file_status = ?
+        """;
+
+        return jdbcTemplate.query(
+                sql,
+                VENDOR_FILE_MAPPER,
+                fileStatus.name()
+        );
+    }
+
+    @Override
     public Optional<VendorFile> findById(Long id) {
         String sql = """
             SELECT
@@ -155,6 +208,43 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
         catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void deleteByVendorId(Long id) {
+        String sql = """
+            DELETE FROM vendor_files
+            WHERE vendor_id = ?
+        """;
+
+        int count = jdbcTemplate.update(
+                sql,
+                id
+        );
+
+//        if (count == 0) {
+//            throw new VendorNotFoundException(id);
+//        }
+    }
+
+    @Override
+    public List<VendorFile> findByVendorId(Long id) {
+        String sql = """
+            SELECT
+                id,
+                vendor_id,
+                filepath,
+                file_status,
+                updated_at
+            FROM vendor_files
+            WHERE vendor_id = ?
+        """;
+
+        return jdbcTemplate.query(
+                sql,
+                VENDOR_FILE_MAPPER,
+                id
+        );
     }
 
 }

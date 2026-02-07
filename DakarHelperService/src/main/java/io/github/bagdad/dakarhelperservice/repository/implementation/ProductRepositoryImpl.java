@@ -3,14 +3,14 @@ package io.github.bagdad.dakarhelperservice.repository.implementation;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.ProductRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
@@ -22,7 +22,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public void saveAll(List<Product> products) {
+    public void saveAll(Collection<Product> products) {
         mongoTemplate.insertAll(products);
     }
 
@@ -31,7 +31,6 @@ public class ProductRepositoryImpl implements ProductRepository {
         return mongoTemplate.findAll(Product.class);
     }
 
-    @Override
     public List<Product> query(ProductQuery query) {
         return List.of();
     }

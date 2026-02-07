@@ -42,6 +42,12 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
+    public void deleteByVendorFileId(Long id) {
+        Query query = new Query(Criteria.where("vendor_file_id").is(id));
+        mongoTemplate.remove(query, Storage.class);
+    }
+
+    @Override
     public Optional<Storage> findById(String id) {
         try {
             Storage storage = mongoTemplate.findById(id, Storage.class);

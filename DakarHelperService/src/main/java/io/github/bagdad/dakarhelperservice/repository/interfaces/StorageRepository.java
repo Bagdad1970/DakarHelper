@@ -17,4 +17,5 @@ public interface StorageRepository {
 
     void deleteById(String id);
 
+    void deleteByVendorFileId(Long id);
 }

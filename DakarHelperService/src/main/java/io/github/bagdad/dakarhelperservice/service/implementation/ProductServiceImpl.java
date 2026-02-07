@@ -6,6 +6,7 @@ import io.github.bagdad.dakarhelperservice.repository.interfaces.ProductReposito
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void saveAll(List<Product> products) {
+    public void saveAll(Collection<Product> products) {
         repository.saveAll(products);
     }
 

@@ -115,6 +115,34 @@ public class VendorFileRepositoryTest {
     }
 
     @Test
+    void Finding_not_parsed_vendor_files_must_return_not_parsed() {
+        Vendor vendor = createVendorForTesting();
+        Vendor savedVendor = vendorRepository.save(vendor);
+
+        VendorFile vendorFile1 = VendorFile.builder()
+                .vendorId(savedVendor.getId())
+                .filepath("filepath1")
+                .fileStatus(FileStatus.CREATED)
+                .updatedAt(OffsetDateTime.now())
+                .build();
+
+        VendorFile vendorFile2 = VendorFile.builder()
+                .vendorId(savedVendor.getId())
+                .filepath("filepath2")
+                .fileStatus(FileStatus.PARSED)
+                .updatedAt(OffsetDateTime.now())
+                .build();
+
+        VendorFile savedVendorFile1 = vendorFileRepository.save(vendorFile1);
+        VendorFile savedVendorFile2 = vendorFileRepository.save(vendorFile2);
+
+        List<VendorFile> found = vendorFileRepository.findByFileStatus(FileStatus.PARSED);
+
+        assertThat(found).isNotEmpty();
+        assertThat(found).isEqualTo(List.of(savedVendorFile2));
+    }
+
+    @Test
     void Finding_existing_vendor_file_by_id_must_return_existing_entity() {
         Vendor vendor = createVendorForTesting();
         Vendor savedVendor = vendorRepository.save(vendor);

@@ -37,4 +37,14 @@ public class StorageServiceImpl implements StorageService {
         repository.deleteById(id);
     }
 
+    @Override
+    public void deleteByVendorFileId(Long id) {
+        repository.deleteByVendorFileId(id);
+    }
+
+    @Override
+    public void saveAll(List<Storage> storages) {
+        repository.saveAll(storages);
+    }
+
 }

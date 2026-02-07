@@ -15,4 +15,7 @@ public interface StorageService {
 
     void deleteById(String id);
 
+    void deleteByVendorFileId(Long id);
+
+    void saveAll(List<Storage> storages);
 }

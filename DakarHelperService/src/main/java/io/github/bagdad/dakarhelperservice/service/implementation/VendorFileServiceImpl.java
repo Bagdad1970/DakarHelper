@@ -48,8 +48,28 @@ public class VendorFileServiceImpl implements VendorFileService {
     }
 
     @Override
+    public void batchUpdate(List<VendorFile> vendorFiles) {
+
+    }
+
+    @Override
     public List<VendorFile> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<VendorFile> findByFileStatus(FileStatus fileStatus) {
+        return repository.findByFileStatus(fileStatus);
+    }
+
+    @Override
+    public List<VendorFile> findByVendorId(Long id) {
+        return repository.findByVendorId(id);
+    }
+
+    @Override
+    public void deleteByVendorId(Long id) {
+        repository.deleteByVendorId(id);
     }
 
 }

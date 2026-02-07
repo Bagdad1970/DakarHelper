@@ -5,8 +5,8 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
 import io.github.bagdad.dakarhelperservice.repository.mapper.HeaderCellMapper;
-import io.github.bagdad.dakarhelperservice.repository.mapper.HeaderCellWithSubcategoryMapper;
 import io.github.bagdad.models.excelparser.Category;
+import io.github.bagdad.models.excelparser.CellStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +22,6 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private static final HeaderCellMapper EXCEL_HEADER_CELL_MAPPER = new HeaderCellMapper();
-    private static final HeaderCellWithSubcategoryMapper EXCEL_HEADER_CELL_WITH_SUBCATEGORY_MAPPER = new HeaderCellWithSubcategoryMapper();
 
     public HeaderCellRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -187,8 +186,26 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         """;
 
         return jdbcTemplate.query(
-                sql,
-                EXCEL_HEADER_CELL_WITH_SUBCATEGORY_MAPPER
+            sql,
+            (rs, rowNum) -> {
+                HeaderCellWithSubcategory dto = new HeaderCellWithSubcategory();
+                dto.setId(rs.getLong("id"));
+                dto.setExcelHeaderSubcategoryId(rs.getLong("subcategory_id"));
+                dto.setOriginName(rs.getString("original_name"));
+                dto.setNormalizedName(rs.getString("normalized_name"));
+
+                String categoryStr = rs.getString("category");
+                dto.setCategory(categoryStr != null ? Category.valueOf(categoryStr.trim().toUpperCase()) : null);
+
+                String cellStatusStr = rs.getString("cell_status");
+                dto.setCellStatus(cellStatusStr != null ? CellStatus.valueOf(cellStatusStr.trim().toUpperCase()) : null);
+
+                Long subId = rs.getObject("sub_id", Long.class);
+                dto.setSubcategoryId(subId);
+
+                dto.setSubcategoryName(rs.getString("name"));
+                return dto;
+            }
         );
     }
 

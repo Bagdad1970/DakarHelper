@@ -4,6 +4,7 @@ import io.github.bagdad.dakarhelperservice.exception.VendorNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorRepository;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
+import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +46,11 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public void delete(Long id) {
         repository.delete(id);
+    }
+
+    @Override
+    public List<VendorWithMaxFileDateTime> findVendorsWithLastFileDate() {
+        return repository.findVendorsWithLastFileTimestamp();
     }
 
 }
