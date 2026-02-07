@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/header-cell")
+@RequestMapping("/api/header-cells")
 public class HeaderCellController {
 
     private final HeaderCellService service;
@@ -19,7 +19,7 @@ public class HeaderCellController {
         this.service = service;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public HeaderCell create(@RequestBody HeaderCellCreateRequest request) {
         HeaderCell headerCell = new HeaderCell();
 
@@ -32,7 +32,7 @@ public class HeaderCellController {
         return service.create(headerCell);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public HeaderCell update(@RequestBody HeaderCellUpdateRequest request) {
         HeaderCell headerCell = new HeaderCell();
 
@@ -46,12 +46,12 @@ public class HeaderCellController {
         return service.update(headerCell);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<HeaderCell> findAll() {
         return service.findAll();
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public void delete(@RequestBody HeaderCellDeleteRequest request) {
         Long id = request.getId();
 

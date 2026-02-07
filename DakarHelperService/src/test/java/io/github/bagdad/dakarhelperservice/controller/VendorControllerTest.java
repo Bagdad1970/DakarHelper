@@ -56,7 +56,7 @@ public class VendorControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/vendor/create")
+                        .post("/api/vendors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
@@ -83,7 +83,7 @@ public class VendorControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/vendor/update")
+                        .put("/api/vendors")
                         .content(asJsonString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ public class VendorControllerTest {
                 .thenReturn(vendors);
 
         // act & assert
-        mockMvc.perform(get("/api/vendor/all")
+        mockMvc.perform(get("/api/vendors")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(asJsonString(vendors)));
@@ -126,7 +126,7 @@ public class VendorControllerTest {
         request.setId(1L);
 
         // act & assert
-        mockMvc.perform( MockMvcRequestBuilders.delete("/api/vendor/delete")
+        mockMvc.perform( MockMvcRequestBuilders.delete("/api/vendors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
                         .accept(MediaType.APPLICATION_JSON)

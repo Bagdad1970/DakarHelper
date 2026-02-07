@@ -10,7 +10,7 @@ import io.github.bagdad.models.request.vendor.VendorUpdateRequest;
 
 import java.util.List;
 
-@RequestMapping("/api/vendor")
+@RequestMapping("/api/vendors")
 @RestController
 public class VendorController {
 
@@ -20,7 +20,7 @@ public class VendorController {
         this.service = service;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public Vendor create(@Valid @RequestBody VendorCreateRequest request) {
         Vendor vendor = new Vendor();
 
@@ -29,12 +29,12 @@ public class VendorController {
         return service.create(vendor);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<Vendor> findAll() {
         return service.findAll();
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public Vendor update(@RequestBody VendorUpdateRequest request) {
         Vendor vendor = new Vendor();
 
@@ -44,7 +44,7 @@ public class VendorController {
         return service.update(vendor);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public void delete(@RequestBody VendorDeleteRequest request) {
         Long id = request.getId();
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/subcategory")
+@RequestMapping("/api/subcategories")
 @RestController
 public class SubcategoryController {
 
@@ -19,7 +19,7 @@ public class SubcategoryController {
         this.service = service;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public Subcategory create(@RequestBody SubcategoryCreateRequest request) {
         Subcategory subcategory = new Subcategory();
 
@@ -29,12 +29,12 @@ public class SubcategoryController {
         return service.create(subcategory);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<Subcategory> findAll() {
         return service.findAll();
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public Subcategory update(@RequestBody SubcategoryUpdateRequest request) {
         Subcategory subcategory = new Subcategory();
 
@@ -45,7 +45,7 @@ public class SubcategoryController {
         return service.update(subcategory);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public void deleteById(@RequestBody SubcategoryDeleteRequest request) {
         service.delete(request.getId());
     }

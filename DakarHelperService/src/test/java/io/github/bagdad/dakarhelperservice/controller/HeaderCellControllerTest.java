@@ -65,7 +65,7 @@ public class HeaderCellControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/header-cell/create")
+                        .post("/api/header-cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
@@ -100,7 +100,7 @@ public class HeaderCellControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/header-cell/update")
+                        .put("/api/header-cells")
                         .content(asJsonString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -137,7 +137,7 @@ public class HeaderCellControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/header-cell/all")
+                        .get("/api/header-cells")
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -154,7 +154,7 @@ public class HeaderCellControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/api/header-cell/delete")
+                        .delete("/api/header-cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
                         .accept(MediaType.APPLICATION_JSON)

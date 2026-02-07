@@ -58,7 +58,7 @@ public class SubcategoryControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/subcategory/create")
+                        .post("/api/subcategories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
@@ -87,7 +87,7 @@ public class SubcategoryControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/subcategory/update")
+                        .put("/api/subcategories")
                         .content(asJsonString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ public class SubcategoryControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/subcategory/all")
+                        .get("/api/subcategories")
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -135,7 +135,7 @@ public class SubcategoryControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/api/subcategory/delete")
+                        .delete("/api/subcategories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request))
                         .accept(MediaType.APPLICATION_JSON)

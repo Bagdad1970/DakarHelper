@@ -64,7 +64,7 @@ public class ExcelProductControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/excel-products/all")
+                        .get("/api/products")
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())

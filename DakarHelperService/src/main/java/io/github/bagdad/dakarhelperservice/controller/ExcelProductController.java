@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/excel-products")
+@RequestMapping("/api/products")
 public class ExcelProductController {
 
     private final ProductService service;
@@ -18,7 +18,7 @@ public class ExcelProductController {
         this.service = service;
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<Product> findAll() {
         return service.findAll();
     }

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/parser")
+@RequestMapping("/api/excel-parser")
 @RestController
 public class ExcelParserController {
 
@@ -15,7 +15,7 @@ public class ExcelParserController {
         this.excelParserService = excelParserService;
     }
 
-    @PostMapping("/parse-excel")
+    @PostMapping("/parse")
     public void parseExcelFiles() {
         excelParserService.runExcelParser();
     }
