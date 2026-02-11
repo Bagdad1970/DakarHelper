@@ -47,7 +47,7 @@ public class ExcelHeader {
                 if (category == Category.NAME) {
                     String value = ExcelCellProcessor.processNameCell(cell);
                     if (value != null) {
-                        excelProduct.addName(column.getColumnKey(), value);
+                        excelProduct.setName(value);
                     }
                 }
                 else if (category == Category.PRICE) {

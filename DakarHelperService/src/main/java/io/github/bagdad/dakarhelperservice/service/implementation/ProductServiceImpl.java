@@ -24,11 +24,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAll() {
-        return repository.findAll();
-    }
-
-    @Override
     public List<Product> query(ProductQuery query) {
         return repository.query(query);
     }

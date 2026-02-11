@@ -6,7 +6,9 @@ import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.utils.ExcelCellProcessor;
 import io.github.bagdad.models.excelparser.Category;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Set;
 public class BodyParser {
 
     private final Sheet sheet;
+
     private final ExcelHeader excelHeader;
 
     public BodyParser(Sheet sheet, ExcelHeader excelHeader) {
@@ -68,6 +71,8 @@ public class BodyParser {
 
             if (isRowValid(row)) {
                 ExcelProduct excelProduct = excelHeader.processRow(row);
+                excelProduct.computeMinPrice();
+                excelProduct.computeTotalQuantity();
                 
                 if (!excelProduct.isEmpty()) {
                     parsedExcelProducts.add(excelProduct);

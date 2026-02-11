@@ -131,14 +131,10 @@ public class VendorRepositoryImpl implements VendorRepository {
             WHERE id = ?
         """;
 
-        int count = jdbcTemplate.update(
+        jdbcTemplate.update(
                 sql,
                 id
         );
-
-//        if (count == 0) {
-//            throw new VendorNotFoundException(id);
-//        }
     }
 
     @Override

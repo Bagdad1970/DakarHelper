@@ -5,10 +5,10 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductQuery {
 
     private List<Long> vendorIds;
@@ -17,10 +17,6 @@ public class ProductQuery {
 
     private BigDecimal price;
 
-    private List<String> priceSubcategoryIds;
-
     private Integer quantity;
-
-    private List<String> quantitySubcategoryIds;
 
 }

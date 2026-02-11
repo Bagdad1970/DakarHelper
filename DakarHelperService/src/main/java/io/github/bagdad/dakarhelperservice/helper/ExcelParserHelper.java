@@ -1,6 +1,10 @@
 package io.github.bagdad.dakarhelperservice.helper;
 
-import io.github.bagdad.dakarhelperservice.model.*;
+import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
+import io.github.bagdad.dakarhelperservice.model.Product;
+import io.github.bagdad.dakarhelperservice.model.Subcategory;
+import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
@@ -18,9 +22,11 @@ public class ExcelParserHelper {
             Product excelProduct = new Product();
 
             excelProduct.setVendorFileId(vendorFile.getId());
-            excelProduct.setNames(product.getNames());
+            excelProduct.setName(product.getName());
             excelProduct.setPrices(product.getPrices());
+            excelProduct.setMinPrice(product.getMinPrice());
             excelProduct.setQuantities(product.getQuantities());
+            excelProduct.setTotalQuantity(product.getTotalQuantity());
 
             return excelProduct;
         }).toList();

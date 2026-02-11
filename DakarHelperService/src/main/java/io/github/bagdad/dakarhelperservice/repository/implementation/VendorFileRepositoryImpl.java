@@ -1,7 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository.implementation;
 
 import io.github.bagdad.dakarhelperservice.exception.VendorFileNotFoundException;
-import io.github.bagdad.dakarhelperservice.exception.VendorNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorFileRepository;
@@ -217,14 +216,10 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             WHERE vendor_id = ?
         """;
 
-        int count = jdbcTemplate.update(
+        jdbcTemplate.update(
                 sql,
                 id
         );
-
-//        if (count == 0) {
-//            throw new VendorNotFoundException(id);
-//        }
     }
 
     @Override

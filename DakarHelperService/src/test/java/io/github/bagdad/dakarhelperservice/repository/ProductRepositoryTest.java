@@ -37,13 +37,14 @@ public class ProductRepositoryTest {
     }
 
     private static Product createExcelProductForTesting() {
-        Product product = new Product();
-        product.setVendorFileId(1L);
-        product.setNames(Map.of("name", "name1"));
-        product.setPrices(Map.of("storage", BigDecimal.valueOf(10.00)));
-        product.setQuantities(Map.of("storage", 10));
-
-        return product;
+        return Product.builder()
+                .vendorFileId(1L)
+                .name("name1")
+                .prices(Map.of("storage", BigDecimal.valueOf(10.00)))
+                .minPrice(BigDecimal.valueOf(10.00))
+                .quantities(Map.of("storage", 10))
+                .totalQuantity(10)
+                .build();
     }
 
     @Test
@@ -56,7 +57,7 @@ public class ProductRepositoryTest {
         repository.saveAll(products);
 
         // act
-        List<Product> found = repository.findAll();
+        List<Product> found = repository.query(new ProductQuery());
 
         // assert
         assertThat(found).isNotEmpty();
@@ -73,7 +74,7 @@ public class ProductRepositoryTest {
         repository.saveAll(products);
 
         // act
-        List<Product> found = repository.findAll();
+        List<Product> found = repository.query(new ProductQuery());
 
         // assert
         assertThat(found).isNotEmpty();
@@ -100,7 +101,7 @@ public class ProductRepositoryTest {
 
         repository.deleteByVendorFileId(1L);
 
-        List<Product> found = repository.findAll();
+        List<Product> found = repository.query(new ProductQuery());
 
         List<Product> expected = List.of(product3);
 
@@ -112,33 +113,41 @@ public class ProductRepositoryTest {
     void Query_to_excel_products() {
         Product product1 = Product.builder()
                 .vendorFileId(1L)
-                .names(Map.of("номенклатура", "BC 12"))
+                .name("Hankook 255/40R22")
                 .prices(Map.of("опт", BigDecimal.valueOf(10.00), "розница", BigDecimal.valueOf(15.00)))
+                .minPrice(BigDecimal.valueOf(10.00))
                 .quantities(Map.of("склад1", 3, "склад2", 2))
+                .totalQuantity(5)
                 .build();
 
         Product product2 = Product.builder()
                 .vendorFileId(2L)
-                .names(Map.of("номенклатура", "ABC 1"))
+                .name("Hankook 255/40R22")
                 .prices(Map.of("опт", BigDecimal.valueOf(18.00), "розница", BigDecimal.valueOf(25.00)))
-                .quantities(Map.of("склад1", 5))
+                .minPrice(BigDecimal.valueOf(18.00))
+                .quantities(Map.of("склад1", 7))
+                .totalQuantity(7)
                 .build();
 
         Product product3 = Product.builder()
                 .vendorFileId(3L)
-                .names(Map.of("номенклатура", "ABD 12/6"))
+                .name("Nokian 185/60R15")
                 .prices(Map.of("опт", BigDecimal.valueOf(19.00), "розница", BigDecimal.valueOf(30.00)))
+                .minPrice(BigDecimal.valueOf(19.00))
                 .quantities(Map.of("склад1", 4, "склад2", 10))
+                .totalQuantity(14)
                 .build();
 
         List<Product> products = List.of(product1, product2, product3);
 
         repository.saveAll(products);
 
-        ProductQuery query = new ProductQuery();
-        query.setName("BC 1");
-        query.setPrice(BigDecimal.valueOf(25.00));
-        query.setQuantity(5);
+        ProductQuery query = ProductQuery.builder()
+                .vendorIds(List.of(1L, 2L))
+                .name("Hankook")
+                .price(BigDecimal.valueOf(18.00))
+                .quantity(5)
+                .build();
 
         List<Product> found = repository.query(query);
 

@@ -5,12 +5,13 @@ import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.ProductRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
@@ -27,12 +28,28 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        return mongoTemplate.findAll(Product.class);
-    }
+    public List<Product> query(ProductQuery productQuery) {
+        Query query = new Query();
 
-    public List<Product> query(ProductQuery query) {
-        return List.of();
+        if (productQuery.getVendorIds() != null && !productQuery.getVendorIds().isEmpty()) {
+            query.addCriteria(where("vendor_file_id").in(productQuery.getVendorIds()));
+        }
+
+        if (productQuery.getName() != null) {
+            query.addCriteria(where("name").regex(productQuery.getName()));
+        }
+
+        if (productQuery.getPrice() != null) {
+            query.addCriteria(where("min_price").lte(productQuery.getPrice()));
+        }
+
+        if (productQuery.getQuantity() != null) {
+            query.addCriteria(where("total_quantity").gte(productQuery.getQuantity()));
+        }
+
+        return mongoTemplate.query(Product.class)
+                .matching(query)
+                .all();
     }
 
     @Override
@@ -40,7 +57,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         if (vendorFileId == null) {
             return;
         }
-        Query query = Query.query(Criteria.where("vendor_file_id").is(vendorFileId));
+
+        Query query = Query.query(where("vendor_file_id").is(vendorFileId));
         mongoTemplate.remove(query, Product.class);
     }
 

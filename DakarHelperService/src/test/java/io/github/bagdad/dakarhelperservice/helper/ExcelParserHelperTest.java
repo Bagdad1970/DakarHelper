@@ -26,12 +26,12 @@ class ExcelParserHelperTest {
 
         List<ExcelProduct> excelProducts = new ArrayList<>();
         ExcelProduct excelProduct1 = new ExcelProduct();
-        excelProduct1.addName("name1", "Product 1");
+        excelProduct1.setName("Product 1");
         excelProduct1.addPrice("price", new BigDecimal("9.99"));
         excelProduct1.addQuantity("count1", 10);
 
         ExcelProduct excelProduct2 = new ExcelProduct();
-        excelProduct2.addName("name2", "Product 2");
+        excelProduct2.setName("Product 2");
         excelProduct2.addPrice("wholesale", new BigDecimal("10.99"));
         excelProduct2.addQuantity("count1", 5);
 
@@ -46,12 +46,12 @@ class ExcelParserHelperTest {
 
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(result.get(0).getVendorFileId()).isEqualTo(1L);
-            softAssertions.assertThat(result.get(0).getNames()).isEqualTo(Map.of("name1", "Product 1"));
+            softAssertions.assertThat(result.get(0).getName()).isEqualTo("Product 1");
             softAssertions.assertThat(result.get(0).getPrices()).isEqualTo(Map.of("price", new BigDecimal("9.99")));
             softAssertions.assertThat(result.get(0).getQuantities()).isEqualTo(Map.of("count1", 10));
 
             softAssertions.assertThat(result.get(1).getVendorFileId()).isEqualTo(1L);
-            softAssertions.assertThat(result.get(1).getNames()).isEqualTo(Map.of("name2", "Product 2"));
+            softAssertions.assertThat(result.get(1).getName()).isEqualTo("Product 2");
             softAssertions.assertThat(result.get(1).getPrices()).isEqualTo(Map.of("wholesale", new BigDecimal("10.99")));
             softAssertions.assertThat(result.get(1).getQuantities()).isEqualTo(Map.of("count1", 5));
         });
@@ -84,7 +84,7 @@ class ExcelParserHelperTest {
         assertThat(result).isNotNull().hasSize(1);
         assertThat(result.get(0)).isNotNull();
         assertThat(result.get(0).getVendorFileId()).isEqualTo(1L);
-        assertThat(result.get(0).getNames()).isEmpty();
+        assertThat(result.get(0).getName()).isNull();
         assertThat(result.get(0).getPrices()).isEmpty();
         assertThat(result.get(0).getQuantities()).isEmpty();
     }

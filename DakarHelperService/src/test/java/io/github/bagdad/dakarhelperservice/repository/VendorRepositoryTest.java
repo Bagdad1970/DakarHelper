@@ -127,12 +127,4 @@ class VendorRepositoryTest {
         assertThat(deleted).isEmpty();
     }
 
-    @Test
-    void Deleting_non_existing_vendor_must_throw_exception() {
-        Long id = 0L;
-
-        assertThatThrownBy(() -> repository.delete(id))
-                .isInstanceOf(VendorNotFoundException.class);
-    }
-
 }

@@ -10,8 +10,6 @@ public interface ProductRepository {
 
     void saveAll(Collection<Product> products);
 
-    List<Product> findAll();
-
     List<Product> query(ProductQuery query);
 
     void deleteByVendorFileId(Long id);

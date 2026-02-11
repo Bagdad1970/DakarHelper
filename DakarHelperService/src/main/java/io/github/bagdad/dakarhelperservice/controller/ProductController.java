@@ -10,17 +10,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-public class ExcelProductController {
+public class ProductController {
 
     private final ProductService service;
 
-    public ExcelProductController(ProductService service) {
+    public ProductController(ProductService service) {
         this.service = service;
-    }
-
-    @GetMapping
-    public List<Product> findAll() {
-        return service.findAll();
     }
 
     @PostMapping("/query")
@@ -30,9 +25,7 @@ public class ExcelProductController {
         query.setVendorIds(request.getVendorIds());
         query.setName(request.getName());
         query.setPrice(request.getPrice());
-        query.setPriceSubcategoryIds(request.getPriceSubcategoryIds());
         query.setQuantity(request.getQuantity());
-        query.setQuantitySubcategoryIds(request.getQuantitySubcategoryIds());
 
         return service.query(query);
     }
