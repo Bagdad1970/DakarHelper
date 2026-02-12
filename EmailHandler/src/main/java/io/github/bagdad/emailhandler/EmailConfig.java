@@ -1,14 +1,16 @@
 package io.github.bagdad.emailhandler;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.nio.file.Path;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Builder
 public class EmailConfig {
 
     private String login;
@@ -23,6 +25,6 @@ public class EmailConfig {
 
     private String fromTerm;
 
-    private String saveDir;
+    private Path saveDir;
 
 }

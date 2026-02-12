@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.nio.file.Path;
+
 @Configuration
 public class EmailHandlerConfig {
 
@@ -27,21 +29,19 @@ public class EmailHandlerConfig {
     private String fromTerm;
 
     @Value("${app.email.save-dir}")
-    private String saveDir;
+    private Path saveDir;
 
     @Bean
     public EmailConfig emailConfig() {
-        EmailConfig config = new EmailConfig();
-
-        config.setLogin(login);
-        config.setPassword(password);
-        config.setProtocol(protocol);
-        config.setHost(host);
-        config.setFolderName(folderName);
-        config.setFromTerm(fromTerm);
-        config.setSaveDir(saveDir);
-
-        return config;
+        return EmailConfig.builder()
+                .login(login)
+                .password(password)
+                .protocol(protocol)
+                .host(host)
+                .folderName(folderName)
+                .fromTerm(fromTerm)
+                .saveDir(saveDir)
+                .build();
     }
 
 }

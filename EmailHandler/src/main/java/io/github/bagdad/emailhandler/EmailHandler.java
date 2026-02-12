@@ -6,7 +6,10 @@ import jakarta.mail.*;
 import jakarta.mail.search.FromStringTerm;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 @Slf4j
 public class EmailHandler {
@@ -52,11 +55,9 @@ public class EmailHandler {
         try {
             List<VendorWithFilepathes> vendorsWithFilepathes = new ArrayList<>();
 
-            FromStringTerm term = new FromStringTerm(config.getFromTerm());
+            Message[] messages = folder.search(new FromStringTerm(config.getFromTerm()));
 
-            Message[] messages = folder.search(term);
-
-            if (messages != null && messages.length > 0) {
+            if (messages.length > 0) {
                 FileHandler fileHandler = new FileHandler(config.getSaveDir());
 
                 MessageHandler messageHandler = new MessageHandler(vendors, fileHandler);
@@ -64,11 +65,18 @@ public class EmailHandler {
 
                 for (VendorWithMaxFileDateTime vendor : vendors) {
                     List<String> paths = messageHandler.getVendorFiles().get(vendor.getTitle());
-                    VendorWithFilepathes vendorWithFilepathes = new VendorWithFilepathes(vendor.getId(), vendor.getTitle(), paths);
-                    vendorsWithFilepathes.add(vendorWithFilepathes);
+
+                    if (!paths.isEmpty()) {
+                        VendorWithFilepathes vendorWithFilepathes = VendorWithFilepathes.builder()
+                                .id(vendor.getId())
+                                .title(vendor.getTitle())
+                                .filepathes(paths)
+                                .build();
+                        vendorsWithFilepathes.add(vendorWithFilepathes);
+                    }
                 }
 
-                log.info("Final vendor filepaths: {}", vendorsWithFilepathes);
+                log.info("Final vendor filepathes: {}", vendorsWithFilepathes);
             }
             else {
                 log.info("No messages to process");
@@ -81,7 +89,7 @@ public class EmailHandler {
             log.error("Error while searching/fetching messages", e);
         }
         catch (Exception e) {
-            log.error("Unexpected error in run()", e);
+            log.error("Unexpected error: ", e);
         }
         finally {
             close();
@@ -103,9 +111,6 @@ public class EmailHandler {
             catch (Exception e) {
                 log.error("Unexpected error during close()", e);
             }
-        }
-        else {
-            log.debug("Folder was not open");
         }
     }
 

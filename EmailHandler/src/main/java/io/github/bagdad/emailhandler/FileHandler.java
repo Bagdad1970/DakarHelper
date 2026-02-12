@@ -7,53 +7,51 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class FileHandler {
 
-    private final Map<String, Path> vendorDirs;
+    private final Path saveDir;
 
-    private final String saveDir;
-
-    FileHandler(String saveDir) {
-        this.vendorDirs = new HashMap<>();
+    public FileHandler(Path saveDir) {
         this.saveDir = saveDir;
     }
 
-    public void createVendorDir(String vendorTitle) {
-        Path vendorDirPath = Paths.get(saveDir, vendorTitle);
-        try {
-            Files.createDirectories(vendorDirPath);
-            vendorDirs.put(vendorTitle, vendorDirPath);
-            log.info("Directory created for vendor '{}': {}", vendorTitle, vendorDirPath);
-        }
-        catch (IOException e) {
-            log.error("Failed to create directory for vendor '{}': {}", vendorTitle, vendorDirPath, e);
-            throw new RuntimeException("Failed to create vendor directories", e);
-        }
-        catch (Exception e) {
-            log.error("Unexpected error creating directory for '{}'", vendorTitle, e);
-        }
-    }
-
     public Path saveExcelFile(String vendorTitle, String filename, BodyPart bodyPart) {
-        if (!vendorDirs.containsKey(vendorTitle)) {
-            createVendorDir(vendorTitle);
-        }
+        Path createdVendorDirectory = createDirectory(vendorTitle);
 
-        Path vendorDir = vendorDirs.get(vendorTitle);
-        Path filepath = vendorDir.resolve(filename);
-        log.info("Saving Excel file: {}", filepath);
+        Path filepath = createdVendorDirectory.resolve(filename);
         saveFile(filepath, bodyPart);
         return filepath;
     }
 
+    public Path createDirectory(String vendorTitle) {
+        Path vendorDiriectoryPath = saveDir.resolve(vendorTitle);
+
+        try {
+            Path createdVendorDirPath = Files.createDirectories(saveDir.resolve(vendorTitle));
+            log.info("Directory created for vendor '{}': {}", vendorTitle, createdVendorDirPath);
+            return createdVendorDirPath;
+        }
+        catch (FileAlreadyExistsException e) {
+            log.error("Directory already exists for vendor '{}': {}", vendorTitle, vendorDiriectoryPath);
+            throw new RuntimeException("Failed to create vendor directory", e);
+        }
+        catch (IOException e) {
+            log.error("Failed to create directory for vendor '{}': {}", vendorTitle, vendorDiriectoryPath);
+            throw new RuntimeException("Failed to create vendor directory", e);
+        }
+        catch (Exception e) {
+            log.error("Unhandled exception when creating vendor directory '{}': {}", vendorTitle, vendorDiriectoryPath);
+            throw new RuntimeException("Failed to create vendor directory", e);
+        }
+    }
+
     private static void saveFile(Path filepath, BodyPart bodyPart) {
+        log.info("Saving Excel file: {}", filepath);
         try (InputStream inputStream = bodyPart.getInputStream();
              FileOutputStream fileOutput = new FileOutputStream(filepath.toFile())) {
 
@@ -72,4 +70,5 @@ public class FileHandler {
             log.error("Unexpected error saving file: {}", filepath, e);
         }
     }
+
 }

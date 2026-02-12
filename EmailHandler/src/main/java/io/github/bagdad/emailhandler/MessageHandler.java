@@ -42,10 +42,6 @@ public class MessageHandler {
     }
 
     public void processMessages(Message[] messages) {
-        if (messages.length == 0) {
-            return;
-        }
-
         List<Message> reversedMessages = Arrays.asList(messages);
         Collections.reverse(reversedMessages);
         log.info("Processing {} messages", reversedMessages.size());
@@ -54,14 +50,7 @@ public class MessageHandler {
         while (hasUnvisitedCompanies() && messageIndex < reversedMessages.size()) {
             Message message = reversedMessages.get(messageIndex);
 
-            try {
-                String subject = message.getSubject();
-                log.debug("Processing message #{}: subject='{}'", messageIndex, subject != null ? subject : "[no subject]");
-                processMessage(message);
-            }
-            catch (MessagingException e) {
-                log.debug("Processing message #{} (subject unavailable)", messageIndex);
-            }
+            processMessage(message);
 
             messageIndex++;
         }
@@ -92,7 +81,7 @@ public class MessageHandler {
             log.error("Error extracting message content", e);
         }
         catch (Exception e) {
-            log.error("Unexpected error in processMessage", e);
+            log.error("Unexpected error: ", e);
         }
     }
 
@@ -121,8 +110,18 @@ public class MessageHandler {
             log.error("Error during multipart processing", e);
         }
         catch (Exception e) {
-            log.error("Unexpected error in processMultipartMessage", e);
+            log.error("Unexpected error: ", e);
         }
+    }
+
+    private VendorWithMaxFileDateTime findVendorTitleInBody(Multipart multipart) throws IOException, MessagingException {
+        BodyPart textBodyPart = MessageHandlerUtils.extractTextBodyPart(multipart);
+        if (textBodyPart != null) {
+            String textContent = textBodyPart.getContent().toString();
+            return findVendorTitleInText(textContent);
+        }
+        log.debug("No text/plain part found in multipart");
+        return new VendorWithMaxFileDateTime("");
     }
 
     private void saveExcelFiles(String vendorTitle, Multipart multipart) {
@@ -145,9 +144,7 @@ public class MessageHandler {
 
                 if (MessageHandlerUtils.isExcelFile(filename)) {
                     Path filepath = fileHandler.saveExcelFile(vendorTitle, filename, bodyPart);
-                    if (filepath != null) {
-                        vendorFiles.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
-                    }
+                    vendorFiles.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
                 }
             }
             else {
@@ -162,18 +159,8 @@ public class MessageHandler {
             throw e;
         }
         catch (Exception e) {
-            log.error("Unexpected error in processBodyPartForExcel", e);
+            log.error("Unexpected error: ", e);
         }
-    }
-
-    private VendorWithMaxFileDateTime findVendorTitleInBody(Multipart multipart) throws IOException, MessagingException {
-        BodyPart textBodyPart = MessageHandlerUtils.extractTextBodyPart(multipart);
-        if (textBodyPart != null) {
-            String textContent = textBodyPart.getContent().toString();
-            return findVendorTitleInText(textContent);
-        }
-        log.debug("No text/plain part found in multipart");
-        return new VendorWithMaxFileDateTime("");
     }
 
     VendorWithMaxFileDateTime findVendorTitleInText(String text) {
@@ -186,7 +173,6 @@ public class MessageHandler {
                 .filter(vendor -> lowerText.contains(vendor.getTitle().toLowerCase()))
                 .findFirst();
 
-        match.ifPresent(vendor -> log.debug("Matched vendor '{}' in text", vendor));
         return match.orElse(new VendorWithMaxFileDateTime(""));
     }
 

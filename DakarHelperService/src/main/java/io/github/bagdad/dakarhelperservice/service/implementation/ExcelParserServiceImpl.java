@@ -1,10 +1,15 @@
 package io.github.bagdad.dakarhelperservice.service.implementation;
 
+import io.github.bagdad.dakarhelperservice.model.FileStatus;
+import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.Product;
+import io.github.bagdad.dakarhelperservice.model.Storage;
+import io.github.bagdad.dakarhelperservice.model.Subcategory;
+import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.emailhandler.EmailConfig;
 import io.github.bagdad.emailhandler.EmailHandler;
 import io.github.bagdad.dakarhelperservice.helper.EmailHelper;
 import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
-import io.github.bagdad.dakarhelperservice.model.*;
 import io.github.bagdad.dakarhelperservice.service.interfaces.*;
 import io.github.bagdad.excelparser.ExcelParser;
 import io.github.bagdad.excelparser.model.ExcelProduct;
@@ -27,7 +32,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
     private final EmailConfig emailConfig;
 
-    private final VendorServiceImpl vendorService;
+    private final VendorService vendorService;
 
     private final VendorFileService vendorFileService;
 
@@ -40,7 +45,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
     private final SubcategoryService subcategoryService;
 
     public ExcelParserServiceImpl(EmailConfig emailConfig,
-                                  VendorServiceImpl vendorService,
+                                  VendorService vendorService,
                                   VendorFileService vendorFileService,
                                   HeaderCellService headerCellService,
                                   ProductService productService,
@@ -131,6 +136,8 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         for (List<VendorFile> vendorFileGroup : vendorFilesByVendorId.values()) {
             parseFileGroup(vendorFileGroup, excelHeaderCellsHandler, parserFactory);
         }
+
+        log.info("Parsing ended");
     }
 
     public void parseFileGroup(List<VendorFile> vendorFileGroup, ExcelHeaderCellsHandler excelHeaderCellsHandler, ParserFactory parserFactory) {
@@ -141,6 +148,8 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         Set<Product> uniqueProducts = new HashSet<>();
         List<Storage> storages = new ArrayList<>();
         for (VendorFile vendorFile : vendorFileGroup) {
+            log.info("Parsing file: {}", vendorFile.getFilepath());
+
             ExcelParser excelParser = new ExcelParser(vendorFile.getFilepath(), excelHeaderCellsHandler, parserFactory);
 
             boolean containsUnprocessableHeaderCells = excelParser.tryToParse();
