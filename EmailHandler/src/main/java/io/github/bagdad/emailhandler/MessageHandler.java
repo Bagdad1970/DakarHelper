@@ -1,6 +1,8 @@
 package io.github.bagdad.emailhandler;
 
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
+import io.github.bagdad.findhandler.FileHandler;
+
 import jakarta.mail.BodyPart;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -143,7 +145,7 @@ public class MessageHandler {
                 String filename = MimeUtility.decodeText(encodedFilename);
 
                 if (MessageHandlerUtils.isExcelFile(filename)) {
-                    Path filepath = fileHandler.saveExcelFile(vendorTitle, filename, bodyPart);
+                    Path filepath = fileHandler.saveExcelFile(vendorTitle, filename, bodyPart.getInputStream());
                     vendorFiles.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
                 }
             }

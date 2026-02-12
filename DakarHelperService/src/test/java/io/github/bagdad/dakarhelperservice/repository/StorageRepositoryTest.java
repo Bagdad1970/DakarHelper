@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository;
 
-import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
+import io.github.bagdad.findhandler.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.model.Storage;
 import io.github.bagdad.dakarhelperservice.repository.implementation.StorageRepositoryImpl;
 import org.junit.jupiter.api.AfterEach;

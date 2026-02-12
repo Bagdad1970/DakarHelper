@@ -4,7 +4,6 @@ import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.dakarhelperservice.repository.implementation.VendorFileRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.service.implementation.VendorFileServiceImpl;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

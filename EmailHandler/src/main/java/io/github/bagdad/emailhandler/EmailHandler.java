@@ -2,6 +2,7 @@ package io.github.bagdad.emailhandler;
 
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
+import io.github.bagdad.findhandler.FileHandler;
 import jakarta.mail.*;
 import jakarta.mail.search.FromStringTerm;
 import lombok.extern.slf4j.Slf4j;

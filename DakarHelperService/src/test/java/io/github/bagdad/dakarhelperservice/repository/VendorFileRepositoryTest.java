@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository;
 
-import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
+import io.github.bagdad.findhandler.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.exception.VendorFileNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.Vendor;

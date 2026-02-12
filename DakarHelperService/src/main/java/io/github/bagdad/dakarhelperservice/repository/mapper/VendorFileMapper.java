@@ -2,7 +2,6 @@ package io.github.bagdad.dakarhelperservice.repository.mapper;
 
 import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
-import io.github.bagdad.models.excelparser.CellStatus;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

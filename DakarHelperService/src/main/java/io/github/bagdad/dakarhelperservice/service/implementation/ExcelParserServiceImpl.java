@@ -6,20 +6,27 @@ import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Storage;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
+import io.github.bagdad.dakarhelperservice.service.interfaces.ExcelParserService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.StorageService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.SubcategoryService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.VendorFileService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
 import io.github.bagdad.emailhandler.EmailConfig;
 import io.github.bagdad.emailhandler.EmailHandler;
 import io.github.bagdad.dakarhelperservice.helper.EmailHelper;
 import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
-import io.github.bagdad.dakarhelperservice.service.interfaces.*;
-import io.github.bagdad.excelparser.ExcelParser;
-import io.github.bagdad.excelparser.model.ExcelProduct;
-import io.github.bagdad.excelparser.headerparser.ParserFactory;
-import io.github.bagdad.excelparser.utils.SubcategoryMapping;
+import io.github.bagdad.excelparser.headerparser.ExcelParser;
+import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
+import io.github.bagdad.excelparser.headerparser.headerparser.ParserFactory;
+import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
+import io.github.bagdad.findhandler.FileHandler;
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
-import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
+import io.github.bagdad.excelparser.headerparser.utils.ExcelHeaderCellsHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +73,16 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         synchronizeExcelFiles();
 
         parseExcelFiles();
+
+        deleteProcessedFilesFromFilesystem();
+    }
+
+    private void deleteProcessedFilesFromFilesystem() {
+        List<VendorFile> parsedVendorFiles = vendorFileService.findByFileStatus(FileStatus.PARSED);
+
+        for (VendorFile vendorFile : parsedVendorFiles) {
+            FileHandler.deleteFile(vendorFile.getFilepath());
+        }
     }
 
     private void removeOldVendorFilesAndData(List<VendorWithFilepathes> oldVendors) {

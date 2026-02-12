@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository.mapper;
 
-import io.github.bagdad.dakarhelperservice.model.*;
+import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
 import org.springframework.jdbc.core.RowMapper;

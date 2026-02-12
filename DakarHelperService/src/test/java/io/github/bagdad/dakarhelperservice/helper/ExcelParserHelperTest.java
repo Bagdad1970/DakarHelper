@@ -4,7 +4,7 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
-import io.github.bagdad.excelparser.model.ExcelProduct;
+import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.excelparser.HeaderCellDto;

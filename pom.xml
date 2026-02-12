@@ -13,6 +13,7 @@
         <module>EmailHandler</module>
         <module>ExcelParser</module>
         <module>DakarHelperService</module>
+        <module>FileHandler</module>
     </modules>
 
     <properties>

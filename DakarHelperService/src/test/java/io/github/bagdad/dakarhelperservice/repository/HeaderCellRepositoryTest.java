@@ -1,8 +1,9 @@
 package io.github.bagdad.dakarhelperservice.repository;
 
-import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
+import io.github.bagdad.findhandler.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.exception.HeaderCellNotFoundException;
-import io.github.bagdad.dakarhelperservice.model.*;
+import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.repository.implementation.HeaderCellRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.repository.implementation.SubcategoryRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
