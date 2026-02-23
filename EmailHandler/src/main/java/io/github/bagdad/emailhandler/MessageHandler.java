@@ -15,46 +15,51 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class MessageHandler {
 
-    private Map<String, Boolean> vendorVisits;
+    private final Map<String, Boolean> vendorVisits;
 
     private final List<VendorWithMaxFileDateTime> vendors;
 
     private final FileHandler fileHandler;
 
     @Getter
-    private final Map<String, List<String>> vendorFiles;
+    private final Map<String, List<String>> vendorFilepathes;
 
-    public MessageHandler(List<VendorWithMaxFileDateTime> vendors, FileHandler fileHandler) {
+    public MessageHandler(List<VendorWithMaxFileDateTime> vendors, EmailConfig config) {
         this.vendors = vendors;
-        this.fileHandler = fileHandler;
-        this.vendorFiles = new HashMap<>();
+        this.fileHandler = new FileHandler(config.getSaveDir());
+        this.vendorFilepathes = new HashMap<>();
+        this.vendorVisits = new HashMap<>();
         initVendorVisits();
     }
 
     private void initVendorVisits() {
-        this.vendorVisits = new HashMap<>();
         for (VendorWithMaxFileDateTime vendor : vendors) {
             vendorVisits.put(vendor.getTitle(), false);
         }
     }
 
     public void processMessages(Message[] messages) {
+        if (messages.length == 0) {
+            log.info("No messages to process");
+        }
+
         List<Message> reversedMessages = Arrays.asList(messages);
         Collections.reverse(reversedMessages);
         log.info("Processing {} messages", reversedMessages.size());
 
-        int messageIndex = 0;
-        while (hasUnvisitedCompanies() && messageIndex < reversedMessages.size()) {
-            Message message = reversedMessages.get(messageIndex);
-
-            processMessage(message);
-
-            messageIndex++;
+        for (int i = 0; i < reversedMessages.size() && hasUnvisitedCompanies(); i++) {
+            processMessage(reversedMessages.get(i));
         }
     }
 
@@ -65,13 +70,14 @@ public class MessageHandler {
     private void processMessage(Message message) {
         try {
             String subject = message.getSubject();
-            VendorWithMaxFileDateTime vendor = findVendorTitleInText(subject);
+            VendorWithMaxFileDateTime vendor = findVendorInText(subject);
 
-            OffsetDateTime sentDateTime = MessageHandlerUtils.getSentOffsetDateTime(message);
             if (!vendor.getTitle().isEmpty()) {
+                OffsetDateTime sentDateTime = MessageHandlerUtils.getSentOffsetDateTime(message);
+
                 if (vendor.getMaxDateTime().isBefore(sentDateTime)) {
                     if (message.getContent() instanceof Multipart multipart) {
-                        processMultipartMessage(vendor.getTitle(), multipart);
+                        processMultipartInMessage(vendor, multipart);
                     }
                 }
                 else {
@@ -87,26 +93,31 @@ public class MessageHandler {
         }
     }
 
-    private void processMultipartMessage(String vendorTitle, Multipart multipart) {
-        try {
-            if (vendorTitle.isEmpty()) {
-                VendorWithMaxFileDateTime vendor = findVendorTitleInBody(multipart);
-                vendorTitle = vendor.getTitle();
-            }
+    private void processMultipartInMessage(VendorWithMaxFileDateTime vendor, Multipart multipart) {
+        String vendorTitle = vendor.getTitle();
 
-            if (!vendorTitle.isEmpty()) {
-                if (!vendorVisits.get(vendorTitle)) {
-                    log.info("Processing first message for vendor: {}", vendorTitle);
-                    saveExcelFiles(vendorTitle, multipart);
-                    vendorVisits.put(vendorTitle, true);
-                }
-                else {
-                    log.debug("Vendor '{}' already processed — skipping", vendorTitle);
-                }
-            }
-            else {
-                log.debug("No matching vendor found in message — skipping");
-            }
+        if (vendorTitle.isEmpty()) {
+            VendorWithMaxFileDateTime vendorFromBody = findVendorInBody(multipart);
+            vendorTitle = vendorFromBody.getTitle();
+        }
+
+        if (!vendorTitle.isEmpty() && !vendorVisits.get(vendorTitle)) {
+            log.info("Processing first message for vendor: {}", vendorTitle);
+            saveExcelFiles(vendorTitle, multipart);
+            vendorVisits.put(vendorTitle, true);
+        }
+    }
+
+    private VendorWithMaxFileDateTime findVendorInBody(Multipart multipart) {
+        BodyPart textBodyPart = MessageHandlerUtils.extractTextBodyPart(multipart);
+
+        if (textBodyPart == null) {
+            return new VendorWithMaxFileDateTime("");
+        }
+
+        try {
+            String textContent = textBodyPart.getContent().toString();
+            return findVendorInText(textContent);
         }
         catch (IOException | MessagingException e) {
             log.error("Error during multipart processing", e);
@@ -114,15 +125,6 @@ public class MessageHandler {
         catch (Exception e) {
             log.error("Unexpected error: ", e);
         }
-    }
-
-    private VendorWithMaxFileDateTime findVendorTitleInBody(Multipart multipart) throws IOException, MessagingException {
-        BodyPart textBodyPart = MessageHandlerUtils.extractTextBodyPart(multipart);
-        if (textBodyPart != null) {
-            String textContent = textBodyPart.getContent().toString();
-            return findVendorTitleInText(textContent);
-        }
-        log.debug("No text/plain part found in multipart");
         return new VendorWithMaxFileDateTime("");
     }
 
@@ -136,9 +138,12 @@ public class MessageHandler {
         catch (MessagingException e) {
             log.error("Error iterating multipart parts", e);
         }
+        catch (Exception e) {
+            log.error("Unhandled exception when saving excel files");
+        }
     }
 
-    private void processExcelBodyPart(String vendorTitle, BodyPart bodyPart) throws MessagingException {
+    private void processExcelBodyPart(String vendorTitle, BodyPart bodyPart) {
         try {
             String encodedFilename = bodyPart.getFileName();
             if (encodedFilename != null) {
@@ -146,26 +151,22 @@ public class MessageHandler {
 
                 if (MessageHandlerUtils.isExcelFile(filename)) {
                     Path filepath = fileHandler.saveExcelFile(vendorTitle, filename, bodyPart.getInputStream());
-                    vendorFiles.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
+                    vendorFilepathes.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
                 }
-            }
-            else {
-                log.debug("Skipping body part with no filename");
             }
         }
         catch (UnsupportedEncodingException e) {
-            log.warn("Failed to decode filename", e);
+            log.error("Failed to decode filename", e);
         }
         catch (MessagingException e) {
             log.error("Error accessing body part", e);
-            throw e;
         }
         catch (Exception e) {
             log.error("Unexpected error: ", e);
         }
     }
 
-    VendorWithMaxFileDateTime findVendorTitleInText(String text) {
+    VendorWithMaxFileDateTime findVendorInText(String text) {
         if (text == null || text.isBlank()) {
             return new VendorWithMaxFileDateTime("");
         }

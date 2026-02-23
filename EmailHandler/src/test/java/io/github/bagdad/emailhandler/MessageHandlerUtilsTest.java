@@ -20,21 +20,21 @@ public class MessageHandlerUtilsTest {
 
     private static GreenMail greenMail;
 
-//    @Test
-//    void test() throws MessagingException, IOException {
-//        greenMail = new GreenMail(ServerSetupTest.SMTP_IMAP);
-//        greenMail.start();
-//
-//        MimeMessage message = new MimeMessage();
-//
-//        try {
-//            GreenMailUtil.sendTextEmailTest(
-//                    "to@localhost", "from@localhost", "some subject", "Sent using available port detection");
-//            assertEquals("Sent using available port detection", greenMail.getReceivedMessages()[0].getContent());
-//        }
-//        finally {
-//            greenMail.stop();
-//        }
-//    }
+    @Test
+    void test() throws MessagingException, IOException {
+        greenMail = new GreenMail(ServerSetupTest.SMTP_IMAP);
+        greenMail.start();
+
+        MimeMessage message = new MimeMessage();
+
+        try {
+            GreenMailUtil.sendTextEmailTest(
+                    "to@localhost", "from@localhost", "some subject", "Sent using available port detection");
+            assertEquals("Sent using available port detection", greenMail.getReceivedMessages()[0].getContent());
+        }
+        finally {
+            greenMail.stop();
+        }
+    }
 
 }

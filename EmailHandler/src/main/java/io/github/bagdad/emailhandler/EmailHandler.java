@@ -2,7 +2,6 @@ package io.github.bagdad.emailhandler;
 
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
-import io.github.bagdad.findhandler.FileHandler;
 import jakarta.mail.*;
 import jakarta.mail.search.FromStringTerm;
 import lombok.extern.slf4j.Slf4j;
@@ -58,30 +57,27 @@ public class EmailHandler {
 
             Message[] messages = folder.search(new FromStringTerm(config.getFromTerm()));
 
-            if (messages.length > 0) {
-                FileHandler fileHandler = new FileHandler(config.getSaveDir());
+            MessageHandler messageHandler = new MessageHandler(vendors, config);
+            messageHandler.processMessages(messages);
 
-                MessageHandler messageHandler = new MessageHandler(vendors, fileHandler);
-                messageHandler.processMessages(messages);
+            if (messageHandler.getVendorFilepathes().isEmpty()) {
+                return Collections.emptyList();
+            }
 
-                for (VendorWithMaxFileDateTime vendor : vendors) {
-                    List<String> paths = messageHandler.getVendorFiles().get(vendor.getTitle());
+            for (VendorWithMaxFileDateTime vendor : vendors) {
+                List<String> paths = messageHandler.getVendorFilepathes().get(vendor.getTitle());
 
-                    if (!paths.isEmpty()) {
-                        VendorWithFilepathes vendorWithFilepathes = VendorWithFilepathes.builder()
-                                .id(vendor.getId())
-                                .title(vendor.getTitle())
-                                .filepathes(paths)
-                                .build();
-                        vendorsWithFilepathes.add(vendorWithFilepathes);
-                    }
+                if (!paths.isEmpty()) {
+                    VendorWithFilepathes vendorWithFilepathes = VendorWithFilepathes.builder()
+                            .id(vendor.getId())
+                            .title(vendor.getTitle())
+                            .filepathes(paths)
+                            .build();
+                    vendorsWithFilepathes.add(vendorWithFilepathes);
                 }
+            }
 
-                log.info("Final vendor filepathes: {}", vendorsWithFilepathes);
-            }
-            else {
-                log.info("No messages to process");
-            }
+            log.info("Final vendor filepathes: {}", vendorsWithFilepathes);
 
             return vendorsWithFilepathes;
 
