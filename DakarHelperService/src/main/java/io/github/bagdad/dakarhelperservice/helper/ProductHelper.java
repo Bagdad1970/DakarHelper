@@ -2,7 +2,7 @@ package io.github.bagdad.dakarhelperservice.helper;
 
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
-import io.github.bagdad.models.response.ProductResponse;
+import io.github.bagdad.models.response.product.ProductQueryItem;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,9 +10,9 @@ import java.util.List;
 
 public class ProductHelper {
 
-    public static ProductResponse mapToProductResponse(Product product,
-                                                       List<Vendor> vendors,
-                                                       BigDecimal margin) {
+    public static ProductQueryItem mapToProductQueryItem(Product product,
+                                                         List<Vendor> vendors,
+                                                         BigDecimal margin) {
         if (vendors.isEmpty()) {
             throw new RuntimeException("Vendors not provided");
         }
@@ -23,7 +23,7 @@ public class ProductHelper {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
 
-        return ProductResponse.builder()
+        return ProductQueryItem.builder()
                 .name(product.getName())
                 .price(product.getMinPrice())
                 .totalQuantity(product.getTotalQuantity())

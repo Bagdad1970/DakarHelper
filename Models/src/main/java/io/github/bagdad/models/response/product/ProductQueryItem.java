@@ -1,4 +1,4 @@
-package io.github.bagdad.models.response;
+package io.github.bagdad.models.response.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ProductResponse {
+public class ProductQueryItem {
 
     private String name;
 

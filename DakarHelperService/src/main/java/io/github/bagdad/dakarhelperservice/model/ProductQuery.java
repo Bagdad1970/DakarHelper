@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,5 +21,9 @@ public class ProductQuery {
     private Integer quantity;
 
     private BigDecimal margin;
+
+    private Integer pageIndex;
+
+    private Integer pageSize;
 
 }

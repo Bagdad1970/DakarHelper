@@ -3,8 +3,12 @@ package io.github.bagdad.dakarhelperservice.repository.implementation;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -28,7 +32,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> query(ProductQuery productQuery) {
+    public List<Product> findAll() {
+        return mongoTemplate.findAll(Product.class);
+    }
+
+    @Override
+    public Page<Product> query(ProductQuery productQuery, Pageable pageable) {
         Query query = new Query();
 
         if (productQuery.getVendorIds() != null && !productQuery.getVendorIds().isEmpty()) {
@@ -47,9 +56,16 @@ public class ProductRepositoryImpl implements ProductRepository {
             query.addCriteria(where("total_quantity").gte(productQuery.getQuantity()));
         }
 
-        return mongoTemplate.query(Product.class)
-                .matching(query)
-                .all();
+        long total = mongoTemplate.count(query, Product.class);
+
+        // Применяем пагинацию к запросу
+        query.with(pageable);
+
+        // Выполняем запрос с пагинацией
+        List<Product> products = mongoTemplate.find(query, Product.class);
+
+        // Создаем Page объект
+        return PageableExecutionUtils.getPage(products, pageable, () -> total);
     }
 
     @Override

@@ -2,7 +2,7 @@ package io.github.bagdad.dakarhelperservice.helper;
 
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
-import io.github.bagdad.models.response.ProductResponse;
+import io.github.bagdad.models.response.product.ProductQueryItem;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -50,12 +50,12 @@ public class ProductHelperTest {
                 .build();
         BigDecimal margin = BigDecimal.valueOf(10);
 
-        assertThatThrownBy(() -> ProductHelper.mapToProductResponse(product, vendors, margin))
+        assertThatThrownBy(() -> ProductHelper.mapToProductQueryItem(product, vendors, margin))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void Mapping_product_to_product_response_returns_product_response() {
+    void Mapping_product_to_product_data_returns_product_data() {
         List<Vendor> vendors = List.of(Vendor.builder()
                 .id(1L)
                 .title("vendor1")
@@ -72,15 +72,15 @@ public class ProductHelperTest {
                 .build();
         BigDecimal margin = BigDecimal.valueOf(10);
 
-        ProductResponse res = ProductHelper.mapToProductResponse(product, vendors, margin);
+        ProductQueryItem res = ProductHelper.mapToProductQueryItem(product, vendors, margin);
 
-        ProductResponse expected = ProductResponse.builder()
-                .name("Hankook")
-                .price(BigDecimal.valueOf(10.00))
-                .priceWithMargin(BigDecimal.valueOf(11.00))
-                .totalQuantity(10)
-                .vendorTitle("vendor1")
-                .build();
+        ProductQueryItem expected = ProductQueryItem.builder()
+                    .name("Hankook")
+                    .price(BigDecimal.valueOf(10.00))
+                    .priceWithMargin(BigDecimal.valueOf(11.00))
+                    .totalQuantity(10)
+                    .vendorTitle("vendor1")
+                    .build();
 
         assertThat(res.getName()).isEqualTo(expected.getName());
         assertThat(res.getVendorTitle()).isEqualTo(expected.getVendorTitle());

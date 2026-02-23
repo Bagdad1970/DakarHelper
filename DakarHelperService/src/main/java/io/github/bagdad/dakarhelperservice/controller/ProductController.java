@@ -1,13 +1,11 @@
 package io.github.bagdad.dakarhelperservice.controller;
 
-import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
 import io.github.bagdad.models.request.product.ProductQueryRequest;
-import io.github.bagdad.models.response.ProductResponse;
+import io.github.bagdad.models.response.product.ProductQueryResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -20,7 +18,7 @@ public class ProductController {
     }
 
     @PostMapping("/query")
-    public List<ProductResponse> query(@RequestBody ProductQueryRequest request) {
+    public ResponseEntity<ProductQueryResponse> query(@RequestBody ProductQueryRequest request) {
         ProductQuery query = new ProductQuery();
 
         query.setVendorIds(request.getVendorIds());
@@ -28,8 +26,12 @@ public class ProductController {
         query.setPrice(request.getPrice());
         query.setQuantity(request.getQuantity());
         query.setMargin(request.getMargin());
+        query.setPageIndex(request.getPageIndex());
+        query.setPageSize(request.getPageSize());
 
-        return service.query(query);
+        ProductQueryResponse response = service.query(query);
+
+        return ResponseEntity.ok(response);
     }
 
 }

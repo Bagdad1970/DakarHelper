@@ -9,6 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -36,7 +40,7 @@ public class ProductRepositoryTest {
         mongoTemplate.dropCollection(Product.class);
     }
 
-    private static Product createExcelProductForTesting() {
+    private static Product createProductForTesting() {
         return Product.builder()
                 .vendorId(1L)
                 .name("name1")
@@ -48,16 +52,16 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void Saving_excel_products_must_save_and_return_them() {
+    void Saving_products_must_save_and_return_them() {
         // arrange
-        Product product1 = createExcelProductForTesting();
-        Product product2 = createExcelProductForTesting();
+        Product product1 = createProductForTesting();
+        Product product2 = createProductForTesting();
         List<Product> products = List.of(product1, product2);
 
         repository.saveAll(products);
 
         // act
-        List<Product> found = repository.query(new ProductQuery());
+        List<Product> found = repository.findAll();
 
         // assert
         assertThat(found).isNotEmpty();
@@ -65,16 +69,16 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void Finding_all_excel_products_must_return_existing_entities() {
+    void Finding_all_products_must_return_existing_entities() {
         // arrange
-        Product product1 = createExcelProductForTesting();
-        Product product2 = createExcelProductForTesting();
+        Product product1 = createProductForTesting();
+        Product product2 = createProductForTesting();
         List<Product> products = List.of(product1, product2);
 
         repository.saveAll(products);
 
         // act
-        List<Product> found = repository.query(new ProductQuery());
+        List<Product> found = repository.findAll();
 
         // assert
         assertThat(found).isNotEmpty();
@@ -82,7 +86,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void Deleting_excel_products_by_vendor_file_id_must_delete_it() {
+    void Deleting_products_by_vendor_file_id_must_delete_it() {
         Product product1 = Product.builder()
                 .vendorId(1L)
                 .build();
@@ -101,7 +105,7 @@ public class ProductRepositoryTest {
 
         repository.deleteByVendorId(1L);
 
-        List<Product> found = repository.query(new ProductQuery());
+        List<Product> found = repository.findAll();
 
         List<Product> expected = List.of(product3);
 
@@ -110,7 +114,8 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void Query_to_excel_products() {
+    void Querying_to_products_returns_matching_products() {
+        // arrange
         Product product1 = Product.builder()
                 .vendorId(1L)
                 .name("Hankook 255/40R22")
@@ -129,32 +134,27 @@ public class ProductRepositoryTest {
                 .totalQuantity(7)
                 .build();
 
-        Product product3 = Product.builder()
-                .vendorId(3L)
-                .name("Nokian 185/60R15")
-                .prices(Map.of("опт", BigDecimal.valueOf(19.00), "розница", BigDecimal.valueOf(30.00)))
-                .minPrice(BigDecimal.valueOf(19.00))
-                .quantities(Map.of("склад1", 4, "склад2", 10))
-                .totalQuantity(14)
-                .build();
-
-        List<Product> products = List.of(product1, product2, product3);
+        List<Product> products = List.of(product1, product2);
 
         repository.saveAll(products);
 
         ProductQuery query = ProductQuery.builder()
-                .vendorIds(List.of(1L, 2L))
+                .vendorIds(List.of())
                 .name("Hankook")
                 .price(BigDecimal.valueOf(18.00))
                 .quantity(5)
                 .build();
+        Pageable pageable = PageRequest.of(0, 20);
 
-        List<Product> found = repository.query(query);
+        // act
+        Page<Product> found = repository.query(query, pageable);
 
-        List<Product> expected = List.of(product1, product2);
-
+        Page<Product> expected = new PageImpl<>(repository.findAll());
+        // assert
         assertThat(found).isNotEmpty();
-        assertThat(found).isEqualTo(expected);
+        assertThat(found.getTotalElements()).isEqualTo(expected.getTotalElements());
+        assertThat(found.getTotalPages()).isEqualTo(expected.getTotalPages());
+        assertThat(found.getContent()).isEqualTo(expected.getContent());
     }
     
 }
