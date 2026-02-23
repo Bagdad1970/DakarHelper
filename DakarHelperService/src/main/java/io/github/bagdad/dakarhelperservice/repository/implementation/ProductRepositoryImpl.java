@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -31,11 +32,11 @@ public class ProductRepositoryImpl implements ProductRepository {
         Query query = new Query();
 
         if (productQuery.getVendorIds() != null && !productQuery.getVendorIds().isEmpty()) {
-            query.addCriteria(where("vendor_file_id").in(productQuery.getVendorIds()));
+            query.addCriteria(where("vendor_id").in(productQuery.getVendorIds()));
         }
 
         if (productQuery.getName() != null) {
-            query.addCriteria(where("name").regex(productQuery.getName()));
+            query.addCriteria(where("name").regex(Pattern.compile(productQuery.getName(), Pattern.CASE_INSENSITIVE)));
         }
 
         if (productQuery.getPrice() != null) {
@@ -52,12 +53,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public void deleteByVendorFileId(Long vendorFileId) {
-        if (vendorFileId == null) {
+    public void deleteByVendorId(Long vendorId) {
+        if (vendorId == null) {
             return;
         }
 
-        Query query = Query.query(where("vendor_file_id").is(vendorFileId));
+        Query query = Query.query(where("vendor_id").is(vendorId));
         mongoTemplate.remove(query, Product.class);
     }
 

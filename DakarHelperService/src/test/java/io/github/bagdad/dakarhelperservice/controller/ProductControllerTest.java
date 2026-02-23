@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.service.implementation.ProductServiceImpl;
+import io.github.bagdad.models.response.ProductResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class ProductControllerTest {
     void Query_must_return_desired_products() throws Exception {
         Product product1 = Product.builder()
                 .id("1")
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .name("Hankook")
                 .prices(Map.of("price", BigDecimal.valueOf(10.00)))
                 .minPrice(BigDecimal.valueOf(10.00))
@@ -53,7 +54,7 @@ public class ProductControllerTest {
 
         Product product2 = Product.builder()
                 .id("2")
-                .vendorFileId(2L)
+                .vendorId(2L)
                 .name("Michelin")
                 .prices(Map.of("price", BigDecimal.valueOf(20.00)))
                 .minPrice(BigDecimal.valueOf(20.00))
@@ -61,24 +62,22 @@ public class ProductControllerTest {
                 .totalQuantity(5)
                 .build();
 
-        Product product3 = Product.builder()
-                .id("3")
-                .vendorFileId(2L)
-                .name("Hankook")
-                .prices(Map.of("price", BigDecimal.valueOf(15.00)))
-                .minPrice(BigDecimal.valueOf(15.00))
-                .quantities(Map.of("count", 5))
-                .totalQuantity(10)
-                .build();
-
         ProductQuery productQuery = ProductQuery.builder()
-                .vendorIds(List.of(1L, 2L))
+                .vendorIds(List.of(1L))
                 .name("Hankook")
                 .price(BigDecimal.valueOf(15))
                 .quantity(5)
+                .margin(BigDecimal.valueOf(1))
                 .build();
 
-        List<Product> desiredProducts = List.of(product1, product3);
+        List<ProductResponse> desiredProducts = List.of(
+                ProductResponse.builder()
+                        .name("Hankook")
+                        .price(BigDecimal.valueOf(20.00))
+                        .totalQuantity(5)
+                        .priceWithMargin(BigDecimal.valueOf(5.05))
+                        .build()
+                );
 
         Mockito.when(service.query(productQuery))
                 .thenReturn(desiredProducts);

@@ -3,13 +3,11 @@ package io.github.bagdad.dakarhelperservice.service.implementation;
 import io.github.bagdad.dakarhelperservice.model.FileStatus;
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.Product;
-import io.github.bagdad.dakarhelperservice.model.Storage;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ExcelParserService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
-import io.github.bagdad.dakarhelperservice.service.interfaces.StorageService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.SubcategoryService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorFileService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
@@ -47,8 +45,6 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
     private final ProductService productService;
 
-    private final StorageService storageService;
-
     private final SubcategoryService subcategoryService;
 
     public ExcelParserServiceImpl(EmailConfig emailConfig,
@@ -56,7 +52,6 @@ public class ExcelParserServiceImpl implements ExcelParserService {
                                   VendorFileService vendorFileService,
                                   HeaderCellService headerCellService,
                                   ProductService productService,
-                                  StorageService storageService,
                                   SubcategoryService subcategoryService
     ) {
         this.emailConfig = emailConfig;
@@ -64,7 +59,6 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         this.vendorFileService = vendorFileService;
         this.headerCellService = headerCellService;
         this.productService = productService;
-        this.storageService = storageService;
         this.subcategoryService = subcategoryService;
     }
 
@@ -93,12 +87,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
 
             List<VendorFile> vendorFilesToDelete = vendorFileService.findByVendorId(oldVendorId);
 
-            for (VendorFile vendorFile : vendorFilesToDelete) {
-                Long vendorFileId = vendorFile.getId();
-
-                productService.deleteByVendorFileId(vendorFileId);
-                storageService.deleteByVendorFileId(vendorFileId);
-            }
+            vendorFilesToDelete.forEach(vendorFile -> productService.deleteByVendorId(vendorFile.getVendorId()));
         }
     }
 
@@ -163,7 +152,6 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         }
 
         Set<Product> uniqueProducts = new HashSet<>();
-        List<Storage> storages = new ArrayList<>();
         for (VendorFile vendorFile : vendorFileGroup) {
             log.info("Parsing file: {}", vendorFile.getFilepath());
 
@@ -191,15 +179,10 @@ public class ExcelParserServiceImpl implements ExcelParserService {
             List<ExcelProduct> foundProducts = excelParser.parse();
 
             if (!foundProducts.isEmpty()) {
-                List<Product> products = ExcelParserHelper.mapToExcelProducts(vendorFile, foundProducts);
+                Long vendorId = vendorFile.getVendorId();
+                List<Product> products = ExcelParserHelper.mapToProducts(vendorId, foundProducts);
 
                 uniqueProducts.addAll(products);
-
-                Storage storage = Storage.builder()
-                        .vendorFileId(vendorFile.getId())
-                        .storages(excelParser.getStorages())
-                        .build();
-                storages.add(storage);
             }
         }
 
@@ -209,8 +192,6 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         }
 
         productService.saveAll(uniqueProducts);
-
-        storageService.saveAll(storages);
     }
 
 }

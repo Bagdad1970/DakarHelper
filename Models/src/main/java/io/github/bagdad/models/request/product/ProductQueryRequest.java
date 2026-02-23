@@ -1,27 +1,33 @@
 package io.github.bagdad.models.request.product;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductQueryRequest {
+
 
     private List<Long> vendorIds;
 
     private String name;
 
+    @Positive(message = "Quantity must be positive")
     private BigDecimal price;
 
-    private List<String> priceSubcategoryIds;
-
+    @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;
 
-    private List<String> quantitySubcategoryIds;
+    @Min(value = 0, message = "Margin cannot be negative")
+    private BigDecimal margin = BigDecimal.valueOf(0);
 
 }

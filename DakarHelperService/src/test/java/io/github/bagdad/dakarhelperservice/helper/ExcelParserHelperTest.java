@@ -23,6 +23,7 @@ class ExcelParserHelperTest {
         // arrange
         VendorFile vendorFile = new VendorFile();
         vendorFile.setId(1L);
+        vendorFile.setVendorId(2L);
 
         List<ExcelProduct> excelProducts = new ArrayList<>();
         ExcelProduct excelProduct1 = new ExcelProduct();
@@ -39,18 +40,18 @@ class ExcelParserHelperTest {
         excelProducts.add(excelProduct2);
 
         // act
-        List<Product> result = ExcelParserHelper.mapToExcelProducts(vendorFile, excelProducts);
+        List<Product> result = ExcelParserHelper.mapToProducts(vendorFile.getVendorId(), excelProducts);
 
         // assert
         assertThat(result).isNotNull().hasSize(2);
 
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(result.get(0).getVendorFileId()).isEqualTo(1L);
+            softAssertions.assertThat(result.get(0).getVendorId()).isEqualTo(2L);
             softAssertions.assertThat(result.get(0).getName()).isEqualTo("Product 1");
             softAssertions.assertThat(result.get(0).getPrices()).isEqualTo(Map.of("price", new BigDecimal("9.99")));
             softAssertions.assertThat(result.get(0).getQuantities()).isEqualTo(Map.of("count1", 10));
 
-            softAssertions.assertThat(result.get(1).getVendorFileId()).isEqualTo(1L);
+            softAssertions.assertThat(result.get(1).getVendorId()).isEqualTo(2L);
             softAssertions.assertThat(result.get(1).getName()).isEqualTo("Product 2");
             softAssertions.assertThat(result.get(1).getPrices()).isEqualTo(Map.of("wholesale", new BigDecimal("10.99")));
             softAssertions.assertThat(result.get(1).getQuantities()).isEqualTo(Map.of("count1", 5));
@@ -58,32 +59,31 @@ class ExcelParserHelperTest {
     }
 
     @Test
-    void mapToExcelProducts_shouldReturnEmptyList_whenInputIsEmpty() {
+    void mapToProducts_shouldReturnEmptyList_whenInputIsEmpty() {
         VendorFile vendorFile = new VendorFile();
         vendorFile.setId(1L);
 
-        List<Product> result = ExcelParserHelper.mapToExcelProducts(vendorFile, Collections.emptyList());
+        List<Product> result = ExcelParserHelper.mapToProducts(vendorFile.getVendorId(), Collections.emptyList());
 
         assertThat(result).isNotNull().isEmpty();
     }
 
     @Test
-    void mapToExcelProducts_shouldHandleNullMaps() {
+    void mapToProducts_shouldHandleNullMaps() {
         // arrange
-        VendorFile vendorFile = new VendorFile();
-        vendorFile.setId(1L);
+        Long vendorId = 1L;
 
         List<ExcelProduct> excelProducts = new ArrayList<>();
         ExcelProduct emptyExcelProduct = new ExcelProduct();
         excelProducts.add(emptyExcelProduct);
 
         // act
-        List<Product> result = ExcelParserHelper.mapToExcelProducts(vendorFile, excelProducts);
+        List<Product> result = ExcelParserHelper.mapToProducts(vendorId, excelProducts);
 
         // assert
         assertThat(result).isNotNull().hasSize(1);
         assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getVendorFileId()).isEqualTo(1L);
+        assertThat(result.get(0).getVendorId()).isEqualTo(1L);
         assertThat(result.get(0).getName()).isNull();
         assertThat(result.get(0).getPrices()).isEmpty();
         assertThat(result.get(0).getQuantities()).isEmpty();

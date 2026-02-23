@@ -4,7 +4,6 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
-import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
@@ -13,23 +12,19 @@ import java.util.*;
 
 public class ExcelParserHelper {
 
-    public static List<Product> mapToExcelProducts(VendorFile vendorFile, List<ExcelProduct> excelProducts) {
+    public static List<Product> mapToProducts(Long vendorId, List<ExcelProduct> excelProducts) {
         if (excelProducts.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return excelProducts.stream().map(product -> {
-            Product excelProduct = new Product();
-
-            excelProduct.setVendorFileId(vendorFile.getId());
-            excelProduct.setName(product.getName());
-            excelProduct.setPrices(product.getPrices());
-            excelProduct.setMinPrice(product.getMinPrice());
-            excelProduct.setQuantities(product.getQuantities());
-            excelProduct.setTotalQuantity(product.getTotalQuantity());
-
-            return excelProduct;
-        }).toList();
+        return excelProducts.stream().map(excelProduct -> Product.builder()
+                .vendorId(vendorId)
+                .name(excelProduct.getName())
+                .prices(excelProduct.getPrices())
+                .minPrice(excelProduct.getMinPrice())
+                .quantities(excelProduct.getQuantities())
+                .totalQuantity(excelProduct.getTotalQuantity())
+                .build()).toList();
     }
 
     public static List<HeaderCell> mapToExcelHeaderCells(List<HeaderCellDto> headerCellDtos) {

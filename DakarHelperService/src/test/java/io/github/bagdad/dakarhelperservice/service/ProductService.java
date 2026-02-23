@@ -31,7 +31,7 @@ public class ProductService {
         // assert
         Product product1 = Product.builder()
                 .id("1")
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .name("Hankook")
                 .prices(Map.of("price", BigDecimal.valueOf(10.00)))
                 .quantities(Map.of("count", 10))
@@ -39,7 +39,7 @@ public class ProductService {
 
         Product product2 = Product.builder()
                 .id("2")
-                .vendorFileId(2L)
+                .vendorId(2L)
                 .name("Michelin")
                 .prices(Map.of("price", BigDecimal.valueOf(20.00)))
                 .quantities(Map.of("count", 5))
@@ -56,11 +56,11 @@ public class ProductService {
     }
 
     @Test
-    void deleteByVendorFileId() {
-        service.deleteByVendorFileId(1L);
+    void deleteByVendorId() {
+        service.deleteByVendorId(1L);
 
         Mockito.verify(repository, times(1))
-                .deleteByVendorFileId(1L);
+                .deleteByVendorId(1L);
     }
 
     @Test

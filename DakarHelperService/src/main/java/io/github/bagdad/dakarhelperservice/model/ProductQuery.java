@@ -19,4 +19,6 @@ public class ProductQuery {
 
     private Integer quantity;
 
+    private BigDecimal margin;
+
 }

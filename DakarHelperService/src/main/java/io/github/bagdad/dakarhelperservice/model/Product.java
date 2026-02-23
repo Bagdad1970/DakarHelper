@@ -24,10 +24,10 @@ public class Product {
     @EqualsAndHashCode.Exclude
     private String id;
 
-    @Field(name="vendor_file_id")
+    @Field(name="vendor_id")
     @Indexed(unique = false)
     @EqualsAndHashCode.Exclude
-    private Long vendorFileId;
+    private Long vendorId;
 
     @Field(name="name")
     private String name;

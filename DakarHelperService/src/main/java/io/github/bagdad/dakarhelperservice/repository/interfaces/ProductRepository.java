@@ -12,6 +12,6 @@ public interface ProductRepository {
 
     List<Product> query(ProductQuery query);
 
-    void deleteByVendorFileId(Long id);
+    void deleteByVendorId(Long id);
 
 }

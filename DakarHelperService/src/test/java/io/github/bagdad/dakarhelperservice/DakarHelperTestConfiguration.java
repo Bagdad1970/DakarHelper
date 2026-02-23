@@ -1,4 +1,4 @@
-package io.github.bagdad.findhandler.dakarhelperservice;
+package io.github.bagdad.dakarhelperservice;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

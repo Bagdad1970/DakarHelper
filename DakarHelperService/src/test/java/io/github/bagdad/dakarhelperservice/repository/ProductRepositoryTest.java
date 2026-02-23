@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository;
 
-import io.github.bagdad.findhandler.dakarhelperservice.DakarHelperTestConfiguration;
+import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.repository.implementation.ProductRepositoryImpl;
@@ -38,7 +38,7 @@ public class ProductRepositoryTest {
 
     private static Product createExcelProductForTesting() {
         return Product.builder()
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .name("name1")
                 .prices(Map.of("storage", BigDecimal.valueOf(10.00)))
                 .minPrice(BigDecimal.valueOf(10.00))
@@ -84,22 +84,22 @@ public class ProductRepositoryTest {
     @Test
     void Deleting_excel_products_by_vendor_file_id_must_delete_it() {
         Product product1 = Product.builder()
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .build();
 
         Product product2 = Product.builder()
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .build();
 
         Product product3 = Product.builder()
-                .vendorFileId(2L)
+                .vendorId(2L)
                 .build();
 
         List<Product> products = List.of(product1, product2, product3);
 
         repository.saveAll(products);
 
-        repository.deleteByVendorFileId(1L);
+        repository.deleteByVendorId(1L);
 
         List<Product> found = repository.query(new ProductQuery());
 
@@ -112,7 +112,7 @@ public class ProductRepositoryTest {
     @Test
     void Query_to_excel_products() {
         Product product1 = Product.builder()
-                .vendorFileId(1L)
+                .vendorId(1L)
                 .name("Hankook 255/40R22")
                 .prices(Map.of("опт", BigDecimal.valueOf(10.00), "розница", BigDecimal.valueOf(15.00)))
                 .minPrice(BigDecimal.valueOf(10.00))
@@ -121,7 +121,7 @@ public class ProductRepositoryTest {
                 .build();
 
         Product product2 = Product.builder()
-                .vendorFileId(2L)
+                .vendorId(2L)
                 .name("Hankook 255/40R22")
                 .prices(Map.of("опт", BigDecimal.valueOf(18.00), "розница", BigDecimal.valueOf(25.00)))
                 .minPrice(BigDecimal.valueOf(18.00))
@@ -130,7 +130,7 @@ public class ProductRepositoryTest {
                 .build();
 
         Product product3 = Product.builder()
-                .vendorFileId(3L)
+                .vendorId(3L)
                 .name("Nokian 185/60R15")
                 .prices(Map.of("опт", BigDecimal.valueOf(19.00), "розница", BigDecimal.valueOf(30.00)))
                 .minPrice(BigDecimal.valueOf(19.00))

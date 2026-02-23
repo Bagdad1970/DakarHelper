@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository;
 
-import io.github.bagdad.findhandler.dakarhelperservice.DakarHelperTestConfiguration;
+import io.github.bagdad.dakarhelperservice.DakarHelperTestConfiguration;
 import io.github.bagdad.dakarhelperservice.exception.HeaderCellNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;

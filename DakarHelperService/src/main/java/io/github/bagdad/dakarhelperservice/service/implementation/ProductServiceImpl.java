@@ -1,36 +1,53 @@
 package io.github.bagdad.dakarhelperservice.service.implementation;
 
+import io.github.bagdad.dakarhelperservice.helper.ProductHelper;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.ProductQuery;
+import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.ProductRepository;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
+import io.github.bagdad.models.response.ProductResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
+    private final VendorService vendorService;
 
-    public ProductServiceImpl(ProductRepository repository) {
-        this.repository = repository;
+    public ProductServiceImpl(ProductRepository productRepository, VendorService vendorService) {
+        this.productRepository = productRepository;
+        this.vendorService = vendorService;
     }
 
     @Override
     public void saveAll(Collection<Product> products) {
-        repository.saveAll(products);
+        productRepository.saveAll(products);
     }
 
     @Override
-    public List<Product> query(ProductQuery query) {
-        return repository.query(query);
+    public List<ProductResponse> query(ProductQuery query) {
+        List<Product> products = productRepository.query(query);
+
+        if (products.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Vendor> vendors = vendorService.findAll();
+
+        return products.stream()
+                .map(product -> ProductHelper.mapToProductResponse(product, vendors, query.getMargin()))
+                .toList();
     }
 
     @Override
-    public void deleteByVendorFileId(Long id) {
-        repository.deleteByVendorFileId(id);
+    public void deleteByVendorId(Long id) {
+        productRepository.deleteByVendorId(id);
     }
 
 }
