@@ -3,9 +3,11 @@ package io.github.bagdad.dakarhelperservice.controller;
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
 import io.github.bagdad.models.request.headercell.HeaderCellCreateRequest;
-import io.github.bagdad.models.request.headercell.HeaderCellDeleteRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellUpdateRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,30 +22,44 @@ public class HeaderCellController {
     }
 
     @PostMapping
-    public HeaderCell create(@RequestBody HeaderCellCreateRequest request) {
-        HeaderCell headerCell = new HeaderCell();
+    public ResponseEntity<HeaderCell> create(@RequestBody HeaderCellCreateRequest request) {
+        HeaderCell headerCell = HeaderCell.builder()
+                .subcategoryId(request.getSubcategoryId())
+                .originalName(request.getOriginalName())
+                .normalizedName(request.getNormalizedName())
+                .category(request.getCategory())
+                .cellStatus(request.getCellStatus())
+                .build();
 
-        headerCell.setSubcategoryId(request.getSubcategoryId());
-        headerCell.setOriginalName(request.getOriginalName());
-        headerCell.setNormalizedName(request.getNormalizedName());
-        headerCell.setCategory(request.getCategory());
-        headerCell.setCellStatus(request.getCellStatus());
+        HeaderCell created = service.create(headerCell);
 
-        return service.create(headerCell);
+        return ResponseEntity.ok(created);
     }
 
-    @PutMapping
-    public HeaderCell update(@RequestBody HeaderCellUpdateRequest request) {
-        HeaderCell headerCell = new HeaderCell();
+    @PutMapping("/{id}")
+    public ResponseEntity<HeaderCell> update(@PathVariable Long id, @RequestBody HeaderCellUpdateRequest request) {
+        HeaderCell headerCell = HeaderCell.builder()
+                .id(request.getId())
+                .subcategoryId(request.getSubcategoryId())
+                .originalName(request.getOriginalName())
+                .normalizedName(request.getNormalizedName())
+                .category(request.getCategory())
+                .cellStatus(request.getCellStatus())
+                .build();
 
-        headerCell.setId(request.getId());
-        headerCell.setSubcategoryId(request.getSubcategoryId());
-        headerCell.setOriginalName(request.getOriginalName());
-        headerCell.setNormalizedName(request.getNormalizedName());
-        headerCell.setCategory(request.getCategory());
-        headerCell.setCellStatus(request.getCellStatus());
+        HeaderCell updated = service.update(headerCell);
 
-        return service.update(headerCell);
+        return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HeaderCell> findById(@PathVariable Long id) {
+        HeaderCell headerCell = service.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "HeaderCell not found with id: " + id
+                ));
+
+        return ResponseEntity.ok(headerCell);
     }
 
     @GetMapping
@@ -51,11 +67,9 @@ public class HeaderCellController {
         return service.findAll();
     }
 
-    @DeleteMapping
-    public void delete(@RequestBody HeaderCellDeleteRequest request) {
-        Long id = request.getId();
-
-        service.delete(id);
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
+        service.deleteById(id);
     }
 
 }

@@ -14,7 +14,7 @@ public interface VendorRepository {
 
     Vendor update(Vendor Vendor);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     List<Vendor> findAll();
 

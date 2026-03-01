@@ -121,7 +121,7 @@ class VendorRepositoryTest {
 
         Vendor saved = repository.save(vendor);
 
-        repository.delete(saved.getId());
+        repository.deleteById(saved.getId());
 
         Optional<Vendor> deleted = repository.findById(saved.getId());
         assertThat(deleted).isEmpty();

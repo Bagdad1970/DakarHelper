@@ -8,6 +8,7 @@ import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VendorServiceImpl implements VendorService {
@@ -44,8 +45,13 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public void delete(Long id) {
-        repository.delete(id);
+    public Optional<Vendor> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     @Override

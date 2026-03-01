@@ -5,6 +5,7 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.models.excelparser.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HeaderCellService {
 
@@ -16,7 +17,9 @@ public interface HeaderCellService {
 
     List<HeaderCell> findAll();
 
-    void delete(Long id);
+    Optional<HeaderCell> findById(Long id);
+
+    void deleteById(Long id);
 
     List<HeaderCellWithSubcategory> findAllWithSubcategory();
 

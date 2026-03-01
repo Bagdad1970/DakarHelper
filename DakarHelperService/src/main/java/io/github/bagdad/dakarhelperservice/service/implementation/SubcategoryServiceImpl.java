@@ -36,9 +36,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     }
 
     @Override
-    public Optional<Subcategory> findById(Subcategory subcategory) {
-        Long id = subcategory.getId();
-
+    public Optional<Subcategory> findById(Long id) {
         return repository.findById(id);
     }
 
@@ -48,8 +46,8 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     }
 
     @Override
-    public void delete(Long id) {
-        repository.delete(id);
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     @Override

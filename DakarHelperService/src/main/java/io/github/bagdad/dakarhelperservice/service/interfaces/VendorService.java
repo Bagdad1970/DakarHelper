@@ -4,6 +4,7 @@ import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VendorService {
 
@@ -15,7 +16,9 @@ public interface VendorService {
 
     List<Vendor> findAll();
 
-    void delete(Long id);
+    Optional<Vendor> findById(Long id);
+
+    void deleteById(Long id);
 
     List<VendorWithMaxFileDateTime> findVendorsWithLastFileDate();
 

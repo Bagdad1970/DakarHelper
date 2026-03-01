@@ -14,7 +14,7 @@ public interface SubcategoryRepository {
 
     List<Subcategory> findAll();
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     Optional<Subcategory> findById(Long id);
 

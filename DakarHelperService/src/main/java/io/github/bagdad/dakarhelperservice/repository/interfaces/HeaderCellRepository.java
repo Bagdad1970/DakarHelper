@@ -19,7 +19,7 @@ public interface HeaderCellRepository {
 
     Optional<HeaderCell> findById(Long id);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     List<HeaderCellWithSubcategory> findAllWithSubcategory();
 

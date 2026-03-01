@@ -9,6 +9,7 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HeaderCellServiceImpl implements HeaderCellService {
@@ -49,8 +50,13 @@ public class HeaderCellServiceImpl implements HeaderCellService {
     }
 
     @Override
-    public void delete(Long id) {
-        repository.delete(id);
+    public Optional<HeaderCell> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     @Override

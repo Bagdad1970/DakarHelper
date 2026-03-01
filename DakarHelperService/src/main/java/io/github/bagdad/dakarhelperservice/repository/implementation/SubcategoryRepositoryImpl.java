@@ -128,7 +128,7 @@ public class SubcategoryRepositoryImpl implements SubcategoryRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM subcategories WHERE id = ?";
 
         int count = jdbcTemplate.update(

@@ -50,6 +50,22 @@ public class VendorServiceTest {
     }
 
     @Test
+    void findById() {
+        Vendor vendor = Vendor.builder()
+                .id(1L)
+                .title("title1")
+                .build();
+
+        Mockito.when(repository.findById(1L))
+                .thenReturn(Optional.of(vendor));
+
+        Optional<Vendor> found = service.findById(1L);
+
+        assertThat(found).isPresent();
+        assertThat(found.get()).isEqualTo(vendor);
+    }
+
+    @Test
     void create() {
         // arrange
         Vendor vendor = Vendor.builder()
@@ -123,11 +139,11 @@ public class VendorServiceTest {
     }
 
     @Test
-    void delete() {
-        service.delete(1L);
+    void deleteById() {
+        service.deleteById(1L);
 
         Mockito.verify(repository, times(1))
-                .delete(1L);
+                .deleteById(1L);
     }
 
 }

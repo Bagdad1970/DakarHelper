@@ -12,11 +12,11 @@ public interface SubcategoryService {
 
     Subcategory update(Subcategory subcategory);
 
-    Optional<Subcategory> findById(Subcategory subcategory);
+    Optional<Subcategory> findById(Long id);
 
     List<Subcategory> findAll();
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     List<Subcategory> findAllByCategory(Category category);
 

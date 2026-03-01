@@ -123,7 +123,7 @@ class SubcategoryRepositoryTest {
 
         Subcategory saved = repository.save(subcategory);
 
-        repository.delete(saved.getId());
+        repository.deleteById(saved.getId());
 
         Optional<Subcategory> deleted = repository.findById(saved.getId());
 
@@ -134,7 +134,7 @@ class SubcategoryRepositoryTest {
     void Deleting_non_existing_subcategory_must_throw_exception() {
         Long nonExistingId = 0L;
 
-        assertThatThrownBy(() -> repository.delete(nonExistingId))
+        assertThatThrownBy(() -> repository.deleteById(nonExistingId))
                 .isInstanceOf(SubcategoryNotFoundException.class);
     }
 }

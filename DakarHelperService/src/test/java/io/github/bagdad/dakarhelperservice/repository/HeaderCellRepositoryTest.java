@@ -64,7 +64,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Saving_excel_header_cell_must_save_and_return_saved_excel_header_cell() {
+    void Saving_header_cell_must_save_and_return_saved_header_cell() {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
@@ -78,7 +78,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Batch_inserting_excel_header_cells_must_save_all() {
+    void Batch_inserting_header_cells_must_save_all() {
         Subcategory subcategory1 = createSubcategoryForTesting();
         Subcategory subcategory2 = createSubcategoryForTesting();
         Subcategory subcategory3 = createSubcategoryForTesting();
@@ -104,7 +104,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Finding_all_excel_header_cells_must_return_existing_entities() {
+    void Finding_all_header_cells_must_return_existing_entities() {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
@@ -118,7 +118,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Finding_existing_excel_header_cell_by_id_must_return_existing_entity() {
+    void Finding_existing_header_cell_by_id_must_return_existing_entity() {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
@@ -132,14 +132,14 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Finding_non_existing_excel_header_cell_by_id_must_return_empty() {
+    void Finding_non_existing_header_cell_by_id_must_return_empty() {
         Optional<HeaderCell> found = headerCellRepository.findById(0L);
 
         assertThat(found).isEmpty();
     }
 
     @Test
-    void Updating_existing_excel_header_cell_must_update_and_return_updated_entity() {
+    void Updating_existing_header_cell_must_update_and_return_updated_entity() {
         Subcategory vendor1 = createSubcategoryForTesting();
         Subcategory savedSubcategory1 = subcategoryRepository.save(vendor1);
 
@@ -163,7 +163,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Updating_non_existing_excel_header_cell_must_throw_exception() {
+    void Updating_non_existing_header_cell_must_throw_exception() {
         HeaderCell nonExistent = new HeaderCell();
         nonExistent.setId(0L);
         nonExistent.setCategory(Category.NAME);
@@ -174,7 +174,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Deleting_existing_excel_header_cell_must_remove_it() {
+    void Deleting_existing_header_cell_must_remove_it() {
         Subcategory subcategory = createSubcategoryForTesting();
 
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
@@ -182,7 +182,7 @@ public class HeaderCellRepositoryTest {
         HeaderCell headerCell = createExcelHeaderCellForTesting(savedSubcategory);
         HeaderCell saved = headerCellRepository.save(headerCell);
 
-        headerCellRepository.delete(saved.getId());
+        headerCellRepository.deleteById(saved.getId());
 
         Optional<HeaderCell> deleted = headerCellRepository.findById(saved.getId());
 
@@ -190,10 +190,10 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Deleting_non_existing_excel_header_cell_must_throw_exception() {
+    void Deleting_non_existing_header_cell_must_throw_exception() {
         Long nonExistingId = 0L;
 
-        assertThatThrownBy(() -> headerCellRepository.delete(nonExistingId))
+        assertThatThrownBy(() -> headerCellRepository.deleteById(nonExistingId))
                 .isInstanceOf(HeaderCellNotFoundException.class);
     }
 

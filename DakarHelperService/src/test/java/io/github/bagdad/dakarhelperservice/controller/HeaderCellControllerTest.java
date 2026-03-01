@@ -6,7 +6,6 @@ import io.github.bagdad.dakarhelperservice.service.implementation.HeaderCellServ
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.request.headercell.HeaderCellCreateRequest;
-import io.github.bagdad.models.request.headercell.HeaderCellDeleteRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -100,13 +100,39 @@ public class HeaderCellControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/header-cells")
+                        .put("/api/header-cells/1")
                         .content(asJsonString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(asJsonString(updated)));
+    }
+
+    @Test
+    void Finding_by_id_existing_header_cell_must_return_it() throws Exception {
+        // arrange
+        HeaderCell headerCell = HeaderCell.builder()
+                .id(1L)
+                .subcategoryId(1L)
+                .originalName("original_name")
+                .normalizedName("normalized_name")
+                .category(Category.NAME)
+                .cellStatus(CellStatus.PROCESSED)
+                .build();
+
+        Mockito.when(service.findById(1L))
+                .thenReturn(Optional.of(headerCell));
+
+        // act & assert
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/header-cells/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(asJsonString(headerCell)));
+        Mockito.verify(service, times(1))
+                .findById(1L);
     }
 
     @Test
@@ -147,22 +173,16 @@ public class HeaderCellControllerTest {
     }
 
     @Test
-    void delete() throws Exception {
-        // arrange
-        HeaderCellDeleteRequest request = new HeaderCellDeleteRequest();
-        request.setId(1L);
-
-        // act & assert
+    void deleteById() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/api/header-cells")
+                        .delete("/api/header-cells/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request))
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
         Mockito.verify(service)
-                .delete(1L);
+                .deleteById(1L);
     }
     
 }

@@ -21,7 +21,7 @@ import java.util.Optional;
 public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private static final HeaderCellMapper EXCEL_HEADER_CELL_MAPPER = new HeaderCellMapper();
+    private static final HeaderCellMapper HEADER_CELL_MAPPER = new HeaderCellMapper();
 
     public HeaderCellRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,7 +48,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
         return jdbcTemplate.queryForObject(
                 sql,
-                EXCEL_HEADER_CELL_MAPPER,
+                HEADER_CELL_MAPPER,
                 headerCell.getSubcategoryId(),
                 headerCell.getOriginalName(),
                 headerCell.getNormalizedName(),
@@ -109,7 +109,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         try {
             return jdbcTemplate.queryForObject(
                     sql,
-                    EXCEL_HEADER_CELL_MAPPER,
+                    HEADER_CELL_MAPPER,
                     headerCell.getSubcategoryId(),
                     headerCell.getOriginalName(),
                     headerCell.getNormalizedName(),
@@ -121,7 +121,6 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         catch (EmptyResultDataAccessException e) {
             throw new HeaderCellNotFoundException(headerCell.getId());
         }
-
     }
 
     @Override
@@ -139,7 +138,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
         return jdbcTemplate.query(
                 sql,
-                EXCEL_HEADER_CELL_MAPPER
+                HEADER_CELL_MAPPER
         );
     }
 
@@ -160,7 +159,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         try {
             HeaderCell headerCell = jdbcTemplate.queryForObject(
                     sql,
-                    EXCEL_HEADER_CELL_MAPPER,
+                    HEADER_CELL_MAPPER,
                     id
             );
             return Optional.ofNullable(headerCell);
@@ -225,13 +224,13 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
         return jdbcTemplate.query(
                 sql,
-                EXCEL_HEADER_CELL_MAPPER,
+                HEADER_CELL_MAPPER,
                 category.name()
         );
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = """
             DELETE FROM header_cells
             WHERE id = ?

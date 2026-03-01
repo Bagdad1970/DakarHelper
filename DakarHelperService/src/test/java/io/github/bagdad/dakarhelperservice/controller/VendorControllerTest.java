@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.service.implementation.VendorServiceImpl;
 import io.github.bagdad.models.request.vendor.VendorCreateRequest;
-import io.github.bagdad.models.request.vendor.VendorDeleteRequest;
 import io.github.bagdad.models.request.vendor.VendorUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -83,13 +83,35 @@ public class VendorControllerTest {
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/vendors")
+                        .put("/api/vendors/1")
                         .content(asJsonString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(asJsonString(updated)));
+    }
+
+    @Test
+    void Finding_by_id_existing_vendor_must_return_it() throws Exception {
+        // arrange
+        Vendor vendor = Vendor.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        Mockito.when(service.findById(1L))
+                .thenReturn(Optional.of(vendor));
+
+        // act & assert
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/vendors/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(asJsonString(vendor)));
+        Mockito.verify(service, times(1))
+                .findById(1L);
     }
 
     @Test
@@ -120,21 +142,42 @@ public class VendorControllerTest {
     }
 
     @Test
-    void delete() throws Exception {
+    void Finding_existing_vendor_by_id_must_return_it() throws Exception {
         // arrange
-        VendorDeleteRequest request = new VendorDeleteRequest();
-        request.setId(1L);
+        Vendor vendor1 = Vendor.builder()
+                .id(1L)
+                .title("title1")
+                .build();
+
+        Vendor vendor2 = Vendor.builder()
+                .id(2L)
+                .title("title2")
+                .build();
+
+        List<Vendor> vendors = List.of(vendor1, vendor2);
+
+        Mockito.when(service.findAll())
+                .thenReturn(vendors);
 
         // act & assert
-        mockMvc.perform( MockMvcRequestBuilders.delete("/api/vendors")
+        mockMvc.perform(get("/api/vendors")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(asJsonString(vendors)));
+        Mockito.verify(service, times(1))
+                .findAll();
+    }
+
+    @Test
+    void deleteById() throws Exception {
+        mockMvc.perform( MockMvcRequestBuilders.delete("/api/vendors/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request))
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
         Mockito.verify(service)
-                .delete(1L);
+                .deleteById(1L);
     }
 
 }

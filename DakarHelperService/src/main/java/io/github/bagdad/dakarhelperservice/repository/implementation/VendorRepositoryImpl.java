@@ -125,7 +125,7 @@ public class VendorRepositoryImpl implements VendorRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = """
             DELETE FROM vendors
             WHERE id = ?

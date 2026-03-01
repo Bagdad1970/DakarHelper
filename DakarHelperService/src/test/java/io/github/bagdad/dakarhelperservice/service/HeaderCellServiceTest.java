@@ -1,6 +1,7 @@
 package io.github.bagdad.dakarhelperservice.service;
 
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.repository.implementation.HeaderCellRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.service.implementation.HeaderCellServiceImpl;
 import io.github.bagdad.models.excelparser.Category;
@@ -57,6 +58,26 @@ public class HeaderCellServiceTest {
         assertThat(found).isNotNull();
         assertThat(found).hasSize(2);
         assertThat(found).isEqualTo(headerCells);
+    }
+
+    @Test
+    void findById() {
+        HeaderCell headerCell = HeaderCell.builder()
+                .id(1L)
+                .subcategoryId(1L)
+                .originalName("original_name1")
+                .normalizedName("normalized_name1")
+                .category(Category.NAME)
+                .cellStatus(CellStatus.PROCESSED)
+                .build();
+
+        Mockito.when(repository.findById(1L))
+                .thenReturn(Optional.of(headerCell));
+
+        Optional<HeaderCell> found = service.findById(1L);
+
+        assertThat(found).isPresent();
+        assertThat(found.get()).isEqualTo(headerCell);
     }
 
     @Test
@@ -157,11 +178,11 @@ public class HeaderCellServiceTest {
     }
 
     @Test
-    void delete() {
-        service.delete(1L);
+    void deleteById() {
+        service.deleteById(1L);
 
         Mockito.verify(repository, times(1))
-                .delete(1L);
+                .deleteById(1L);
     }
     
 }

@@ -1,6 +1,7 @@
 package io.github.bagdad.dakarhelperservice.service;
 
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
+import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.repository.implementation.SubcategoryRepositoryImpl;
 import io.github.bagdad.dakarhelperservice.service.implementation.SubcategoryServiceImpl;
 import io.github.bagdad.models.excelparser.Category;
@@ -38,6 +39,22 @@ public class SubcategoryServiceTest {
 
         assertThat(subcategories).isNotNull();
         assertThat(subcategories).hasSize(2);
+    }
+
+    @Test
+    void findById() {
+        Subcategory subcategory = Subcategory.builder()
+                .category(Category.NAME)
+                .name("name")
+                .build();
+
+        Mockito.when(repository.findById(1L))
+                .thenReturn(Optional.of(subcategory));
+
+        Optional<Subcategory> found = service.findById(1L);
+
+        assertThat(found).isPresent();
+        assertThat(found.get()).isEqualTo(subcategory);
     }
 
     @Test
@@ -93,11 +110,11 @@ public class SubcategoryServiceTest {
     }
 
     @Test
-    void delete() {
-        service.delete(1L);
+    void deleteById() {
+        service.deleteById(1L);
 
         Mockito.verify(repository, times(1))
-                .delete(1L);
+                .deleteById(1L);
     }
 
 }
