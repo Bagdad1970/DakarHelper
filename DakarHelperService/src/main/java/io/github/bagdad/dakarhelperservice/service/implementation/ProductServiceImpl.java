@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         productQueryResponse.setProductData(productData);
 
         Pagination pagination = Pagination.builder()
-                .currentPage(productPage.getNumber())
+                .pageIndex(productPage.getNumber())
                 .totalRecords(productPage.getTotalElements())
                 .totalPages(productPage.getTotalPages())
                 .build();

@@ -135,7 +135,7 @@ public class ProductServiceTest {
                 .map(product -> ProductHelper.mapToProductQueryItem(product, vendors, productQuery.getMargin()))
                 .toList();
         Pagination expectedPagination = Pagination.builder()
-                .currentPage(0)
+                .pageIndex(0)
                 .totalRecords((long) products.size())
                 .totalPages(1)
                 .build();

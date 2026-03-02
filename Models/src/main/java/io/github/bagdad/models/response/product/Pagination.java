@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Pagination {
 
-    private Integer currentPage;
+    private Integer pageIndex;
 
     private Long totalRecords;
 
@@ -19,7 +19,7 @@ public class Pagination {
 
     public static Pagination createEmptyPagination() {
         return Pagination.builder()
-                .currentPage(0)
+                .pageIndex(0)
                 .totalRecords(0L)
                 .totalPages(0)
                 .build();
