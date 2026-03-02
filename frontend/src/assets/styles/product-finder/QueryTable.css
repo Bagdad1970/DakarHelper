@@ -1,0 +1,250 @@
+/* QueryTable.css */
+
+/* Основной контейнер таблицы */
+.query-table-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 600px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Предотвращает выпадение содержимого */
+}
+
+/* Контейнер для таблицы с прокруткой */
+.table-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px); /* Регулируйте под ваш макет */
+    min-height: 400px;
+}
+
+/* Стили таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333333;
+}
+
+/* Заголовок таблицы */
+thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #495057;
+    white-space: nowrap;
+    position: relative;
+    user-select: none;
+}
+
+/* Ячейки таблицы */
+td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+/* Строки при наведении */
+tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+/* Сортировка */
+th.sortable {
+    cursor: pointer;
+    padding-right: 30px;
+}
+
+th.sortable:hover {
+    background-color: #e9ecef;
+}
+
+/* Индикатор сортировки */
+th.sortable::after {
+    position: absolute;
+    right: 10px;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+th.sorted-asc::after {
+    content: '↑';
+    opacity: 1;
+}
+
+th.sorted-desc::after {
+    content: '↓';
+    opacity: 1;
+}
+
+.data-loading,
+.data-error,
+.data-empty {
+    padding: 24px;
+    text-align: center;
+    color: #666666;
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+/* Пустое состояние */
+.table-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    text-align: center;
+    padding: 48px 20px;
+    color: #6c757d;
+    font-size: 16px;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+/* Пагинация - ВСЕГДА ВНИЗУ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background-color: #ffffff;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.pagination button {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    background-color: white;
+    color: #495057;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    min-width: 40px;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    color: white;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+}
+
+.pagination button.active {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    color: white;
+}
+
+.pagination-info {
+    margin: 0 16px;
+    color: #6c757d;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+    .table-container {
+        max-height: calc(100vh - 280px);
+    }
+
+    th, td {
+        padding: 14px 16px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .query-table-section {
+        border-radius: 0;
+        box-shadow: none;
+        background-color: transparent;
+        min-height: auto;
+    }
+
+    .table-container {
+        max-height: none;
+        min-height: 300px;
+        background-color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 12px;
+        white-space: nowrap;
+    }
+
+    td:first-child {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 12px;
+        background-color: white;
+        border-radius: 0 0 8px 8px;
+        margin-top: 2px;
+    }
+
+    .pagination button {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-width: 36px;
+    }
+
+    .pagination-info {
+        width: 100%;
+        text-align: center;
+        margin: 4px 0 0;
+        order: -1;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .table-container {
+        min-height: 250px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    /* Скрываем цену продавца на очень маленьких экранах */
+    td:nth-child(4),
+    th:nth-child(4) {
+        display: none;
+    }
+}

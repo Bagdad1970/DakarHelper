@@ -1,0 +1,82 @@
+.product-finder-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.product-finder-content {
+    display: flex;
+    flex: 1;
+    padding: 24px;
+    gap: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Левая колонка - параметры запроса (боковая панель поиска) */
+.query-params-section {
+    flex: 0 0 320px; /* Фиксированная ширина 320px */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: fit-content;
+    position: sticky;
+    top: 88px; /* 64px (навигация) + 24px (отступ) */
+}
+
+/* Правая колонка - таблица результатов (занимает оставшееся место) */
+.query-table-section {
+    flex: 1; /* Растягивается на все свободное место */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    min-height: 600px;
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+    .product-finder-content {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .query-params-section {
+        flex: 0 0 280px; /* Немного меньше на планшетах */
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .product-finder-content {
+        flex-direction: column; /* На мобильных колонки становятся вертикальными */
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .query-params-section {
+        flex: auto;
+        width: 100%;
+        position: static; /* Убираем sticky на мобильных */
+        top: 0;
+    }
+
+    .query-table-section {
+        width: 100%;
+        min-height: 400px;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .product-finder-content {
+        padding: 8px;
+    }
+
+    .query-params-section,
+    .query-table-section {
+        padding: 16px;
+    }
+}

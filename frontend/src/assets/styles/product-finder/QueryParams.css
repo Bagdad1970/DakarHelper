@@ -1,0 +1,76 @@
+.query-params {
+    width: 100%;
+}
+
+.query-params-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.query-params-form input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.query-params-form input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.query-params-form input::placeholder {
+    color: #999999;
+}
+
+.query-params-form input[type="number"]::-webkit-outer-spin-button,
+.query-params-form input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Кнопка поиска */
+.query-params-form button[type="submit"] {
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 8px;
+}
+
+.query-params-form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.query-params-form button[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+.query-params-form button[type="submit"]:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Заголовок секции вендоров */
+.vendors-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin: 8px 0 4px;
+}
+
+/* Стили для ошибок валидации */
+.field-error {
+    font-size: 12px;
+    color: #dc3545;
+    margin-top: 4px;
+}

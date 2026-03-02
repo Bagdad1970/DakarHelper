@@ -1,0 +1,118 @@
+.page-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 64px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+}
+
+.logo-nav {
+    flex: 0 0 auto;
+}
+
+.logo-nav img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Стили для навигационных ссылок */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333333;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+nav a:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Стили для активной ссылки */
+nav a.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+nav a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.rule-handler-nav a,
+.vendor-handler-nav a {
+    text-decoration: none;
+    color: #333333;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.rule-handler-nav a:hover,
+.vendor-handler-nav a:hover {
+    color: #007bff;
+}
+
+/* Центрируем ссылки */
+.rule-handler-nav,
+.vendor-handler-nav {
+    display: inline-block;
+}
+
+/* Добавляем отступы для группы ссылок */
+.page-nav > :not(.logo-nav):not(.profile-nav) {
+    margin: 0 8px;
+}
+
+.profile-nav {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    background-image: url('../images/default-profile.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.profile-nav:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .page-nav {
+        padding: 0 16px;
+    }
+
+    nav a {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+
+    .logo-nav img {
+        height: 32px;
+    }
+
+    /* Адаптация активной ссылки для мобильных */
+    nav a.active::after {
+        left: 8px;
+        right: 8px;
+    }
+}

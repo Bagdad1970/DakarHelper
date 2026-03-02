@@ -1,0 +1,77 @@
+.configuration-handler {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #f0f2f5;
+}
+
+.configuration-handler-container {
+    display: flex;
+    flex: 1;
+    padding: 32px 0;
+    gap: 32px;
+    overflow: hidden;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.configuration-unit-button-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+.configuration-unit-button-item {
+    padding: 14px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: #2d3436;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.configuration-unit-button-item:hover {
+    background-color: #e9ecef;
+}
+
+.configuration-unit-button-item:active {
+    background-color: #dee2e6;
+}
+
+.configuration-unit-button-item.active {
+    background-color: #e7f3ff;
+    color: #0066cc;
+}
+
+
+
+@media (max-width: 1200px) {
+    .configuration-handler-container {
+        padding: 32px 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .configuration-handler-container {
+        flex-direction: column;
+        padding: 24px 16px;
+        gap: 24px;
+    }
+
+    .configuration-unit-button-list {
+        min-width: 100%;
+    }
+}
