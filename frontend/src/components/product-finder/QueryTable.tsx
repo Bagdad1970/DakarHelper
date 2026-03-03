@@ -6,11 +6,12 @@ import {
     useReactTable
 } from "@tanstack/react-table";
 import type { ProductQueryItem } from "../../types/product/ProductQueryItem.ts";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { ProductManager } from '../../api/ProductManager.ts';
 import type { Pagination } from "../../types/product/Pagination.ts";
 import type { ProductQuery } from "../../types/product/ProductQuery.ts";
 import Decimal from "decimal.js";
+import {PaginationView} from "./PaginationView.tsx";
 
 const formatPrice = (decimal: Decimal): string => {
     const rounded = decimal.toFixed(2);
@@ -45,11 +46,12 @@ const columns = [
 ];
 
 interface QueryTableProps {
-    productQuery: ProductQuery;
-    findClicked: boolean;
+    formData: ProductQuery;
+    isClicked: boolean;
+    onReacted: () => void;
 }
 
-export default function QueryTable({ productQuery, findClicked }: QueryTableProps) {
+export default function QueryTable({ formData, isClicked, onReacted }: QueryTableProps) {
     const productManager = new ProductManager();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -61,15 +63,16 @@ export default function QueryTable({ productQuery, findClicked }: QueryTableProp
         pageSize: 20
     });
 
-    const loadPage = useCallback(async () => {
+    const loadPage = async () => {
         try {
+            console.log(formData);
             setLoading(true);
 
             const query = {
-                ...productQuery,
+                ...formData,
                 pageSize: pagination.pageSize,
                 pageIndex: pagination.pageIndex,
-                vendorIds: Array.from(productQuery.vendorIds)
+                vendorIds: Array.from(formData.vendorIds)
             };
 
             const result = await productManager.query(query);
@@ -84,69 +87,36 @@ export default function QueryTable({ productQuery, findClicked }: QueryTableProp
         finally {
             setLoading(false);
         }
-    }, [productQuery, pagination.pageIndex, pagination.pageSize]);
+    }
 
     // Загрузка при нажатии на кнопку поиска
     useEffect(() => {
-        if (findClicked) {
+        if (isClicked) {
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
             loadPage();
+            onReacted();
         }
-    }, [findClicked]);
+    }, [isClicked]);
 
-    // Загрузка при изменении пагинации
     useEffect(() => {
         if (pagination.pageIndex > 0 || data.length > 0) {
             loadPage();
         }
     }, [pagination.pageIndex]);
 
-    const handlePrevPageClick = useCallback(() => {
-        if (pagination.pageIndex > 0 && !loading) {
-            setPagination(prev => ({
-                ...prev,
-                pageIndex: prev.pageIndex - 1
-            }));
-        }
-    }, [pagination.pageIndex, loading]);
-
-    const handleNextPageClick = useCallback(() => {
-        if (pagination.pageIndex < pagination.totalPages - 1 && !loading) {
-            setPagination(prev => ({
-                ...prev,
-                pageIndex: prev.pageIndex + 1
-            }));
-        }
-    }, [pagination.pageIndex, loading]);
-
-    const handleFirstPageClick = useCallback(() => {
-        if (pagination.pageIndex > 0 && !loading) {
-            setPagination(prev => ({
-                ...prev,
-                pageIndex: 0
-            }));
-        }
-    }, [pagination.pageIndex, loading]);
-
-    const handleLastPageClick = useCallback(() => {
-        if (pagination.pageIndex < pagination.totalPages - 1 && !loading) {
-            setPagination(prev => ({
-                ...prev,
-                pageIndex: pagination.totalPages - 1
-            }));
-        }
-    }, [pagination.pageIndex, loading]);
-
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        manualPagination: true,
-        pageCount: pagination?.totalPages ?? -1
+        manualPagination: true
     });
 
-    const canClickPrevPage = pagination ? pagination.pageIndex > 0 && !loading : false;
-    const canClickNextPage = pagination ? pagination.pageIndex < pagination.totalPages - 1 && !loading : false;
+    const handlePagination = (pageIndex: number)=> {
+        setPagination(prev => ({
+            ...prev,
+            pageIndex: pageIndex
+        }));
+    }
 
     if (loading && !data.length) {
         return (
@@ -230,41 +200,10 @@ export default function QueryTable({ productQuery, findClicked }: QueryTableProp
             </div>
 
             {pagination && pagination.totalPages > 1 && (
-                <div className="pagination">
-                    <button
-                        onClick={handleFirstPageClick}
-                        disabled={!canClickPrevPage}
-                        title="Первая страница"
-                    >
-                        {'<<'}
-                    </button>
-                    <button
-                        onClick={handlePrevPageClick}
-                        disabled={!canClickPrevPage}
-                        title="Предыдущая страница"
-                    >
-                        {'<'}
-                    </button>
-
-                    <span className="pagination-info">
-                        Страница {pagination.pageIndex + 1} из {pagination.totalPages}
-                    </span>
-
-                    <button
-                        onClick={handleNextPageClick}
-                        disabled={!canClickNextPage}
-                        title="Следующая страница"
-                    >
-                        {'>'}
-                    </button>
-                    <button
-                        onClick={handleLastPageClick}
-                        disabled={!canClickNextPage}
-                        title="Последняя страница"
-                    >
-                        {'>>'}
-                    </button>
-                </div>
+                <PaginationView
+                    pagination={pagination}
+                    onPageChange={handlePagination}
+                />
             )}
         </div>
     );
