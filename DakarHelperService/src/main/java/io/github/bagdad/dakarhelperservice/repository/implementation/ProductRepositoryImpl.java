@@ -40,7 +40,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Page<Product> query(ProductQuery productQuery, Pageable pageable) {
         Query query = new Query();
 
-        if (productQuery.getVendorIds() != null && !productQuery.getVendorIds().isEmpty()) {
+        if (productQuery.getVendorIds() == null || productQuery.getVendorIds().isEmpty()) {
+            return Page.empty(pageable);
+        }
+        else {
             query.addCriteria(where("vendor_id").in(productQuery.getVendorIds()));
         }
 
