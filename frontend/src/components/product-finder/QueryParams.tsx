@@ -1,40 +1,27 @@
 import { VendorsCheckboxes } from "./VendorsCheckboxes.tsx";
 import '../../assets/styles/product-finder/QueryParams.css';
-import {useState, useEffect} from "react";
-import type {ProductQuery} from "../../types/product/ProductQuery.ts";
-import Decimal from "decimal.js";
+import {type ChangeEvent, type FormEvent, useState} from "react";
 
 interface QueryParamsProps {
-    onQueryChange: (query: Partial<ProductQuery>) => void;
-    onSearch: () => void;
+    onFind: (data: Params) => void;
 }
 
 type Params = {
     name: string,
     price: string,
-    quantity: string,
-    margin: string,
+    quantity: number,
+    margin: number,
     vendorIds: Set<bigint>
 }
 
-export default function QueryParams({ onQueryChange, onSearch }: QueryParamsProps) {
+export default function QueryParams({ onFind }: QueryParamsProps) {
     const [formData, setFormData] = useState<Params>({
         name: '',
         price: '',
-        quantity: '',
-        margin: '',
+        quantity: 1,
+        margin: 0,
         vendorIds: new Set<bigint>
     });
-
-    useEffect(() => {
-        onQueryChange({
-            name: formData.name,
-            price: formData.price ? Decimal(formData.price) : null,
-            quantity: formData.quantity ? parseInt(formData.quantity) : 0,
-            margin: formData.margin ? Decimal(formData.margin) : null,
-            vendorIds: formData.vendorIds
-        });
-    }, [formData, onQueryChange]);
 
     const handleCheckboxChange = (vendorId: bigint, checked: boolean) => {
         setFormData(prev => {
@@ -53,20 +40,33 @@ export default function QueryParams({ onQueryChange, onSearch }: QueryParamsProp
         });
     };
 
-    const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [id.replace('product-', '')]: value
-        }));
+    const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const submitData = {
+            name: formData.name,
+            price: formData.price,
+            quantity: formData.quantity,
+            margin: formData.margin,
+            vendorIds: formData.vendorIds
+        };
+
+        onFind(submitData);
     };
 
     return (
         <div className="query-params">
-            <form className="query-params-form" action={onSearch}>
+            <form className="query-params-form">
                 <input
                     type="text"
-                    id="product-name"
+                    name="name"
                     placeholder="Наименование"
                     value={formData.name}
                     onChange={handleQueryChange}
@@ -75,8 +75,8 @@ export default function QueryParams({ onQueryChange, onSearch }: QueryParamsProp
                 <input
                     type="number"
                     min="0"
-                    step="10"
-                    id="product-price"
+                    step="100"
+                    name="price"
                     placeholder="Цена (руб)"
                     value={formData.price}
                     onChange={handleQueryChange}
@@ -84,8 +84,8 @@ export default function QueryParams({ onQueryChange, onSearch }: QueryParamsProp
 
                 <input
                     type="number"
-                    min="0"
-                    id="product-quantity"
+                    min="1"
+                    name="quantity"
                     placeholder="Количество"
                     value={formData.quantity}
                     onChange={handleQueryChange}
@@ -100,13 +100,13 @@ export default function QueryParams({ onQueryChange, onSearch }: QueryParamsProp
                     type="number"
                     min="0"
                     step="0.1"
-                    id="product-margin"
+                    name="margin"
                     placeholder="Процент"
                     value={formData.margin}
                     onChange={handleQueryChange}
                 />
 
-                <button type="submit">Найти</button>
+                <button type="submit" onClick={handleSubmit}>Найти</button>
             </form>
         </div>
     );

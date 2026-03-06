@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ProductHelperTest {
 
     @Test
-    void Calculating_seller_price_with_margin_returns_seller_price() {
+    void Calculating_seller_price_with_integer_margin() {
         BigDecimal price = BigDecimal.valueOf(100.50);
         BigDecimal margin = BigDecimal.valueOf(10);
 
@@ -26,6 +26,28 @@ public class ProductHelperTest {
     }
 
     @Test
+    void Calculating_price_with_rational_margin() {
+        BigDecimal price = BigDecimal.valueOf(100);
+        BigDecimal margin = BigDecimal.valueOf(10.50);
+
+        BigDecimal res = ProductHelper.calculateSellerPrice(price, margin);
+
+        assertThat(res).isNotNull();
+        assertThat(res).isEqualByComparingTo(BigDecimal.valueOf(110.50));
+    }
+
+    @Test
+    void Calculating_price_with_small_price_and_small_rational_margin() {
+        BigDecimal price = BigDecimal.valueOf(1.5);
+        BigDecimal margin = BigDecimal.valueOf(1.5);
+
+        BigDecimal res = ProductHelper.calculateSellerPrice(price, margin);
+
+        assertThat(res).isNotNull();
+        assertThat(res).isEqualByComparingTo(BigDecimal.valueOf(1.5225));
+    }
+
+    @Test
     void Calculating_price_without_margin_returns_price_itself() {
         BigDecimal price = BigDecimal.valueOf(100.50);
         BigDecimal margin = null;
@@ -33,7 +55,7 @@ public class ProductHelperTest {
         BigDecimal res = ProductHelper.calculateSellerPrice(price, margin);
 
         assertThat(res).isNotNull();
-        assertThat(res).isEqualTo(BigDecimal.valueOf(100.50));
+        assertThat(res).isEqualByComparingTo(BigDecimal.valueOf(100.50));
     }
 
     @Test

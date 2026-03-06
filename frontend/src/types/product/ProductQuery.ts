@@ -5,7 +5,7 @@ export interface ProductQuery {
     name: string;
     price: Decimal | null;
     quantity: number;
-    margin: Decimal | null;
+    margin: number;
     pageIndex: number;
     pageSize: number;
 }

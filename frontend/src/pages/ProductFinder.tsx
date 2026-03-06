@@ -2,31 +2,29 @@ import QueryParams from "../components/product-finder/QueryParams.tsx";
 import QueryTable from "../components/product-finder/QueryTable.tsx";
 import PageNav from "../components/PageNav.tsx";
 import '../assets/styles/product-finder/ProductFinder.css';
-import {useState, useCallback} from "react";
+import {useState} from "react";
 import type { ProductQuery } from "../types/product/ProductQuery.ts";
 
 export default function ProductFinder() {
-    const [formQuery, setFormQuery] = useState<ProductQuery>({
+    const [formData, setFormData] = useState<ProductQuery>({
         name: '',
         price: null,
-        quantity: 0,
-        margin: null,
+        quantity: 1,
+        margin: 0,
         vendorIds: new Set<bigint>(),
         pageIndex: 0,
         pageSize: 20
     });
 
-    const [findClicked, setFindClicked] = useState<boolean>(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
 
-    const handleProductQueryChange = useCallback((updatedFields: Partial<ProductQuery>) => {
-        setFormQuery(prev => ({
-            ...prev,
-            ...updatedFields
-        }));
-    }, []);
+    const handleFormSubmit = (data) => {
+        setFormData(data);
+        setIsButtonClicked(true);
+    }
 
-    const handleFindClick = () => {
-        setFindClicked(prev => !prev);
+    const handleReacted = () => {
+        setIsButtonClicked(false);
     };
 
     return (
@@ -35,14 +33,14 @@ export default function ProductFinder() {
             <div className="product-finder-content">
                 <div className="query-params-section">
                     <QueryParams
-                        onQueryChange={handleProductQueryChange}
-                        onSearch={handleFindClick}
+                        onFind={handleFormSubmit}
                     />
                 </div>
 
                 <QueryTable
-                    productQuery={formQuery}
-                    findClicked={findClicked}
+                    formData={formData}
+                    isClicked={isButtonClicked}
+                    onReacted={handleReacted}
                 />
             </div>
         </div>

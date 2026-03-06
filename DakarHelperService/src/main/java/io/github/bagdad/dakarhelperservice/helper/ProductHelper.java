@@ -37,12 +37,9 @@ public class ProductHelper {
             return price;
         }
 
-        BigDecimal marginPercent = margin.divide(BigDecimal.valueOf(100),
-                2,
-                RoundingMode.HALF_UP
-        );
+        BigDecimal multiplier = BigDecimal.valueOf(100).add(margin);
 
-        return price.multiply(BigDecimal.valueOf(1).add(marginPercent));
+        return price.multiply(multiplier).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
     }
 
 }

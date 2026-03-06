@@ -7,6 +7,8 @@ import io.github.bagdad.models.response.product.ProductQueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -25,7 +27,7 @@ public class ProductController {
         query.setName(request.getName());
         query.setPrice(request.getPrice());
         query.setQuantity(request.getQuantity());
-        query.setMargin(request.getMargin());
+        query.setMargin(BigDecimal.valueOf(request.getMargin() == null ? 0.0 : request.getMargin()));
         query.setPageIndex(request.getPageIndex());
         query.setPageSize(request.getPageSize());
 

@@ -10,15 +10,8 @@ import { useEffect, useState } from "react";
 import { ProductManager } from '../../api/ProductManager.ts';
 import type { Pagination } from "../../types/product/Pagination.ts";
 import type { ProductQuery } from "../../types/product/ProductQuery.ts";
-import Decimal from "decimal.js";
 import {PaginationView} from "./PaginationView.tsx";
-
-const formatPrice = (decimal: Decimal): string => {
-    const rounded = decimal.toFixed(2);
-    const [integerPart, decimalPart] = rounded.split('.');
-    const localizedIntegerPart = parseInt(integerPart).toLocaleString('ru-RU');
-    return localizedIntegerPart + "," + decimalPart;
-}
+import {formatPrice} from "../../utils/DecimalHelper.ts";
 
 const columnHelper = createColumnHelper<ProductQueryItem>();
 
@@ -65,7 +58,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
 
     const loadPage = async () => {
         try {
-            console.log(formData);
             setLoading(true);
 
             const query = {
@@ -89,7 +81,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         }
     }
 
-    // Загрузка при нажатии на кнопку поиска
     useEffect(() => {
         if (isClicked) {
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
@@ -118,14 +109,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         }));
     }
 
-    if (loading && !data.length) {
-        return (
-            <div className="query-table-section">
-                <p>Loading data...</p>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <div className="query-table-section">
@@ -147,6 +130,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
     }
 
     return (
+
         <div className="query-table-section">
             <div className="table-container">
                 <table>
@@ -206,5 +190,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                 />
             )}
         </div>
+
     );
 }

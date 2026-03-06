@@ -29,7 +29,7 @@ public class ProductQueryRequest {
     private Integer quantity;
 
     @Min(value = 0, message = "Margin cannot be negative")
-    private BigDecimal margin = BigDecimal.valueOf(0);
+    private Double margin;
 
     @PositiveOrZero(message = "Page number cannot be negative")
     private Integer pageIndex;

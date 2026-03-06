@@ -6,7 +6,6 @@ export default class VendorManager {
     
     async create(vendor: VendorCreateRequest): Promise<Vendor> {
         try {
-            console.log(vendor);
             const response = await api.post<Vendor>("vendors", vendor);
             return response.data;
         }
