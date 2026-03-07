@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +45,42 @@ public class ProductRepositoryTest {
         return Product.builder()
                 .vendorId(1L)
                 .name("name1")
-                .prices(Map.of("storage", BigDecimal.valueOf(10.00)))
                 .minPrice(BigDecimal.valueOf(10.00))
                 .quantities(Map.of("storage", 10))
                 .totalQuantity(10)
                 .build();
+    }
+
+    private static List<Product> createProductsForQuery() {
+        Product product1 = Product.builder()
+                .vendorId(1L)
+                .name("Hankook 210/32R21")
+                .minPrice(BigDecimal.valueOf(10.00))
+                .totalQuantity(5)
+                .build();
+
+        Product product2 = Product.builder()
+                .vendorId(2L)
+                .name("Hankook 255/40R22")
+                .minPrice(BigDecimal.valueOf(20.00))
+                .totalQuantity(7)
+                .build();
+
+        Product product3 = Product.builder()
+                .vendorId(3L)
+                .name("Michelin 223/27R18")
+                .minPrice(BigDecimal.valueOf(18.00))
+                .totalQuantity(10)
+                .build();
+
+        Product product4 = Product.builder()
+                .vendorId(2L)
+                .name("INFINITY 215/75")
+                .minPrice(BigDecimal.valueOf(25.00))
+                .totalQuantity(3)
+                .build();
+
+        return List.of(product1, product2, product3, product4);
     }
 
     @Test
@@ -114,47 +146,94 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void Querying_to_products_returns_matching_products() {
+    void Querying_products_without_vendors_returns_empty_collection() {
         // arrange
-        Product product1 = Product.builder()
-                .vendorId(1L)
-                .name("Hankook 255/40R22")
-                .prices(Map.of("опт", BigDecimal.valueOf(10.00), "розница", BigDecimal.valueOf(15.00)))
-                .minPrice(BigDecimal.valueOf(10.00))
-                .quantities(Map.of("склад1", 3, "склад2", 2))
-                .totalQuantity(5)
-                .build();
-
-        Product product2 = Product.builder()
-                .vendorId(2L)
-                .name("Hankook 255/40R22")
-                .prices(Map.of("опт", BigDecimal.valueOf(18.00), "розница", BigDecimal.valueOf(25.00)))
-                .minPrice(BigDecimal.valueOf(18.00))
-                .quantities(Map.of("склад1", 7))
-                .totalQuantity(7)
-                .build();
-
-        List<Product> products = List.of(product1, product2);
+        List<Product> products = createProductsForQuery();
 
         repository.saveAll(products);
 
-        ProductQuery query = ProductQuery.builder()
-                .vendorIds(List.of())
-                .name("Hankook")
-                .price(BigDecimal.valueOf(18.00))
-                .quantity(5)
-                .build();
-        Pageable pageable = PageRequest.of(0, 20);
+        ProductQuery query = ProductQuery.builder().build();
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
 
         // act
         Page<Product> found = repository.query(query, pageable);
 
-        Page<Product> expected = new PageImpl<>(repository.findAll());
+        // assert
+        assertThat(found.getTotalElements()).isZero();
+        assertThat(found.getTotalPages()).isZero();
+        assertThat(found.getContent()).isEmpty();
+    }
+
+    @Test
+    void Querying_products_with_pagination_returns_page_of_matching_products() {
+        // arrange
+        List<Product> products = createProductsForQuery();
+
+        repository.saveAll(products);
+
+        ProductQuery query = ProductQuery.builder()
+                .vendorIds(List.of(1L, 2L, 3L))
+                .build();
+        Pageable pageable = PageRequest.of(0, 2);
+
+        // act
+        Page<Product> found = repository.query(query, pageable);
+
         // assert
         assertThat(found).isNotEmpty();
-        assertThat(found.getTotalElements()).isEqualTo(expected.getTotalElements());
-        assertThat(found.getTotalPages()).isEqualTo(expected.getTotalPages());
-        assertThat(found.getContent()).isEqualTo(expected.getContent());
+        assertThat(found.getContent()).isEqualTo(List.of(products.get(0), products.get(1)));
+        assertThat(found.getTotalElements()).isEqualTo(products.size());
+        assertThat(found.getTotalPages()).isEqualTo(2);
+    }
+
+    @Test
+    void Querying_products_with_sorting_returns_sorted_and_matching_products() {
+        // arrange
+        List<Product> products = createProductsForQuery();
+
+        repository.saveAll(products);
+
+        LinkedHashMap<String, Integer> sortingConditions = new LinkedHashMap<>();
+        sortingConditions.put("min_price", 1);
+        sortingConditions.put("total_quantity", -1);
+        ProductQuery query = ProductQuery.builder()
+                .vendorIds(List.of(1L, 2L, 3L))
+                .sortingConditions(sortingConditions)
+                .build();
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+
+        // act
+        Page<Product> found = repository.query(query, pageable);
+
+        // assert
+        assertThat(found.getContent()).isNotEmpty();
+        assertThat(found.getContent()).isEqualTo(List.of(products.get(3), products.get(1), products.get(2), products.get(0)));
+        assertThat(found.getTotalElements()).isEqualTo(products.size());
+    }
+
+    @Test
+    void Querying_products_with_sorting_returns_page_of_sorted_and_matching_products() {
+        // arrange
+        List<Product> products = createProductsForQuery();
+
+        repository.saveAll(products);
+
+        LinkedHashMap<String, Integer> sortingConditions = new LinkedHashMap<>();
+        sortingConditions.put("min_price", 1);
+        sortingConditions.put("total_quantity", -1);
+        ProductQuery query = ProductQuery.builder()
+                .vendorIds(List.of(1L, 2L, 3L))
+                .sortingConditions(sortingConditions)
+                .build();
+        Pageable pageable = PageRequest.of(0, 2);
+
+        // act
+        Page<Product> found = repository.query(query, pageable);
+
+        // assert
+        assertThat(found.getContent()).isNotEmpty();
+        assertThat(found.getContent()).isEqualTo(List.of(products.get(3), products.get(1)));
+        assertThat(found.getTotalElements()).isEqualTo(4);
     }
     
 }

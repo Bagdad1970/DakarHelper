@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -23,13 +24,15 @@ public class ProductQueryRequest {
     private String name;
 
     @Positive(message = "Quantity must be positive")
-    private BigDecimal price;
+    private BigDecimal minPrice;
 
     @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;
 
     @Min(value = 0, message = "Margin cannot be negative")
     private Double margin;
+
+    private LinkedHashMap<String, Integer> sortingConditions;
 
     @PositiveOrZero(message = "Page number cannot be negative")
     private Integer pageIndex;

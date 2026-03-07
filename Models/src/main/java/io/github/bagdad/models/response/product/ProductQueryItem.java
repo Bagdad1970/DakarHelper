@@ -17,7 +17,7 @@ public class ProductQueryItem {
 
     private String vendorTitle;
 
-    private BigDecimal price;
+    private BigDecimal minPrice;
 
     private Integer totalQuantity;
 

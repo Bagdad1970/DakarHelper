@@ -25,9 +25,10 @@ public class ProductController {
 
         query.setVendorIds(request.getVendorIds());
         query.setName(request.getName());
-        query.setPrice(request.getPrice());
+        query.setMinPrice(request.getMinPrice());
         query.setQuantity(request.getQuantity());
         query.setMargin(BigDecimal.valueOf(request.getMargin() == null ? 0.0 : request.getMargin()));
+        query.setSortingConditions(request.getSortingConditions());
         query.setPageIndex(request.getPageIndex());
         query.setPageSize(request.getPageSize());
 

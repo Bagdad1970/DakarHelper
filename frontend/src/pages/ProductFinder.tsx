@@ -8,7 +8,7 @@ import type { ProductQuery } from "../types/product/ProductQuery.ts";
 export default function ProductFinder() {
     const [formData, setFormData] = useState<ProductQuery>({
         name: '',
-        price: null,
+        minPrice: null,
         quantity: 1,
         margin: 0,
         vendorIds: new Set<bigint>(),
@@ -18,7 +18,7 @@ export default function ProductFinder() {
 
     const [isButtonClicked, setIsButtonClicked] = useState(false);
 
-    const handleFormSubmit = (data) => {
+    const handleFormSubmit = (data: ProductQuery) => {
         setFormData(data);
         setIsButtonClicked(true);
     }

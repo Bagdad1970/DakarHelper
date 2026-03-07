@@ -1,4 +1,5 @@
 import type {Pagination} from "../../types/product/Pagination";
+import "../../assets/styles/product-finder/PaginationView.css";
 
 interface PaginationProps {
     pagination: Pagination,

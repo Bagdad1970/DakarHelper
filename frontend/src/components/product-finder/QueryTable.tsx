@@ -12,6 +12,8 @@ import type { Pagination } from "../../types/product/Pagination.ts";
 import type { ProductQuery } from "../../types/product/ProductQuery.ts";
 import {PaginationView} from "./PaginationView.tsx";
 import {formatPrice} from "../../utils/DecimalHelper.ts";
+import { decamelize } from 'humps';
+import { SortDirection } from "../../types/product/SortDirection.ts";
 
 const columnHelper = createColumnHelper<ProductQueryItem>();
 
@@ -19,22 +21,27 @@ const columns = [
     columnHelper.accessor('name', {
         header: 'Наименование',
         cell: info => info.getValue(),
+        enableSorting: false,
     }),
-    columnHelper.accessor('price', {
+    columnHelper.accessor('minPrice', {
         header: 'Цена',
         cell: info => formatPrice(info.getValue()),
+        enableSorting: true
     }),
     columnHelper.accessor('totalQuantity', {
         header: 'Количество',
         cell: info => info.getValue(),
+        enableSorting: true
     }),
     columnHelper.accessor('priceWithMargin', {
         header: 'Цена продавца',
         cell: info => formatPrice(info.getValue()),
+        enableSorting: false
     }),
     columnHelper.accessor('vendorTitle', {
         header: 'Поставщик',
         cell: info => info.getValue(),
+        enableSorting: false,
     })
 ];
 
@@ -49,12 +56,21 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<ProductQueryItem[]>([]);
+    const [sortingMap, setSortingMap] = useState<Map<string, SortDirection>>(new Map());
     const [pagination, setPagination] = useState<Pagination>({
         totalPages: 0,
         totalRecords: 0n,
         pageIndex: 0,
         pageSize: 20
     });
+
+    const getSortingConditions = (): Record<string, SortDirection> => {
+        const conditions: Record<string, SortDirection> = {};
+        sortingMap.forEach((direction, field) => {
+            conditions[decamelize(field)] = direction;
+        });
+        return conditions;
+    };
 
     const loadPage = async () => {
         try {
@@ -64,7 +80,8 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                 ...formData,
                 pageSize: pagination.pageSize,
                 pageIndex: pagination.pageIndex,
-                vendorIds: Array.from(formData.vendorIds)
+                vendorIds: Array.from(formData.vendorIds || []),
+                sortingConditions: getSortingConditions()
             };
 
             const result = await productManager.query(query);
@@ -79,35 +96,61 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         finally {
             setLoading(false);
         }
-    }
+    };
+
+    const handleSorting = (columnId: string) => {
+
+        setSortingMap(prevMap => {
+            const newMap = new Map(prevMap);
+
+            if (newMap.has(columnId)) {
+                const currentDirection = newMap.get(columnId);
+                if (currentDirection === SortDirection.ASC) {
+                    newMap.set(columnId, SortDirection.DESC);
+                } else {
+                    newMap.delete(columnId);
+                }
+            } else {
+                newMap.set(columnId, SortDirection.ASC);
+            }
+
+            return newMap;
+        });
+
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
+    // Получаем направление сортировки для колонки
+    const getSortDirection = (columnId: string): SortDirection | null => {
+        return sortingMap.get(columnId) || null;
+    };
 
     useEffect(() => {
         if (isClicked) {
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
+            setSortingMap(new Map());
             loadPage();
             onReacted();
         }
     }, [isClicked]);
 
     useEffect(() => {
-        if (pagination.pageIndex > 0 || data.length > 0) {
+        if (pagination.pageIndex > 0 || data.length > 0 || sortingMap.size > 0) {
             loadPage();
         }
-    }, [pagination.pageIndex]);
+    }, [pagination.pageIndex, sortingMap]);
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        manualPagination: true
+        manualPagination: true,
+        manualSorting: true
     });
 
     const handlePagination = (pageIndex: number)=> {
-        setPagination(prev => ({
-            ...prev,
-            pageIndex: pageIndex
-        }));
-    }
+        setPagination(prev => ({ ...prev, pageIndex }));
+    };
 
     if (error) {
         return (
@@ -130,33 +173,35 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
     }
 
     return (
-
         <div className="query-table-section">
             <div className="table-container">
                 <table>
                     <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <th
-                                    key={header.id}
-                                    onClick={header.column.getToggleSortingHandler()}
-                                    className={
-                                        header.column.getCanSort()
-                                            ? 'sortable' + (header.column.getIsSorted()
-                                            ? header.column.getIsSorted() === 'asc'
-                                                ? ' sorted-asc'
-                                                : ' sorted-desc'
-                                            : '')
-                                            : ''
-                                    }
-                                >
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
-                                </th>
-                            ))}
+                            {headerGroup.headers.map(header => {
+                                const direction = getSortDirection(header.column.id);
+
+                                return (
+                                    <th
+                                        key={header.id}
+                                        onClick={header.column.getCanSort() ? () => handleSorting(header.column.id) : undefined}
+                                        className="sortable"
+                                    >
+                                        <div className="th-content">
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            {direction && (
+                                                <span className="sort-indicator">
+                                                    {direction === SortDirection.ASC ? ' ↑' : ' ↓'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </th>
+                                );
+                            })}
                         </tr>
                     ))}
                     </thead>
@@ -190,6 +235,5 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                 />
             )}
         </div>
-
     );
 }

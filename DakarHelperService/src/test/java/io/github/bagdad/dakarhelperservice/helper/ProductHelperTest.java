@@ -1,16 +1,22 @@
 package io.github.bagdad.dakarhelperservice.helper;
 
 import io.github.bagdad.dakarhelperservice.model.Product;
+import io.github.bagdad.dakarhelperservice.model.ProductQuery;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.models.response.product.ProductQueryItem;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 public class ProductHelperTest {
 
@@ -98,7 +104,7 @@ public class ProductHelperTest {
 
         ProductQueryItem expected = ProductQueryItem.builder()
                     .name("Hankook")
-                    .price(BigDecimal.valueOf(10.00))
+                    .minPrice(BigDecimal.valueOf(10.00))
                     .priceWithMargin(BigDecimal.valueOf(11.00))
                     .totalQuantity(10)
                     .vendorTitle("vendor1")
@@ -106,9 +112,73 @@ public class ProductHelperTest {
 
         assertThat(res.getName()).isEqualTo(expected.getName());
         assertThat(res.getVendorTitle()).isEqualTo(expected.getVendorTitle());
-        assertThat(res.getPrice()).isEqualByComparingTo(expected.getPrice());
+        assertThat(res.getMinPrice()).isEqualByComparingTo(expected.getMinPrice());
         assertThat(res.getTotalQuantity()).isEqualTo(expected.getTotalQuantity());
         assertThat(res.getPriceWithMargin()).isEqualByComparingTo(expected.getPriceWithMargin());
     }
+
+    @Test
+    void Creating_field_conditions_with_all_fields_must_return_collection_with_all_criteria() {
+        ProductQuery productQuery = ProductQuery.builder()
+                .vendorIds(List.of(1L, 2L))
+                .name("Hankook")
+                .minPrice(BigDecimal.valueOf(100.00))
+                .quantity(5)
+                .build();
+
+        List<Criteria> res = ProductHelper.createFieldConditions(productQuery);
+
+        List<Criteria> expected = List.of(
+                where("vendor_id").in(List.of(1L, 2L)),
+                where("name").regex(Pattern.compile("Hankook", Pattern.CASE_INSENSITIVE)),
+                where("min_price").lte(BigDecimal.valueOf(100.00)),
+                where("total_quantity").gte(5)
+        );
+
+        assertThat(res).isEqualTo(expected);
+    }
+
+    @Test
+    void Creating_sorting_conditions_with_empty_conditions_must_return_empty_collection() {
+        LinkedHashMap<String, Integer> sortingConditions = new LinkedHashMap<>();
+        sortingConditions.put("name", 1);
+        sortingConditions.put("min_price", -1);
+        sortingConditions.put("total_quantity", 0);
+
+        ProductQuery productQuery = ProductQuery.builder()
+                .sortingConditions(sortingConditions)
+                .build();
+
+        List<Sort.Order> res = ProductHelper.createSortingConditions(productQuery);
+
+        List<Sort.Order> expected = List.of(
+                new Sort.Order(Sort.Direction.DESC, "name"),
+                new Sort.Order(Sort.Direction.ASC, "min_price")
+        );
+
+        assertThat(res).isEqualTo(expected);
+    }
+
+    @Test
+    void Creating_sorting_conditions_must_return_collection_with_all_sorting_conditions() {
+        LinkedHashMap<String, Integer> sortingConditions = new LinkedHashMap<>();
+        sortingConditions.put("name", 1);
+        sortingConditions.put("min_price", -1);
+        sortingConditions.put("total_quantity", 0);
+
+        ProductQuery productQuery = ProductQuery.builder()
+                .sortingConditions(sortingConditions)
+                .build();
+
+        List<Sort.Order> res = ProductHelper.createSortingConditions(productQuery);
+
+        List<Sort.Order> expected = List.of(
+                new Sort.Order(Sort.Direction.DESC, "name"),
+                new Sort.Order(Sort.Direction.ASC, "min_price")
+        );
+
+        assertThat(res).isEqualTo(expected);
+    }
+
 
 }

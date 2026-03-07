@@ -3,8 +3,8 @@ package io.github.bagdad.dakarhelperservice.model;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -16,11 +16,13 @@ public class ProductQuery {
 
     private String name;
 
-    private BigDecimal price;
+    private BigDecimal minPrice;
 
     private Integer quantity;
 
     private BigDecimal margin;
+
+    private LinkedHashMap<String, Integer> sortingConditions;
 
     private Integer pageIndex;
 

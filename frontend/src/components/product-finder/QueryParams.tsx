@@ -8,7 +8,7 @@ interface QueryParamsProps {
 
 type Params = {
     name: string,
-    price: string,
+    minPrice: string,
     quantity: number,
     margin: number,
     vendorIds: Set<bigint>
@@ -17,7 +17,7 @@ type Params = {
 export default function QueryParams({ onFind }: QueryParamsProps) {
     const [formData, setFormData] = useState<Params>({
         name: '',
-        price: '',
+        minPrice: '',
         quantity: 1,
         margin: 0,
         vendorIds: new Set<bigint>
@@ -52,7 +52,7 @@ export default function QueryParams({ onFind }: QueryParamsProps) {
 
         const submitData = {
             name: formData.name,
-            price: formData.price,
+            minPrice: formData.minPrice,
             quantity: formData.quantity,
             margin: formData.margin,
             vendorIds: formData.vendorIds
@@ -76,9 +76,9 @@ export default function QueryParams({ onFind }: QueryParamsProps) {
                     type="number"
                     min="0"
                     step="100"
-                    name="price"
+                    name="minPrice"
                     placeholder="Цена (руб)"
-                    value={formData.price}
+                    value={formData.minPrice}
                     onChange={handleQueryChange}
                 />
 

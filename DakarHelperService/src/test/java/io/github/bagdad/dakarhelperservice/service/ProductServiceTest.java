@@ -83,7 +83,7 @@ public class ProductServiceTest {
         ProductQuery productQuery = ProductQuery.builder()
                 .vendorIds(List.of(1L, 2L))
                 .name("Hankook")
-                .price(BigDecimal.valueOf(15))
+                .minPrice(BigDecimal.valueOf(15))
                 .quantity(5)
                 .build();
 
