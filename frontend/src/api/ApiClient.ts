@@ -1,11 +1,11 @@
 import axios, {type AxiosResponse, type InternalAxiosRequestConfig} from 'axios';
 import {camelizeKeys, decamelizeKeys} from 'humps';
 
-const api = axios.create({
+const apiClient = axios.create({
     baseURL: 'http://localhost:8080'
 });
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const newConfig = { ...config };
     newConfig.url = `api/${config.url}`;
 
@@ -23,7 +23,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     return newConfig;
 });
 
-api.interceptors.response.use((response: AxiosResponse) => {
+apiClient.interceptors.response.use((response: AxiosResponse) => {
     if (
         response.data &&
         response.headers['content-type'] === 'application/json'
@@ -34,4 +34,4 @@ api.interceptors.response.use((response: AxiosResponse) => {
     return response;
 });
 
-export default api;
+export default apiClient;

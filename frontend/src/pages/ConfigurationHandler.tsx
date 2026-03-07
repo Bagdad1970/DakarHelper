@@ -3,6 +3,7 @@ import { ConfigurationUnit } from "../types/ConfigurationUnit.ts";
 import { useState } from "react";
 import "../assets/styles/configuration-handler/ConfigurationHandler.css";
 import ConfigurationUnitManager from "../components/configuration-handler/ConfigurationUnitManager.tsx";
+import {SynchronizeButton} from "../components/configuration-handler/SynchronizeButton.tsx";
 
 export default function ConfigurationHandler() {
 
@@ -39,6 +40,8 @@ export default function ConfigurationHandler() {
                 </div>
 
                 <ConfigurationUnitManager confUnit={confUnit} />
+
+                <SynchronizeButton />
             </div>
         </div>
     );

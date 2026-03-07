@@ -1,12 +1,12 @@
 import type { Vendor } from "../types/vendor/Vendor.ts";
-import api from "./Client.ts";
+import apiClient from "./ApiClient.ts";
 import type {VendorCreateRequest} from "../types/vendor/VendorCreateRequest.ts";
 
 export default class VendorManager {
     
     async create(vendor: VendorCreateRequest): Promise<Vendor> {
         try {
-            const response = await api.post<Vendor>("vendors", vendor);
+            const response = await apiClient.post<Vendor>("vendors", vendor);
             return response.data;
         }
         catch (error) {
@@ -17,7 +17,7 @@ export default class VendorManager {
 
     async update(vendor: Vendor): Promise<Vendor> {
         try {
-            const response = await api.put<Vendor>(`vendors/${vendor.id}`, vendor);
+            const response = await apiClient.put<Vendor>(`vendors/${vendor.id}`, vendor);
             return response.data;
         }
         catch (error) {
@@ -28,7 +28,7 @@ export default class VendorManager {
 
     async findAll(): Promise<Vendor[]> {
         try {
-            const response = await api.get<Vendor[]>("vendors");
+            const response = await apiClient.get<Vendor[]>("vendors");
             return response.data;
         }
         catch (error) {
@@ -39,7 +39,7 @@ export default class VendorManager {
 
     async findById(id: bigint): Promise<Vendor> {
         try {
-            const response = await api.get<Vendor>(`vendors/${id}`);
+            const response = await apiClient.get<Vendor>(`vendors/${id}`);
             return response.data;
         }
         catch (error) {
@@ -50,7 +50,7 @@ export default class VendorManager {
 
     async deleteById(id: bigint): Promise<void> {
         try {
-            await api.delete(`vendors/${id}`);
+            await apiClient.delete(`vendors/${id}`);
         }
         catch (error) {
             console.error("Error deleting vendor:", error);

@@ -1,11 +1,11 @@
 import type {HeaderCell} from "../types/headercell/HeaderCell.ts";
-import api from "./Client.ts";
+import apiClient from "./ApiClient.ts";
 
 export default class HeaderCellManager  {
 
     async create(headerCell: Omit<HeaderCell, 'id'>): Promise<HeaderCell> {
         try {
-            const response = await api.post<HeaderCell>("header-cells", headerCell);
+            const response = await apiClient.post<HeaderCell>("header-cells", headerCell);
             return response.data;
         }
         catch (error) {
@@ -16,7 +16,7 @@ export default class HeaderCellManager  {
 
     async update(headerCell: HeaderCell): Promise<HeaderCell> {
         try {
-            const response = await api.put<HeaderCell>(`header-cells/${headerCell.id}`, headerCell);
+            const response = await apiClient.put<HeaderCell>(`header-cells/${headerCell.id}`, headerCell);
             return response.data;
         }
         catch (error) {
@@ -27,7 +27,7 @@ export default class HeaderCellManager  {
 
     async findAll(): Promise<HeaderCell[]> {
         try {
-            const response = await api.get<HeaderCell[]>("header-cells");
+            const response = await apiClient.get<HeaderCell[]>("header-cells");
             return response.data;
         }
         catch (error) {
@@ -38,7 +38,7 @@ export default class HeaderCellManager  {
 
     async findById(id: bigint): Promise<HeaderCell> {
         try {
-            const response = await api.get<HeaderCell>(`header-cells/${id}`);
+            const response = await apiClient.get<HeaderCell>(`header-cells/${id}`);
             return response.data;
         }
         catch (error) {
@@ -49,7 +49,7 @@ export default class HeaderCellManager  {
 
     async deleteById(id: bigint): Promise<void> {
         try {
-            await api.delete(`header-cells/${id}`);
+            await apiClient.delete(`header-cells/${id}`);
         }
         catch (error) {
             console.error("Error deleting HeaderCell:", error);

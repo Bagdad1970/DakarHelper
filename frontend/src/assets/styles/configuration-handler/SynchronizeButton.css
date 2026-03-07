@@ -1,0 +1,42 @@
+.synchronize-button-container {
+    display: inline-block;
+}
+
+.synchronize-button {
+    padding: 10px 20px;
+    background-color: #1ecd50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.synchronize-button:hover:not(:disabled) {
+    background-color: #16a34a;
+}
+
+.synchronize-button:active:not(:disabled) {
+    background-color: #15803d;
+}
+
+.synchronize-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 205, 80, 0.3);
+}
+
+.synchronize-button:disabled {
+    background-color: #94e3a8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

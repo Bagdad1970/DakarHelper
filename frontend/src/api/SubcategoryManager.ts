@@ -1,11 +1,11 @@
 import type {Subcategory} from "../types/subcategory/Subcategory.ts";
-import api from "./Client.ts";
+import apiClient from "./ApiClient.ts";
 
 export default class SubcategoryManager  {
 
     async create(subcategory: Omit<Subcategory, 'id'>): Promise<Subcategory> {
         try {
-            const response = await api.post<Subcategory>("subcategories", subcategory);
+            const response = await apiClient.post<Subcategory>("subcategories", subcategory);
             return response.data;
         }
         catch (error) {
@@ -16,7 +16,7 @@ export default class SubcategoryManager  {
 
     async update(subcategory: Subcategory): Promise<Subcategory> {
         try {
-            const response = await api.put<Subcategory>(`subcategories/${subcategory.id}`, subcategory);
+            const response = await apiClient.put<Subcategory>(`subcategories/${subcategory.id}`, subcategory);
             return response.data;
         }
         catch (error) {
@@ -27,7 +27,7 @@ export default class SubcategoryManager  {
 
     async findAll(): Promise<Subcategory[]> {
         try {
-            const response = await api.get<Subcategory[]>("subcategories");
+            const response = await apiClient.get<Subcategory[]>("subcategories");
             return response.data;
         }
         catch (error) {
@@ -38,7 +38,7 @@ export default class SubcategoryManager  {
 
     async findById(id: bigint): Promise<Subcategory> {
         try {
-            const response = await api.get<Subcategory>(`subcategories/${id}`);
+            const response = await apiClient.get<Subcategory>(`subcategories/${id}`);
             return response.data;
         }
         catch (error) {
@@ -49,7 +49,7 @@ export default class SubcategoryManager  {
 
     async deleteById(id: bigint): Promise<void> {
         try {
-            await api.delete(`subcategories/${id}`);
+            await apiClient.delete(`subcategories/${id}`);
         }
         catch (error) {
             console.error("Error deleting Subcategory:", error);
