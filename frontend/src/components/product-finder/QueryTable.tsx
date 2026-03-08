@@ -53,7 +53,7 @@ interface QueryTableProps {
 
 export default function QueryTable({ formData, isClicked, onReacted }: QueryTableProps) {
     const productManager = new ProductManager();
-    const [loading, setLoading] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<ProductQueryItem[]>([]);
     const [sortingMap, setSortingMap] = useState<Map<string, SortDirection>>(new Map());
@@ -74,7 +74,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
 
     const loadPage = async () => {
         try {
-            setLoading(true);
+            const timer = setTimeout(() => setShowLoader(true), 80);
 
             const query = {
                 ...formData,
@@ -86,6 +86,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
 
             const result = await productManager.query(query);
 
+            clearTimeout(timer);
             setPagination(result.pagination);
             setData(result.productData);
             setError(null);
@@ -94,7 +95,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
             setError(err instanceof Error ? err.message : 'Failed to process query');
         }
         finally {
-            setLoading(false);
+            setShowLoader(false);
         }
     };
 
@@ -162,7 +163,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         );
     }
 
-    if (data.length === 0 && !loading) {
+    if (data.length === 0) {
         return (
             <div className="query-table-section">
                 <div className="data-empty">
@@ -221,7 +222,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                     </tbody>
                 </table>
 
-                {loading && data.length > 0 && (
+                {showLoader && data.length > 0 && (
                     <div className="loading-overlay">
                         <p>Загрузка...</p>
                     </div>
