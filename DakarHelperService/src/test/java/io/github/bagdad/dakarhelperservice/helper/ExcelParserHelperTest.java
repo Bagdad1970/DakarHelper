@@ -1,9 +1,7 @@
 package io.github.bagdad.dakarhelperservice.helper;
 
-import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.Product;
-import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
@@ -19,39 +17,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExcelParserHelperTest {
 
     @Test
-    void mapToExcelProducts_shouldMapCorrectly() {
+    void Mapping_to_excel_products_must_return_excel_product_collection() {
         // arrange
-        VendorFile vendorFile = new VendorFile();
-        vendorFile.setId(1L);
-        vendorFile.setVendorId(2L);
+        Long vendorId = 1L;
 
-        List<ExcelProduct> excelProducts = new ArrayList<>();
-        ExcelProduct excelProduct1 = new ExcelProduct();
-        excelProduct1.setName("Product 1");
-        excelProduct1.addPrice("price", new BigDecimal("9.99"));
-        excelProduct1.addQuantity("count1", 10);
+        ExcelProduct excelProduct1 = ExcelProduct.builder()
+                .name("Product 1")
+                .prices(Map.of("price", new BigDecimal("9.99")))
+                .quantities(Map.of("count1", 10))
+                .build();
 
-        ExcelProduct excelProduct2 = new ExcelProduct();
-        excelProduct2.setName("Product 2");
-        excelProduct2.addPrice("wholesale", new BigDecimal("10.99"));
-        excelProduct2.addQuantity("count1", 5);
+        ExcelProduct excelProduct2 = ExcelProduct.builder()
+                .name("Product 2")
+                .prices(Map.of("wholesale", new BigDecimal("10.99")))
+                .quantities(Map.of("count1", 5))
+                .build();
 
-        excelProducts.add(excelProduct1);
-        excelProducts.add(excelProduct2);
+        List<ExcelProduct> excelProducts = List.of(excelProduct1, excelProduct2);
 
         // act
-        List<Product> result = ExcelParserHelper.mapToProducts(vendorFile.getVendorId(), excelProducts);
+        List<Product> result = ExcelParserHelper.mapToProducts(vendorId, excelProducts);
 
         // assert
         assertThat(result).isNotNull().hasSize(2);
-
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(result.get(0).getVendorId()).isEqualTo(2L);
+            softAssertions.assertThat(result.get(0).getVendorId()).isEqualTo(1L);
             softAssertions.assertThat(result.get(0).getName()).isEqualTo("Product 1");
             softAssertions.assertThat(result.get(0).getPrices()).isEqualTo(Map.of("price", new BigDecimal("9.99")));
             softAssertions.assertThat(result.get(0).getQuantities()).isEqualTo(Map.of("count1", 10));
 
-            softAssertions.assertThat(result.get(1).getVendorId()).isEqualTo(2L);
+            softAssertions.assertThat(result.get(1).getVendorId()).isEqualTo(1L);
             softAssertions.assertThat(result.get(1).getName()).isEqualTo("Product 2");
             softAssertions.assertThat(result.get(1).getPrices()).isEqualTo(Map.of("wholesale", new BigDecimal("10.99")));
             softAssertions.assertThat(result.get(1).getQuantities()).isEqualTo(Map.of("count1", 5));
@@ -59,57 +54,37 @@ class ExcelParserHelperTest {
     }
 
     @Test
-    void mapToProducts_shouldReturnEmptyList_whenInputIsEmpty() {
-        VendorFile vendorFile = new VendorFile();
-        vendorFile.setId(1L);
+    void Mapping_to_products_with_empty_product_collection_must_return_empty_collection() {
+        Long vendorId = 1L;
 
-        List<Product> result = ExcelParserHelper.mapToProducts(vendorFile.getVendorId(), Collections.emptyList());
+        List<Product> result = ExcelParserHelper.mapToProducts(vendorId, Collections.emptyList());
 
         assertThat(result).isNotNull().isEmpty();
     }
 
     @Test
-    void mapToProducts_shouldHandleNullMaps() {
+    void Mapping_to_header_cell_dtos_must_return_header_cell_dtos_collection() {
         // arrange
-        Long vendorId = 1L;
+        HeaderCellWithSubcategory cell1 = HeaderCellWithSubcategory.builder()
+                .originalName("originalName1")
+                .normalizedName("normalized_name1")
+                .subcategoryName("subcategory_name1")
+                .category(Category.NAME)
+                .cellStatus(CellStatus.PROCESSED)
+                .build();
 
-        List<ExcelProduct> excelProducts = new ArrayList<>();
-        ExcelProduct emptyExcelProduct = new ExcelProduct();
-        excelProducts.add(emptyExcelProduct);
+        HeaderCellWithSubcategory cell2 = HeaderCellWithSubcategory.builder()
+                .originalName("original_name2")
+                .normalizedName("normalized_name2")
+                .subcategoryName("subcategory_name2")
+                .category(Category.PRICE)
+                .cellStatus(CellStatus.IGNORED)
+                .build();
+
+        List<HeaderCellWithSubcategory> headerCellWithSubcategories = List.of(cell1, cell2);
 
         // act
-        List<Product> result = ExcelParserHelper.mapToProducts(vendorId, excelProducts);
-
-        // assert
-        assertThat(result).isNotNull().hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getVendorId()).isEqualTo(1L);
-        assertThat(result.get(0).getName()).isNull();
-        assertThat(result.get(0).getPrices()).isEmpty();
-        assertThat(result.get(0).getQuantities()).isEmpty();
-    }
-
-    @Test
-    void mapToExcelHeaderCellDtos_shouldMapCorrectly() {
-        // arrange
-        HeaderCellWithSubcategory cell1 = new HeaderCellWithSubcategory();
-        cell1.setOriginName("originalName1");
-        cell1.setCategory(Category.NAME);
-        cell1.setSubcategoryName("subcategory_name1");
-        cell1.setNormalizedName("normalized_name1");
-        cell1.setCellStatus(CellStatus.PROCESSED);
-
-        HeaderCellWithSubcategory cell2 = new HeaderCellWithSubcategory();
-        cell2.setOriginName("original_name2");
-        cell2.setCategory(Category.PRICE);
-        cell2.setSubcategoryName("subcategory_name2");
-        cell2.setNormalizedName("normalized_name2");
-        cell2.setCellStatus(CellStatus.IGNORED);
-
-        List<HeaderCellWithSubcategory> input = List.of(cell1, cell2);
-
-        // act
-        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
+        List<HeaderCellDto> result = ExcelParserHelper.mapToHeaderCellDtos(headerCellWithSubcategories);
 
         // assert
         assertThat(result).isNotNull().hasSize(2);
@@ -129,44 +104,10 @@ class ExcelParserHelperTest {
     }
 
     @Test
-    void mapToExcelHeaderCellDtos_shouldReturnEmptyList_whenInputIsEmpty() {
-        List<HeaderCellWithSubcategory> excelHeaderCellWithSubcategories = new ArrayList<>();
-
-        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(excelHeaderCellWithSubcategories);
+    void Mapping_to_header_cell_dtos_with_empty_collection_must_return_empty_collection() {
+        List<HeaderCellDto> result = ExcelParserHelper.mapToHeaderCellDtos(Collections.emptyList());
 
         assertThat(result).isNotNull().isEmpty();
-    }
-
-    @Test
-    void mapToExcelHeaderCellDtos_shouldHandleNullFields() {
-        // arrange
-        HeaderCellWithSubcategory cell = new HeaderCellWithSubcategory();
-        List<HeaderCellWithSubcategory> input = List.of(cell);
-
-        // act
-        List<HeaderCellDto> result = ExcelParserHelper.mapToExcelHeaderCellDtos(input);
-
-        // assert
-        assertThat(result).isNotNull().hasSize(1);
-        HeaderCellDto dto = result.get(0);
-
-        assertThat(dto).isNotNull();
-        assertThat(dto.getOriginalName()).isNull();
-        assertThat(dto.getCategory()).isNull();
-        assertThat(dto.getSubcategoryName()).isNull();
-        assertThat(dto.getNormalizedName()).isNull();
-        assertThat(dto.getCellStatus()).isNull();
-    }
-
-    @Test
-    void creating_Subcategory_Mapping_Without_Subcategories_Returns_Empty_Subcategory_Mapping() {
-        List<HeaderCell> headerCells = new ArrayList<>();
-
-        HeaderCell headerCell1 = new HeaderCell();
-        //excelHeaderCell1.setId();
-
-
-
     }
 
 

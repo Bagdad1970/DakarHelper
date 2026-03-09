@@ -125,7 +125,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
     }
 
     private ExcelHeaderCellsHandler createExcelHeaderCellsHandler() {
-        List<HeaderCellDto> excelHeaderCellsWithSubcategory = ExcelParserHelper.mapToExcelHeaderCellDtos(headerCellService.findAllWithSubcategory());
+        List<HeaderCellDto> excelHeaderCellsWithSubcategory = ExcelParserHelper.mapToHeaderCellDtos(headerCellService.findAllWithSubcategory());
         return new ExcelHeaderCellsHandler(excelHeaderCellsWithSubcategory);
     }
 
@@ -162,7 +162,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
             if (containsUnprocessableHeaderCells) {
                 List<HeaderCellDto> unprocessableHeaderCellDtos = excelParser.getUnprocessableHeaderCells();
                 if (!unprocessableHeaderCellDtos.isEmpty()) {
-                    List<HeaderCell> unprocessableHeaderCells = ExcelParserHelper.mapToExcelHeaderCells(unprocessableHeaderCellDtos);
+                    List<HeaderCell> unprocessableHeaderCells = ExcelParserHelper.mapToHeaderCells(unprocessableHeaderCellDtos);
 
                     headerCellService.batchInsert(unprocessableHeaderCells);
 

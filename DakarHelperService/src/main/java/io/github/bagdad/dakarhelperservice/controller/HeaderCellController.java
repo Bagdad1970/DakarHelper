@@ -1,6 +1,7 @@
 package io.github.bagdad.dakarhelperservice.controller;
 
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
 import io.github.bagdad.models.request.headercell.HeaderCellCreateRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellUpdateRequest;
@@ -63,8 +64,8 @@ public class HeaderCellController {
     }
 
     @GetMapping
-    public List<HeaderCell> findAll() {
-        return service.findAll();
+    public List<HeaderCellWithSubcategory> findAllWithSubcategory() {
+        return service.findAllWithSubcategory();
     }
 
     @DeleteMapping("/{id}")

@@ -189,8 +189,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
             (rs, rowNum) -> {
                 HeaderCellWithSubcategory dto = new HeaderCellWithSubcategory();
                 dto.setId(rs.getLong("id"));
-                dto.setExcelHeaderSubcategoryId(rs.getLong("subcategory_id"));
-                dto.setOriginName(rs.getString("original_name"));
+                dto.setOriginalName(rs.getString("original_name"));
                 dto.setNormalizedName(rs.getString("normalized_name"));
 
                 String categoryStr = rs.getString("category");
@@ -198,9 +197,6 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
 
                 String cellStatusStr = rs.getString("cell_status");
                 dto.setCellStatus(cellStatusStr != null ? CellStatus.valueOf(cellStatusStr.trim().toUpperCase()) : null);
-
-                Long subId = rs.getObject("sub_id", Long.class);
-                dto.setSubcategoryId(subId);
 
                 dto.setSubcategoryName(rs.getString("name"));
                 return dto;

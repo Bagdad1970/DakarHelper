@@ -8,7 +8,12 @@ import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class ExcelParserHelper {
 
@@ -17,17 +22,20 @@ public class ExcelParserHelper {
             return Collections.emptyList();
         }
 
-        return excelProducts.stream().map(excelProduct -> Product.builder()
-                .vendorId(vendorId)
-                .name(excelProduct.getName())
-                .prices(excelProduct.getPrices())
-                .minPrice(excelProduct.getMinPrice())
-                .quantities(excelProduct.getQuantities())
-                .totalQuantity(excelProduct.getTotalQuantity())
-                .build()).toList();
+        return excelProducts.stream()
+                .map(excelProduct -> Product.builder()
+                    .vendorId(vendorId)
+                    .name(excelProduct.getName())
+                    .prices(excelProduct.getPrices())
+                    .minPrice(excelProduct.getMinPrice())
+                    .quantities(excelProduct.getQuantities())
+                    .totalQuantity(excelProduct.getTotalQuantity())
+                    .build()
+                )
+                .toList();
     }
 
-    public static List<HeaderCell> mapToExcelHeaderCells(List<HeaderCellDto> headerCellDtos) {
+    public static List<HeaderCell> mapToHeaderCells(List<HeaderCellDto> headerCellDtos) {
         if (headerCellDtos.isEmpty()) {
             return Collections.emptyList();
         }
@@ -40,19 +48,19 @@ public class ExcelParserHelper {
                 }).toList();
     }
 
-    public static List<HeaderCellDto> mapToExcelHeaderCellDtos(List<HeaderCellWithSubcategory> excelHeaderCellWithSubcategories) {
-        if (excelHeaderCellWithSubcategories.isEmpty()) {
+    public static List<HeaderCellDto> mapToHeaderCellDtos(List<HeaderCellWithSubcategory> headerCellWithSubcategories) {
+        if (headerCellWithSubcategories.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return excelHeaderCellWithSubcategories.stream()
-                .map(excelHeaderCellWithSubcategory -> {
+        return headerCellWithSubcategories.stream()
+                .map(headerCellWithSubcategory -> {
                     HeaderCellDto dto = new HeaderCellDto();
-                    dto.setOriginalName(excelHeaderCellWithSubcategory.getOriginName());
-                    dto.setCategory(excelHeaderCellWithSubcategory.getCategory());
-                    dto.setSubcategoryName(excelHeaderCellWithSubcategory.getSubcategoryName());
-                    dto.setNormalizedName(excelHeaderCellWithSubcategory.getNormalizedName());
-                    dto.setCellStatus(excelHeaderCellWithSubcategory.getCellStatus());
+                    dto.setOriginalName(headerCellWithSubcategory.getOriginalName());
+                    dto.setCategory(headerCellWithSubcategory.getCategory());
+                    dto.setSubcategoryName(headerCellWithSubcategory.getSubcategoryName());
+                    dto.setNormalizedName(headerCellWithSubcategory.getNormalizedName());
+                    dto.setCellStatus(headerCellWithSubcategory.getCellStatus());
                     return dto;
                 }).toList();
     }

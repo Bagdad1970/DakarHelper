@@ -1,5 +1,6 @@
 import type {HeaderCell} from "../types/headercell/HeaderCell.ts";
 import apiClient from "./ApiClient.ts";
+import type {HeaderCellWithSubcategory} from "../types/headercell/HeaderCellWithSubcategory.ts";
 
 export default class HeaderCellManager  {
 
@@ -25,9 +26,9 @@ export default class HeaderCellManager  {
         }
     }
 
-    async findAll(): Promise<HeaderCell[]> {
+    async findAll(): Promise<HeaderCellWithSubcategory[]> {
         try {
-            const response = await apiClient.get<HeaderCell[]>("header-cells");
+            const response = await apiClient.get<HeaderCellWithSubcategory[]>("header-cells");
             return response.data;
         }
         catch (error) {

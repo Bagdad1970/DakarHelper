@@ -3,27 +3,23 @@ package io.github.bagdad.dakarhelperservice.model;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.CellStatus;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class HeaderCellWithSubcategory {
 
     private Long id;
 
-    private Long excelHeaderSubcategoryId;
-
-    private Long subcategoryId;
+    private String subcategoryName;
 
     private Category category;
 
-    private String subcategoryName;
-
-    private String originName;
+    private String originalName;
 
     private String normalizedName;
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { Vendor } from "../../types/vendor/Vendor.ts";
 import "../../assets/styles/configuration-handler/ConfigurationUnitManager.css";
 import type { Subcategory } from "../../types/subcategory/Subcategory.ts";
-import type { HeaderCell } from "../../types/headercell/HeaderCell.ts";
+import type { HeaderCellWithSubcategory } from "../../types/headercell/HeaderCellWithSubcategory.ts";
 import VendorManager from "../../api/VendorManager.ts";
 import HeaderCellManager from "../../api/HeaderCellManager.ts";
 import SubcategoryManager from "../../api/SubcategoryManager.ts";
@@ -18,7 +18,7 @@ interface ConfigurationUnitManagerProps {
 type ModalType = 'add' | 'update' | 'delete' | null;
 
 export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnitManagerProps) {
-    const [confUnitGroup, setConfUnitGroup] = useState<Vendor[] | HeaderCell[] | Subcategory[]>([]);
+    const [confUnitGroup, setConfUnitGroup] = useState<Vendor[] | HeaderCellWithSubcategory[] | Subcategory[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedItems, setSelectedItems] = useState<Set<bigint>>(new Set());
@@ -233,7 +233,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
         }
 
         if (confUnit === ConfigurationUnit.HEADER_CELL) {
-            const headerCells = confUnitGroup as HeaderCell[];
+            const headerCells = confUnitGroup as HeaderCellWithSubcategory[];
             return (
                 <div className="table-container">
                     <table className="data-table">
@@ -269,7 +269,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
                                 </td>
                                 <td>{cell.originalName}</td>
                                 <td>
-                                    {cell.subcategoryId ? cell.subcategoryId.toString() : '—'}
+                                    {cell.subcategoryName ? cell.subcategoryName : '—'}
                                 </td>
                                 <td>
                                     <span className={`category-badge category-${cell.category}`}>
