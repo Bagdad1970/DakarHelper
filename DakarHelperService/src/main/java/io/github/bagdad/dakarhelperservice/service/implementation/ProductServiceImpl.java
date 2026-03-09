@@ -39,8 +39,8 @@ public class ProductServiceImpl implements ProductService {
         ProductQueryResponse productQueryResponse = new ProductQueryResponse();
 
         Pageable pageable = PageRequest.of(
-                query.getPageIndex() != null ? query.getPageIndex() : 0,
-                query.getPageSize() != null ? query.getPageSize() : 20
+            query.getPageIndex() != null ? query.getPageIndex() : 0,
+            query.getPageSize() != null ? query.getPageSize() : 10
         );
 
         Page<Product> productPage = productRepository.query(query, pageable);

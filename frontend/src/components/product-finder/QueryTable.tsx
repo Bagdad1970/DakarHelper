@@ -10,10 +10,10 @@ import { useEffect, useState } from "react";
 import { ProductManager } from '../../api/ProductManager.ts';
 import type { Pagination } from "../../types/product/Pagination.ts";
 import type { ProductQuery } from "../../types/product/ProductQuery.ts";
-import {PaginationView} from "./PaginationView.tsx";
 import {formatPrice} from "../../utils/DecimalHelper.ts";
 import { decamelize } from 'humps';
 import { SortDirection } from "../../types/product/SortDirection.ts";
+import {BottomTable} from "./BottomTable.tsx";
 
 const columnHelper = createColumnHelper<ProductQueryItem>();
 
@@ -22,26 +22,31 @@ const columns = [
         header: 'Наименование',
         cell: info => info.getValue(),
         enableSorting: false,
+        enableHiding: false
     }),
     columnHelper.accessor('minPrice', {
-        header: 'Цена',
+        header: 'Цена (руб)',
         cell: info => formatPrice(info.getValue()),
-        enableSorting: true
+        enableSorting: true,
+        enableHiding: false
     }),
     columnHelper.accessor('totalQuantity', {
         header: 'Количество',
         cell: info => info.getValue(),
-        enableSorting: true
+        enableSorting: true,
+        enableHiding: false
     }),
     columnHelper.accessor('priceWithMargin', {
-        header: 'Цена продавца',
+        header: 'Цена продавца (руб)',
         cell: info => formatPrice(info.getValue()),
-        enableSorting: false
+        enableSorting: false,
+        enableHiding: true
     }),
     columnHelper.accessor('vendorTitle', {
         header: 'Поставщик',
         cell: info => info.getValue(),
         enableSorting: false,
+        enableHiding: true
     })
 ];
 
@@ -61,7 +66,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         totalPages: 0,
         totalRecords: 0n,
         pageIndex: 0,
-        pageSize: 20
+        pageSize: 10
     });
 
     const getSortingConditions = (): Record<string, SortDirection> => {
@@ -74,7 +79,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
 
     const loadPage = async () => {
         try {
-            const timer = setTimeout(() => setShowLoader(true), 80);
+            const timer = setTimeout(() => setShowLoader(true), 70);
 
             const query = {
                 ...formData,
@@ -100,7 +105,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
     };
 
     const handleSorting = (columnId: string) => {
-
         setSortingMap(prevMap => {
             const newMap = new Map(prevMap);
 
@@ -108,10 +112,12 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                 const currentDirection = newMap.get(columnId);
                 if (currentDirection === SortDirection.ASC) {
                     newMap.set(columnId, SortDirection.DESC);
-                } else {
+                }
+                else {
                     newMap.delete(columnId);
                 }
-            } else {
+            }
+            else {
                 newMap.set(columnId, SortDirection.ASC);
             }
 
@@ -119,11 +125,6 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         });
 
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    };
-
-    // Получаем направление сортировки для колонки
-    const getSortDirection = (columnId: string): SortDirection | null => {
-        return sortingMap.get(columnId) || null;
     };
 
     useEffect(() => {
@@ -153,6 +154,25 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
         setPagination(prev => ({ ...prev, pageIndex }));
     };
 
+    const handleHideColumns = () => {
+        const hideableColumns = table.getAllColumns()
+            .filter(column => column.getCanHide());
+
+        if (hideableColumns.length === 0) return;
+
+        const allHideableVisible = hideableColumns.every(column => column.getIsVisible());
+        if (allHideableVisible) {
+            hideableColumns.forEach(column => {
+                column.toggleVisibility(false);
+            });
+        }
+        else {
+            hideableColumns.forEach(column => {
+                column.toggleVisibility(true);
+            });
+        }
+    }
+
     if (error) {
         return (
             <div className="query-table-section">
@@ -181,7 +201,7 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map(header => {
-                                const direction = getSortDirection(header.column.id);
+                                const direction = sortingMap.get(header.column.id) || null;
 
                                 return (
                                     <th
@@ -229,12 +249,12 @@ export default function QueryTable({ formData, isClicked, onReacted }: QueryTabl
                 )}
             </div>
 
-            {pagination && pagination.totalPages > 1 && (
-                <PaginationView
-                    pagination={pagination}
-                    onPageChange={handlePagination}
-                />
-            )}
+            <BottomTable
+                onConcealColumnsChange={handleHideColumns}
+                pagination={pagination}
+                onPaginationChange={handlePagination}
+            />
+
         </div>
     );
 }
