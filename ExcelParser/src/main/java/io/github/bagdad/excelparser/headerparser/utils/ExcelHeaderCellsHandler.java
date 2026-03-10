@@ -2,7 +2,6 @@ package io.github.bagdad.excelparser.headerparser.utils;
 
 import io.github.bagdad.excelparser.headerparser.headerparser.CellFindStatus;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,13 +29,13 @@ public class ExcelHeaderCellsHandler {
             String originName = dto.getOriginalName();
 
             if (cellValue.startsWith(originName)) {
-                if (dto.getCellStatus() == CellStatus.IGNORED) {
+                if (!dto.getIsProcessing()) {
                     return CellFindStatus.ABSENTS;
                 }
                 return CellFindStatus.STARTS;
             }
             if (cellValue.contains(originName)) {
-                if (dto.getCellStatus() == CellStatus.IGNORED) {
+                if (!dto.getIsProcessing()) {
                     return CellFindStatus.ABSENTS;
                 }
                 return CellFindStatus.CONTAINS;

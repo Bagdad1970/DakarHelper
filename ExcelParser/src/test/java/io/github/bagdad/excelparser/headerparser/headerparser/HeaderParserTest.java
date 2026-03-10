@@ -2,7 +2,6 @@ package io.github.bagdad.excelparser.headerparser.headerparser;
 
 import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import io.github.bagdad.excelparser.headerparser.utils.ExcelHeaderCellsHandler;
 import org.apache.poi.ss.usermodel.*;
@@ -26,11 +25,11 @@ public class HeaderParserTest {
     @BeforeAll
     static void setupExcelHeaderCellsHandler() {
         List<HeaderCellDto> headerCellDtos = new ArrayList<>();
-        headerCellDtos.add(new HeaderCellDto("номенклатура", Category.NAME, null, CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("наименование", Category.NAME, null, CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("цена", Category.PRICE, null, CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("остаток", Category.QUANTITY, null, CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("склад", Category.QUANTITY, null, CellStatus.PROCESSED));
+        headerCellDtos.add(new HeaderCellDto("номенклатура", Category.NAME, "номенклатура", true));
+        headerCellDtos.add(new HeaderCellDto("наименование", Category.NAME, "наименование", true));
+        headerCellDtos.add(new HeaderCellDto("цена", Category.PRICE, "цена", true));
+        headerCellDtos.add(new HeaderCellDto("остаток", Category.QUANTITY, "остаток", true));
+        headerCellDtos.add(new HeaderCellDto("склад", Category.QUANTITY, "склад", true));
         excelHeaderCellsHandler = new ExcelHeaderCellsHandler(headerCellDtos);
     }
 

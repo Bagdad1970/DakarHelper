@@ -10,6 +10,7 @@ import SubcategoryManager from "../../api/SubcategoryManager.ts";
 import {EditModal} from "./EditModal.tsx";
 import {CreateModal} from "./CreateModal.tsx";
 import {DeleteModal} from "./DeleteModal.tsx";
+import {Category} from "../../types/Category.ts";
 
 interface ConfigurationUnitManagerProps {
     confUnit: ConfigurationUnit;
@@ -35,7 +36,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
             try {
                 setLoading(true);
                 const currentManager = manager.get(confUnit);
-                const data: Vendor[] | Subcategory[] | HeaderCell[] = await currentManager.findAll() ?? [];
+                const data: Vendor[] | Subcategory[] | HeaderCellWithSubcategory[] = await currentManager.findAll() ?? [];
 
                 setConfUnitGroup(data);
                 setError(null);
@@ -59,6 +60,8 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
             const data = await currentManager.findAll() ?? [];
             setConfUnitGroup(data);
             setError(null);
+
+            setSelectedItems(new Set());
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load data');
         } finally {
@@ -128,6 +131,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
         }
 
         if (modalType === 'delete') {
+
             return (
                 <DeleteModal
                     isOpen={true}
@@ -137,6 +141,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
                     manager={manager.get(confUnit)}
                 />
             );
+
         }
     };
 
@@ -221,7 +226,7 @@ export default function ConfigurationUnitManager({ confUnit }: ConfigurationUnit
                                 <td>{subcategory.name}</td>
                                 <td>
                                     <span className={`category-badge category-${subcategory.category}`}>
-                                        {subcategory.category}
+                                        {Category[subcategory.category]}
                                     </span>
                                 </td>
                             </tr>

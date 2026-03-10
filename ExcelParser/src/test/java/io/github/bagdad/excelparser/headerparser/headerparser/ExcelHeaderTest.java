@@ -66,9 +66,7 @@ public class ExcelHeaderTest {
         ExcelProduct result = excelHeader.processRow(row);
 
         ExcelProduct expectedExcelProduct = new ExcelProduct();
-        expectedExcelProduct.setNames(Map.of(
-                "name", "name1")
-        );
+        expectedExcelProduct.setName("name1");
         expectedExcelProduct.setPrices(Map.of(
                 "wholesale", BigDecimal.valueOf(123.45),
                 "retail", BigDecimal.valueOf(130.0),

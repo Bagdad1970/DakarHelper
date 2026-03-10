@@ -59,8 +59,7 @@ public class ExcelParserHelper {
                     dto.setOriginalName(headerCellWithSubcategory.getOriginalName());
                     dto.setCategory(headerCellWithSubcategory.getCategory());
                     dto.setSubcategoryName(headerCellWithSubcategory.getSubcategoryName());
-                    dto.setNormalizedName(headerCellWithSubcategory.getNormalizedName());
-                    dto.setCellStatus(headerCellWithSubcategory.getCellStatus());
+                    dto.setIsProcessing(headerCellWithSubcategory.getIsProcessing());
                     return dto;
                 }).toList();
     }

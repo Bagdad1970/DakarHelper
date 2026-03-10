@@ -54,7 +54,9 @@ export function CreateSubcategoryModal({ isOpen, onClose, onSuccess, manager }: 
                             onChange={(e) => handleInputChange('category', e.target.value)}
                         >
                             {Object.keys(Category).map(category => (
-                                <option key={category} value={category}>{Category[category]}</option>
+                                <option key={category} value={category}>
+                                    {category}
+                                </option>
                             ))}
                         </select>
                     </div>

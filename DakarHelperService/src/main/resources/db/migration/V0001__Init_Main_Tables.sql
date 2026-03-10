@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS vendors (
     id BIGSERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL UNIQUE
+    title VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS vendor_files (
@@ -21,9 +21,8 @@ CREATE TABLE IF NOT EXISTS header_cells (
     id BIGSERIAL PRIMARY KEY,
     subcategory_id BIGINT DEFAULT NULL,
     original_name VARCHAR(255) NOT NULL,
-    normalized_name VARCHAR(255) NULL,
     category VARCHAR(255) NOT NULL,
-    cell_status VARCHAR(255) NULL,
+    is_processing BOOLEAN DEFAULT TRUE,
     CONSTRAINT fk_subcategory
         FOREIGN KEY (subcategory_id)
         REFERENCES subcategories(id)

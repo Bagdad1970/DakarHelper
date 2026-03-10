@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,9 +64,10 @@ public class BodyParser {
     public List<ExcelProduct> parse() {
         log.info("Parsing body cells");
 
-        List<ExcelProduct> parsedExcelProducts = new ArrayList<>();
-
         int startRowIndex = getFirstValidRow();
+        if (startRowIndex == -1 ) return Collections.emptyList();
+
+        List<ExcelProduct> parsedExcelProducts = new ArrayList<>();
         for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 

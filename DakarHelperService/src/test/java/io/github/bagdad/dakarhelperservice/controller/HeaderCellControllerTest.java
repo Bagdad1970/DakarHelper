@@ -2,9 +2,9 @@ package io.github.bagdad.dakarhelperservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bagdad.dakarhelperservice.model.HeaderCell;
+import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.service.implementation.HeaderCellServiceImpl;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.request.headercell.HeaderCellCreateRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellUpdateRequest;
 import org.junit.jupiter.api.Test;
@@ -47,17 +47,15 @@ public class HeaderCellControllerTest {
         HeaderCellCreateRequest request = new HeaderCellCreateRequest();
         request.setSubcategoryId(1L);
         request.setOriginalName("original_name");
-        request.setNormalizedName("normalized_name");
         request.setCategory(Category.NAME);
-        request.setCellStatus(CellStatus.PROCESSED);
+        request.setIsProcessing(true);
 
         HeaderCell saved = HeaderCell.builder()
                 .id(1L)
                 .subcategoryId(1L)
                 .originalName("original_name")
-                .normalizedName("normalized_name")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
         Mockito.when(service.create(Mockito.any(HeaderCell.class)))
@@ -82,20 +80,18 @@ public class HeaderCellControllerTest {
         request.setId(1L);
         request.setSubcategoryId(1L);
         request.setOriginalName("original_name");
-        request.setNormalizedName("normalized_name");
         request.setCategory(Category.NAME);
-        request.setCellStatus(CellStatus.PROCESSED);
+        request.setIsProcessing(true);
 
         HeaderCell updated = HeaderCell.builder()
                 .id(1L)
                 .subcategoryId(1L)
                 .originalName("updated_original_name")
-                .normalizedName("updated_normalized_name")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
-        Mockito.when(service.update(Mockito.any(HeaderCell.class)))
+        Mockito.when(service.update(updated))
                 .thenReturn(updated);
 
         // act & assert
@@ -116,9 +112,8 @@ public class HeaderCellControllerTest {
                 .id(1L)
                 .subcategoryId(1L)
                 .originalName("original_name")
-                .normalizedName("normalized_name")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
         Mockito.when(service.findById(1L))
@@ -136,30 +131,28 @@ public class HeaderCellControllerTest {
     }
 
     @Test
-    void findAll() throws Exception {
+    void Finding_all_header_cells_must_return_them() throws Exception {
         // arrange
         HeaderCell headerCell1 = HeaderCell.builder()
                 .id(1L)
                 .subcategoryId(1L)
                 .originalName("original_name1")
-                .normalizedName("normalized_name1")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
         HeaderCell headerCell2 = HeaderCell.builder()
                 .id(2L)
                 .subcategoryId(2L)
                 .originalName("original_name2")
-                .normalizedName("normalized_name2")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
-        List<HeaderCell> subcategories = List.of(headerCell1, headerCell2);
+        List<HeaderCell> headerCells = List.of(headerCell1, headerCell2);
 
         Mockito.when(service.findAll())
-                .thenReturn(subcategories);
+                .thenReturn(headerCells);
 
         // act & assert
         mockMvc.perform(MockMvcRequestBuilders
@@ -167,7 +160,42 @@ public class HeaderCellControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(asJsonString(subcategories)));
+                .andExpect(content().json(asJsonString(headerCells)));
+        Mockito.verify(service, times(1))
+                .findAll();
+    }
+
+    @Test
+    void Finding_all_header_cells_with_subcategory_must_return_them() throws Exception {
+        // arrange
+        HeaderCellWithSubcategory headerCellWithSubcategory1 = HeaderCellWithSubcategory.builder()
+                .id(1L)
+                .subcategoryName("subcategory_name1")
+                .originalName("original_name1")
+                .category(Category.NAME)
+                .isProcessing(true)
+                .build();
+
+        HeaderCellWithSubcategory headerCellWithSubcategory2 = HeaderCellWithSubcategory.builder()
+                .id(2L)
+                .subcategoryName("subcategory_name2")
+                .originalName("original_name2")
+                .category(Category.NAME)
+                .isProcessing(true)
+                .build();
+
+        List<HeaderCellWithSubcategory> headerCellWithSubcategories = List.of(headerCellWithSubcategory1, headerCellWithSubcategory2);
+
+        Mockito.when(service.findAllWithSubcategory())
+                .thenReturn(headerCellWithSubcategories);
+
+        // act & assert
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/header-cells/with-subcategory")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(asJsonString(headerCellWithSubcategories)));
         Mockito.verify(service, times(1))
                 .findAll();
     }

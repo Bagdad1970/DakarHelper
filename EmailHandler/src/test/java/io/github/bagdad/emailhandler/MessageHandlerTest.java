@@ -39,23 +39,6 @@ public class MessageHandlerTest {
     }
 
     @Test
-    void test() throws MessagingException, IOException {
-        greenMail = new GreenMail(ServerSetupTest.SMTP_IMAP);
-        greenMail.start();
-
-        MimeMessage message = new MimeMessage();
-
-        try {
-            GreenMailUtil.sendTextEmailTest(
-                    "to@localhost", "from@localhost", "some subject", "Sent using available port detection");
-            assertEquals("Sent using available port detection", greenMail.getReceivedMessages()[0].getContent());
-        }
-        finally {
-            greenMail.stop();
-        }
-    }
-
-    @Test
     void Finding_vendor_title_in_empty_text_must_return_empty_vendor() {
         String text = "";
         VendorWithMaxFileDateTime expected = new VendorWithMaxFileDateTime("");

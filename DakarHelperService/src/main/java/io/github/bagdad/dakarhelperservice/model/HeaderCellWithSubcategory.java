@@ -1,7 +1,6 @@
 package io.github.bagdad.dakarhelperservice.model;
 
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +20,6 @@ public class HeaderCellWithSubcategory {
 
     private String originalName;
 
-    private String normalizedName;
-
-    private CellStatus cellStatus;
+    private Boolean isProcessing;
 
 }

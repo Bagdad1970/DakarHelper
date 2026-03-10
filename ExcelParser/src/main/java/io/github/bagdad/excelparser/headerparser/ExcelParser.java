@@ -37,10 +37,6 @@ public class ExcelParser {
         return headerParser.getUnprocessableHeaderCells();
     }
 
-    public Map<String, String> getStorages() {
-        return excelHeader.getStorages();
-    }
-
     private Sheet getFirstSheetFromFile(String filepath) {
         Workbook workbook = ExcelWorkbookHandler.loadWorkbook(filepath);
 

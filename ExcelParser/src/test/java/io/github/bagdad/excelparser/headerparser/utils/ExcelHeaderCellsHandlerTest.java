@@ -2,7 +2,6 @@ package io.github.bagdad.excelparser.headerparser.utils;
 
 import io.github.bagdad.excelparser.headerparser.headerparser.CellFindStatus;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,11 +18,11 @@ public class ExcelHeaderCellsHandlerTest {
     @BeforeAll
     static void setup() {
         List<HeaderCellDto> headerCellDtos = new ArrayList<>();
-        headerCellDtos.add(new HeaderCellDto("starts", Category.PRICE, "", "", CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("contains", Category.PRICE, "", "", CellStatus.PROCESSED));
-        headerCellDtos.add(new HeaderCellDto("ignore starts", Category.PRICE, "", "", CellStatus.IGNORED));
-        headerCellDtos.add(new HeaderCellDto("__ignore contains", Category.PRICE, "", "", CellStatus.IGNORED));
-        headerCellDtos.add(new HeaderCellDto("present cell value", Category.NAME, "", "", CellStatus.PROCESSED));
+        headerCellDtos.add(new HeaderCellDto("starts", Category.PRICE, "", true));
+        headerCellDtos.add(new HeaderCellDto("contains", Category.PRICE, "", true));
+        headerCellDtos.add(new HeaderCellDto("ignore starts", Category.PRICE, "", false));
+        headerCellDtos.add(new HeaderCellDto("__ignore contains", Category.PRICE, "", false));
+        headerCellDtos.add(new HeaderCellDto("present cell value", Category.NAME, "", true));
 
         excelHeaderCellsHandler = new ExcelHeaderCellsHandler(headerCellDtos);
     }

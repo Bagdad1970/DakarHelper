@@ -116,7 +116,7 @@ public class ProductServiceTest {
                 .quantities(Map.of("count", 3))
                 .build();
 
-        Pageable pageable = PageRequest.of(0, 20);
+        Pageable pageable = PageRequest.of(0, 10);
 
         List<Product> products = List.of(product1, product2, product3);
         Page<Product> productPage = new PageImpl<Product>(products);

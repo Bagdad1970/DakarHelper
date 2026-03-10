@@ -15,16 +15,6 @@ public class HeaderCellDto {
 
     private String subcategoryName;
 
-    private String normalizedName;
-
-    private CellStatus cellStatus;
-
-    public HeaderCellDto(String originalName, Category category, String subcategoryName, CellStatus cellStatus) {
-        this.originalName = originalName;
-        this.category = category;
-        this.subcategoryName = subcategoryName;
-        this.normalizedName = originalName;
-        this.cellStatus = cellStatus;
-    }
+    private Boolean isProcessing;
 
 }

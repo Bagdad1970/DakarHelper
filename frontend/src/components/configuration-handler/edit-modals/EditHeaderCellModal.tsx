@@ -1,8 +1,10 @@
 import Modal from "../Modal.tsx";
 import {useEffect, useState} from "react";
 import {Category} from "../../../types/Category.ts";
-import type {HeaderCell} from "../../../types/headercell/HeaderCell.ts";
 import type HeaderCellManager from "../../../api/HeaderCellManager.ts";
+import type {HeaderCellUpdateRequest} from "../../../types/headercell/HeaderCellUpdateRequest.ts";
+import type {Subcategory} from "../../../types/subcategory/Subcategory.ts";
+import SubcategoryManager from "../../../api/SubcategoryManager.ts";
 
 interface EditHeaderCellModalProps {
     isOpen: boolean;
@@ -13,9 +15,17 @@ interface EditHeaderCellModalProps {
 }
 
 export function EditHeaderCellModal({ isOpen, onClose, onSuccess, selectedId, manager }: EditHeaderCellModalProps) {
-    const [formData, setFormData] = useState<HeaderCell | null>(null);
+    const [formData, setFormData] = useState<HeaderCellUpdateRequest | null>({
+        id: selectedId,
+        subcategoryId: null,
+        originalName: "",
+        category: null,
+        isProcessing: true,
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+    const subcategoryManager = new SubcategoryManager();
 
     useEffect(() => {
         const fetchHeaderCell = async () => {
@@ -24,7 +34,10 @@ export function EditHeaderCellModal({ isOpen, onClose, onSuccess, selectedId, ma
             try {
                 setLoading(true);
                 const headerCell = await manager.findById(selectedId);
-                setFormData(headerCell);
+                setFormData({
+                    ...headerCell,
+                    category: null
+                });
                 setError(null);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to load HeaderCell');
@@ -34,9 +47,30 @@ export function EditHeaderCellModal({ isOpen, onClose, onSuccess, selectedId, ma
         };
 
         fetchHeaderCell();
-    }, [selectedId, isOpen, manager])
+        console.log(formData);
+    }, [])
 
-    const handleInputChange = (field: string, value: any) => {
+    useEffect(() => {
+        const loadSubcategories = async () => {
+            try {
+                setLoading(true);
+                const data = await subcategoryManager.findAll() ?? [];
+
+                setSubcategories(data);
+                setError(null);
+            }
+            catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load data');
+            }
+            finally {
+                setLoading(false);
+            }
+        };
+
+        loadSubcategories()
+    }, []);
+
+    const handleInputChange = (field: string, value) => {
         if (formData) {
             setFormData({
                 ...formData,
@@ -74,37 +108,55 @@ export function EditHeaderCellModal({ isOpen, onClose, onSuccess, selectedId, ma
                         <label>Оригинальное название:</label>
                         <input
                             type="text"
-                            value={formData.originalName || ''}
+                            value={formData.originalName ?? ''}
                             onChange={(e) => handleInputChange('originalName', e.target.value)}
-                            placeholder="Введите название"
+                            placeholder="Например: розница"
                         />
                     </div>
                     <div className="form-field">
-                        <label>ID подкатегории:</label>
-                        <input
-                            type="number"
-                            value={formData.subcategoryId ?? ""}
-                            onChange={(e) => handleInputChange('subcategoryId', e.target.value ? BigInt(e.target.value) : null)}
-                            placeholder="Введите ID подкатегории"
-                        />
-                    </div>
-                    <div className="form-field">
-                        <label>Категория:</label>
+                        <label>Подкатегория:</label>
                         <select
-                            value={formData?.category || Category.NAME}
-                            onChange={(e) => handleInputChange('category', e.target.value)}
+                            value={formData.subcategoryId ?? ""}
+                            onChange={(e) => {
+                                handleInputChange('subcategoryId', e.target.value || null);
+                            }}
                         >
-                            {Object.values(Category).map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
+                            <option value="">Без подкатегории</option>
+                            {subcategories.map(subcategory => (
+                                <option key={subcategory.id} value={subcategory.id.toString()}>
+                                    {subcategory.name} ({Category[subcategory.category]})
+                                </option>
                             ))}
                         </select>
                     </div>
+
+                    {!formData.subcategoryId &&
+                        <div className="form-field">
+                            <label>Категория:</label>
+                            <select
+                                value={formData.category ?? ""}
+                                onChange={(e) => {
+                                    handleInputChange('category', e.target.value || null);
+                                }}
+                            >
+                                <option value="">Не выбрано</option>
+                                {Object.keys(Category)
+                                    .map(category => (
+                                        <option key={category} value={category}>
+                                            {category}
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+                    }
+
                     <div className="form-field checkbox">
                         <label>
                             <input
                                 type="checkbox"
                                 checked={formData?.isProcessing || false}
-                                onChange={(e) => handleInputChange('isProcessed', e.target.checked)}
+                                onChange={(e) => handleInputChange('isProcessing', e.target.checked)}
                             />
                             Обрабатывается
                         </label>

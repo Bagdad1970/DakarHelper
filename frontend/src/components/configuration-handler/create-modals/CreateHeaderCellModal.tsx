@@ -17,7 +17,7 @@ export function CreateHeaderCellModal({ isOpen, onClose, onSuccess, manager }: C
     const [formData, setFormData] = useState<HeaderCellCreateRequest>({
         subcategoryId: null,
         originalName: "",
-        category: Category.NAME,
+        category: null,
         isProcessing: true,
     });
     const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ export function CreateHeaderCellModal({ isOpen, onClose, onSuccess, manager }: C
         loadSubcategories()
     }, []);
 
-    const handleInputChange = (field: string, value: any) => {
+    const handleInputChange = (field: string, value) => {
         setFormData((prev: HeaderCellCreateRequest) => ({
             ...prev,
             [field]: value
@@ -78,36 +78,48 @@ export function CreateHeaderCellModal({ isOpen, onClose, onSuccess, manager }: C
                         <label>Оригинальное название:</label>
                         <input
                             type="text"
-                            value={formData.originalName || ''}
+                            value={formData.originalName ?? ''}
                             onChange={(e) => handleInputChange('originalName', e.target.value)}
                             placeholder="Например: опт"
                         />
                     </div>
+
                     <div className="form-field">
                         <label>Подкатегория:</label>
                         <select
-                            value={formData.subcategoryId ? formData.subcategoryId.toString() : ""}
-                            onChange={(e) => handleInputChange('subcategoryId', e.target.value)}
+                            value={formData.subcategoryId ?? ""}
+                            onChange={(e) => {
+                                handleInputChange('subcategoryId', e.target.value);
+                            }}
                         >
                             <option value="">Без подкатегории</option>
                             {subcategories.map(subcategory => (
-                                <option key={subcategory.id} value={subcategory.name}>
+                                <option key={subcategory.id} value={subcategory.id.toString()}>
                                     {subcategory.name} ({Category[subcategory.category]})
                                 </option>
                             ))}
                         </select>
                     </div>
-                    <div className="form-field">
-                        <label>Категория:</label>
-                        <select
-                            value={formData?.category || Category.NAME}
-                            onChange={(e) => handleInputChange('category', e.target.value)}
-                        >
-                            {Object.keys(Category).map(category => (
-                                <option key={category} value={category}>{Category[category]}</option>
-                            ))}
-                        </select>
-                    </div>
+
+                    {!formData.subcategoryId &&
+                        <div className="form-field">
+                            <label>Категория:</label>
+                            <select
+                                value={formData.category ?? ""}
+                                onChange={(e) => handleInputChange('category', e.target.value)}
+                            >
+                                <option value="">Не выбрано</option>
+                                {Object.keys(Category)
+                                    .map(category => (
+                                        <option key={category} value={category}>
+                                            {category}
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+                    }
+
                     <div className="form-field checkbox">
                         <label>
                             <input

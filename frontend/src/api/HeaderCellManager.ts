@@ -28,7 +28,7 @@ export default class HeaderCellManager  {
 
     async findAll(): Promise<HeaderCellWithSubcategory[]> {
         try {
-            const response = await apiClient.get<HeaderCellWithSubcategory[]>("header-cells");
+            const response = await apiClient.get<HeaderCellWithSubcategory[]>("header-cells/with-subcategory");
             return response.data;
         }
         catch (error) {

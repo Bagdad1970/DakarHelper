@@ -9,7 +9,6 @@ import io.github.bagdad.dakarhelperservice.repository.implementation.Subcategory
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.SubcategoryRepository;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +55,8 @@ public class HeaderCellRepositoryTest {
         HeaderCell headerCell = new HeaderCell();
         headerCell.setSubcategoryId(subcategoryId);
         headerCell.setOriginalName("original_name");
-        headerCell.setNormalizedName("normalized_name");
         headerCell.setCategory(Category.NAME);
-        headerCell.setCellStatus(CellStatus.PROCESSED);
+        headerCell.setIsProcessing(true);
 
         return headerCell;
     }
@@ -104,7 +102,7 @@ public class HeaderCellRepositoryTest {
     }
 
     @Test
-    void Finding_all_header_cells_must_return_existing_entities() {
+    void Finding_all_header_cells_must_return_them() {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
@@ -151,9 +149,8 @@ public class HeaderCellRepositoryTest {
 
         savedHeaderCell.setSubcategoryId(savedSubcategory2.getId());
         savedHeaderCell.setOriginalName("updated_original_name");
-        savedHeaderCell.setNormalizedName("updated_normalized_name");
         savedHeaderCell.setCategory(Category.PRICE);
-        savedHeaderCell.setCellStatus(CellStatus.IGNORED);
+        savedHeaderCell.setIsProcessing(false);
         HeaderCell updatedHeaderCell = headerCellRepository.update(savedHeaderCell);
 
         Optional<HeaderCell> found = headerCellRepository.findById(updatedHeaderCell.getId());
@@ -167,7 +164,7 @@ public class HeaderCellRepositoryTest {
         HeaderCell nonExistent = new HeaderCell();
         nonExistent.setId(0L);
         nonExistent.setCategory(Category.NAME);
-        nonExistent.setCellStatus(CellStatus.PROCESSED);
+        nonExistent.setIsProcessing(true);
 
         assertThatThrownBy(() -> headerCellRepository.update(nonExistent))
                 .isInstanceOf(HeaderCellNotFoundException.class);

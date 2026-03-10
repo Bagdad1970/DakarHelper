@@ -6,7 +6,6 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.HeaderCellRepository;
 import io.github.bagdad.dakarhelperservice.repository.mapper.HeaderCellMapper;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,17 +32,15 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
             INSERT INTO header_cells (
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
-            ) VALUES (?, ?, ?, ?, ?)
+                is_processing
+            ) VALUES (?, ?, ?, ?)
             RETURNING
                 id,
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
+                is_processing
         """;
 
         return jdbcTemplate.queryForObject(
@@ -51,9 +48,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 HEADER_CELL_MAPPER,
                 headerCell.getSubcategoryId(),
                 headerCell.getOriginalName(),
-                headerCell.getNormalizedName(),
                 headerCell.getCategory().name(),
-                headerCell.getCellStatus().name()
+                headerCell.getIsProcessing()
         );
     }
 
@@ -63,10 +59,9 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
             INSERT INTO header_cells (
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
-            ) VALUES (?, ?, ?, ?, ?)
+                is_processing
+            ) VALUES (?, ?, ?, ?)
         """;
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -75,9 +70,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 HeaderCell headerCell = headerCells.get(i);
                 ps.setLong(1, headerCell.getSubcategoryId());
                 ps.setString(2, headerCell.getOriginalName());
-                ps.setString(3, headerCell.getNormalizedName());
-                ps.setString(4, headerCell.getCategory() != null ? headerCell.getCategory().name() : null);
-                ps.setString(5, headerCell.getCellStatus() != null ? headerCell.getCellStatus().name() : null);
+                ps.setString(3, headerCell.getCategory() != null ? headerCell.getCategory().name() : null);
+                ps.setBoolean(4, headerCell.getIsProcessing() != null ? headerCell.getIsProcessing() : true);
             }
 
             @Override
@@ -93,17 +87,15 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
             UPDATE header_cells SET
                 subcategory_id = ?,
                 original_name = ?,
-                normalized_name = ?,
                 category = ?,
-                cell_status = ?
+                is_processing = ?
             WHERE id = ?
             RETURNING
                 id,
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
+                is_processing
         """;
 
         try {
@@ -112,9 +104,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                     HEADER_CELL_MAPPER,
                     headerCell.getSubcategoryId(),
                     headerCell.getOriginalName(),
-                    headerCell.getNormalizedName(),
                     headerCell.getCategory().name(),
-                    headerCell.getCellStatus().name(),
+                    headerCell.getIsProcessing(),
                     headerCell.getId()
             );
         }
@@ -130,9 +121,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 id,
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
+                is_processing
             FROM header_cells
         """;
 
@@ -149,9 +139,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 id,
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
+                is_processing
             FROM header_cells
             WHERE id = ?
         """;
@@ -175,9 +164,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 c.id,
                 c.subcategory_id,
                 c.original_name,
-                c.normalized_name,
                 c.category,
-                c.cell_status,
+                c.is_processing,
                 s.id AS sub_id,
                 s.name
             FROM header_cells c
@@ -190,13 +178,11 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 HeaderCellWithSubcategory dto = new HeaderCellWithSubcategory();
                 dto.setId(rs.getLong("id"));
                 dto.setOriginalName(rs.getString("original_name"));
-                dto.setNormalizedName(rs.getString("normalized_name"));
 
                 String categoryStr = rs.getString("category");
                 dto.setCategory(categoryStr != null ? Category.valueOf(categoryStr.trim().toUpperCase()) : null);
 
-                String cellStatusStr = rs.getString("cell_status");
-                dto.setCellStatus(cellStatusStr != null ? CellStatus.valueOf(cellStatusStr.trim().toUpperCase()) : null);
+                dto.setIsProcessing(rs.getBoolean("is_processing"));
 
                 dto.setSubcategoryName(rs.getString("name"));
                 return dto;
@@ -211,9 +197,8 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
                 id,
                 subcategory_id,
                 original_name,
-                normalized_name,
                 category,
-                cell_status
+                is_processing
             FROM header_cells
             WHERE category = ?
         """;

@@ -27,9 +27,8 @@ public class HeaderCellController {
         HeaderCell headerCell = HeaderCell.builder()
                 .subcategoryId(request.getSubcategoryId())
                 .originalName(request.getOriginalName())
-                .normalizedName(request.getNormalizedName())
                 .category(request.getCategory())
-                .cellStatus(request.getCellStatus())
+                .isProcessing(request.getIsProcessing())
                 .build();
 
         HeaderCell created = service.create(headerCell);
@@ -43,9 +42,8 @@ public class HeaderCellController {
                 .id(request.getId())
                 .subcategoryId(request.getSubcategoryId())
                 .originalName(request.getOriginalName())
-                .normalizedName(request.getNormalizedName())
                 .category(request.getCategory())
-                .cellStatus(request.getCellStatus())
+                .isProcessing(request.getIsProcessing())
                 .build();
 
         HeaderCell updated = service.update(headerCell);
@@ -64,6 +62,11 @@ public class HeaderCellController {
     }
 
     @GetMapping
+    public List<HeaderCell> findAll() {
+        return service.findAll();
+    }
+
+    @GetMapping("/with-subcategory")
     public List<HeaderCellWithSubcategory> findAllWithSubcategory() {
         return service.findAllWithSubcategory();
     }

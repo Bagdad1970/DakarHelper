@@ -4,7 +4,6 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
 import io.github.bagdad.models.excelparser.Category;
-import io.github.bagdad.models.excelparser.CellStatus;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
@@ -67,18 +66,16 @@ class ExcelParserHelperTest {
         // arrange
         HeaderCellWithSubcategory cell1 = HeaderCellWithSubcategory.builder()
                 .originalName("originalName1")
-                .normalizedName("normalized_name1")
                 .subcategoryName("subcategory_name1")
                 .category(Category.NAME)
-                .cellStatus(CellStatus.PROCESSED)
+                .isProcessing(true)
                 .build();
 
         HeaderCellWithSubcategory cell2 = HeaderCellWithSubcategory.builder()
                 .originalName("original_name2")
-                .normalizedName("normalized_name2")
                 .subcategoryName("subcategory_name2")
                 .category(Category.PRICE)
-                .cellStatus(CellStatus.IGNORED)
+                .isProcessing(true)
                 .build();
 
         List<HeaderCellWithSubcategory> headerCellWithSubcategories = List.of(cell1, cell2);
@@ -92,14 +89,12 @@ class ExcelParserHelperTest {
             softly.assertThat(result.get(0).getOriginalName()).isEqualTo("originalName1");
             softly.assertThat(result.get(0).getCategory()).isEqualTo(Category.NAME);
             softly.assertThat(result.get(0).getSubcategoryName()).isEqualTo("subcategory_name1");
-            softly.assertThat(result.get(0).getNormalizedName()).isEqualTo("normalized_name1");
-            softly.assertThat(result.get(0).getCellStatus()).isEqualTo(CellStatus.PROCESSED);
+            softly.assertThat(result.get(0).getIsProcessing()).isEqualTo(true);
 
             softly.assertThat(result.get(1).getOriginalName()).isEqualTo("original_name2");
             softly.assertThat(result.get(1).getCategory()).isEqualTo(Category.PRICE);
             softly.assertThat(result.get(1).getSubcategoryName()).isEqualTo("subcategory_name2");
-            softly.assertThat(result.get(1).getNormalizedName()).isEqualTo("normalized_name2");
-            softly.assertThat(result.get(1).getCellStatus()).isEqualTo(CellStatus.IGNORED);
+            softly.assertThat(result.get(1).getIsProcessing()).isEqualTo(true);
         });
     }
 
