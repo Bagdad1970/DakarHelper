@@ -137,4 +137,28 @@ class SubcategoryRepositoryTest {
         assertThatThrownBy(() -> repository.deleteById(nonExistingId))
                 .isInstanceOf(SubcategoryNotFoundException.class);
     }
+
+    @Test
+    void Batch_deleting_subcategories_must_delete_specified_subcategories() {
+        // arrange
+        Subcategory subcategory1 = createSubcategoryForTesting();
+        Subcategory subcategory2 = createSubcategoryForTesting();
+        Subcategory subcategory3 = createSubcategoryForTesting();
+
+        Subcategory savedSubcategory1 = repository.save(subcategory1);
+        Subcategory savedSubcategory2 = repository.save(subcategory2);
+        Subcategory savedSubcategory3 = repository.save(subcategory3);
+
+        List<Long> ids = List.of(savedSubcategory1.getId(), savedSubcategory2.getId());
+
+        // act
+        repository.batchDelete(ids);
+
+        // assert
+        List<Subcategory> vendors = repository.findAll();
+
+        assertThat(vendors).hasSize(1);
+        assertThat(vendors.get(0)).isEqualTo(savedSubcategory3);
+    }
+
 }

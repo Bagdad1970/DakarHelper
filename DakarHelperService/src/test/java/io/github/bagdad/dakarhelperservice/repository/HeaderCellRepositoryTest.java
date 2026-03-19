@@ -49,7 +49,7 @@ public class HeaderCellRepositoryTest {
         return subcategory;
     }
 
-    private static HeaderCell createExcelHeaderCellForTesting(Subcategory subcategory) {
+    private static HeaderCell createHeaderCellForTesting(Subcategory subcategory) {
         Long subcategoryId = subcategory != null ? subcategory.getId() : null;
         
         HeaderCell headerCell = new HeaderCell();
@@ -66,7 +66,7 @@ public class HeaderCellRepositoryTest {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
-        HeaderCell vendorFile = createExcelHeaderCellForTesting(savedSubcategory);
+        HeaderCell vendorFile = createHeaderCellForTesting(savedSubcategory);
         HeaderCell savedHeaderCell = headerCellRepository.save(vendorFile);
 
         Optional<HeaderCell> found = headerCellRepository.findById(savedHeaderCell.getId());
@@ -85,9 +85,9 @@ public class HeaderCellRepositoryTest {
         Subcategory savedSubcategory2 = subcategoryRepository.save(subcategory2);
         Subcategory savedSubcategory3 = subcategoryRepository.save(subcategory3);
 
-        HeaderCell headerCell1 = createExcelHeaderCellForTesting(savedSubcategory1);
-        HeaderCell headerCell2 = createExcelHeaderCellForTesting(savedSubcategory2);
-        HeaderCell headerCell3 = createExcelHeaderCellForTesting(savedSubcategory3);
+        HeaderCell headerCell1 = createHeaderCellForTesting(savedSubcategory1);
+        HeaderCell headerCell2 = createHeaderCellForTesting(savedSubcategory2);
+        HeaderCell headerCell3 = createHeaderCellForTesting(savedSubcategory3);
 
         List<HeaderCell> vendorFiles = new ArrayList<>();
         vendorFiles.add(headerCell1);
@@ -106,7 +106,7 @@ public class HeaderCellRepositoryTest {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
-        HeaderCell headerCell = createExcelHeaderCellForTesting(savedSubcategory);
+        HeaderCell headerCell = createHeaderCellForTesting(savedSubcategory);
         HeaderCell saved = headerCellRepository.save(headerCell);
 
         List<HeaderCell> files = headerCellRepository.findAll();
@@ -120,7 +120,7 @@ public class HeaderCellRepositoryTest {
         Subcategory subcategory = createSubcategoryForTesting();
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
-        HeaderCell headerCell = createExcelHeaderCellForTesting(savedSubcategory);
+        HeaderCell headerCell = createHeaderCellForTesting(savedSubcategory);
         HeaderCell savedHeaderCell = headerCellRepository.save(headerCell);
 
         Optional<HeaderCell> found = headerCellRepository.findById(savedHeaderCell.getId());
@@ -144,7 +144,7 @@ public class HeaderCellRepositoryTest {
         Subcategory vendor2 = createSubcategoryForTesting();
         Subcategory savedSubcategory2 = subcategoryRepository.save(vendor2);
 
-        HeaderCell headerCell = createExcelHeaderCellForTesting(savedSubcategory1);
+        HeaderCell headerCell = createHeaderCellForTesting(savedSubcategory1);
         HeaderCell savedHeaderCell = headerCellRepository.save(headerCell);
 
         savedHeaderCell.setSubcategoryId(savedSubcategory2.getId());
@@ -176,7 +176,7 @@ public class HeaderCellRepositoryTest {
 
         Subcategory savedSubcategory = subcategoryRepository.save(subcategory);
 
-        HeaderCell headerCell = createExcelHeaderCellForTesting(savedSubcategory);
+        HeaderCell headerCell = createHeaderCellForTesting(savedSubcategory);
         HeaderCell saved = headerCellRepository.save(headerCell);
 
         headerCellRepository.deleteById(saved.getId());
@@ -192,6 +192,31 @@ public class HeaderCellRepositoryTest {
 
         assertThatThrownBy(() -> headerCellRepository.deleteById(nonExistingId))
                 .isInstanceOf(HeaderCellNotFoundException.class);
+    }
+
+    @Test
+    void Batch_deleting_header_cells_must_delete_specified_header_cells() {
+        // arrange
+        Subcategory subcategory = createSubcategoryForTesting();
+
+        HeaderCell headerCell1 = createHeaderCellForTesting(subcategory);
+        HeaderCell headerCell2 = createHeaderCellForTesting(subcategory);
+        HeaderCell headerCell3 = createHeaderCellForTesting(subcategory);
+
+        HeaderCell savedHeaderCell1 = headerCellRepository.save(headerCell1);
+        HeaderCell savedHeaderCell2 = headerCellRepository.save(headerCell2);
+        HeaderCell savedHeaderCell3 = headerCellRepository.save(headerCell3);
+
+        List<Long> ids = List.of(savedHeaderCell1.getId(), savedHeaderCell2.getId());
+
+        // act
+        headerCellRepository.batchDelete(ids);
+
+        // assert
+        List<HeaderCell> headerCells = headerCellRepository.findAll();
+
+        assertThat(headerCells).hasSize(1);
+        assertThat(headerCells.get(0)).isEqualTo(savedHeaderCell3);
     }
 
 }

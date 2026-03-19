@@ -1,6 +1,7 @@
 import type { Vendor } from "../types/vendor/Vendor.ts";
 import apiClient from "./ApiClient.ts";
 import type {VendorCreateRequest} from "../types/vendor/VendorCreateRequest.ts";
+import type {BatchDeleteRequest} from "../types/BatchDeleteRequest.ts";
 
 export default class VendorManager {
     
@@ -54,6 +55,16 @@ export default class VendorManager {
         }
         catch (error) {
             console.error("Error deleting vendor:", error);
+            throw error;
+        }
+    }
+
+    async batchDelete(ids: BatchDeleteRequest): Promise<void> {
+        try {
+            await apiClient.post(`header-cells/batch-delete`, ids);
+        }
+        catch (error) {
+            console.error("Error deleting vendors:", error);
             throw error;
         }
     }

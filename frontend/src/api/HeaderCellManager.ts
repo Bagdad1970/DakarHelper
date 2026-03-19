@@ -1,6 +1,7 @@
 import type {HeaderCell} from "../types/headercell/HeaderCell.ts";
 import apiClient from "./ApiClient.ts";
 import type {HeaderCellWithSubcategory} from "../types/headercell/HeaderCellWithSubcategory.ts";
+import type {BatchDeleteRequest} from "../types/BatchDeleteRequest.ts";
 
 export default class HeaderCellManager  {
 
@@ -51,6 +52,16 @@ export default class HeaderCellManager  {
     async deleteById(id: bigint): Promise<void> {
         try {
             await apiClient.delete(`header-cells/${id}`);
+        }
+        catch (error) {
+            console.error("Error deleting HeaderCell:", error);
+            throw error;
+        }
+    }
+
+    async batchDelete(ids: BatchDeleteRequest): Promise<void> {
+        try {
+            await apiClient.post(`header-cells/batch-delete`, ids);
         }
         catch (error) {
             console.error("Error deleting HeaderCell:", error);

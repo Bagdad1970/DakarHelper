@@ -2,6 +2,7 @@ package io.github.bagdad.dakarhelperservice.controller;
 
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
+import io.github.bagdad.models.request.BatchDeleteRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,11 @@ public class VendorController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         service.deleteById(id);
+    }
+
+    @PostMapping("/batch-delete")
+    public void batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+        service.batchDelete(request.getIds());
     }
 
 }

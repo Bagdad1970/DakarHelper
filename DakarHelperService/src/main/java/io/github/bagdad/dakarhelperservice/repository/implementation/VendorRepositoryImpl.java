@@ -1,5 +1,6 @@
 package io.github.bagdad.dakarhelperservice.repository.implementation;
 
+import io.github.bagdad.dakarhelperservice.exception.SubcategoryNotFoundException;
 import io.github.bagdad.dakarhelperservice.exception.VendorNotFoundException;
 import io.github.bagdad.dakarhelperservice.model.Vendor;
 import io.github.bagdad.dakarhelperservice.repository.interfaces.VendorRepository;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class VendorRepositoryImpl implements VendorRepository {
@@ -125,15 +127,38 @@ public class VendorRepositoryImpl implements VendorRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = """
             DELETE FROM vendors
             WHERE id = ?
         """;
 
-        jdbcTemplate.update(
+        int count = jdbcTemplate.update(
                 sql,
                 id
+        );
+
+        if (count == 0) {
+            throw new VendorNotFoundException(id);
+        }
+
+        return count;
+    }
+
+    @Override
+    public int batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return 0;
+        }
+
+        String sql = """
+            DELETE FROM vendors
+            WHERE id = ANY(?::bigint[])
+        """;
+
+        return jdbcTemplate.update(
+                sql,
+                ids.toArray(new Long[0])
         );
     }
 

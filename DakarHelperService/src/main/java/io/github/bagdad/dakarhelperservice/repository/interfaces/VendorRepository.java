@@ -14,12 +14,14 @@ public interface VendorRepository {
 
     Vendor update(Vendor Vendor);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     List<Vendor> findAll();
 
     Optional<Vendor> findById(Long id);
 
     List<VendorWithMaxFileDateTime> findVendorsWithLastFileTimestamp();
+
+    int batchDelete(List<Long> ids);
     
 }

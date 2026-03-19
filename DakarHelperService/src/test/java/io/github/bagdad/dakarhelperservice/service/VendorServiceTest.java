@@ -140,10 +140,35 @@ public class VendorServiceTest {
 
     @Test
     void deleteById() {
-        service.deleteById(1L);
+        Mockito.when(repository.deleteById(1L))
+                .thenReturn(1);
+        
+        int result = service.deleteById(1L);
 
+        assertThat(result).isEqualTo(1);
         Mockito.verify(repository, times(1))
                 .deleteById(1L);
+    }
+
+    @Test
+    void batchDelete() {
+        // arrange
+        Vendor vendor1 = Vendor.builder()
+                .title("title")
+                .build();
+
+        Vendor vendor2 = Vendor.builder()
+                .title("updated_title")
+                .build();
+
+        List<Vendor> vendors = List.of(vendor1, vendor2);
+
+        // act
+        service.batchInsert(vendors);
+
+        // assert
+        Mockito.verify(repository, times(1))
+                .batchInsert(vendors);
     }
 
 }

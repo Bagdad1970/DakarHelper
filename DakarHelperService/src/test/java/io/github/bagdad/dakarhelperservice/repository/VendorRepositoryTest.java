@@ -127,4 +127,27 @@ class VendorRepositoryTest {
         assertThat(deleted).isEmpty();
     }
 
+    @Test
+    void Batch_deleting_vendors_must_delete_specified_vendors() {
+        // arrange
+        Vendor vendor1 = createVendorForTesting();
+        Vendor vendor2 = createVendorForTesting();
+        Vendor vendor3 = createVendorForTesting();
+
+        Vendor savedVendor1 = repository.save(vendor1);
+        Vendor savedVendor2 = repository.save(vendor2);
+        Vendor savedVendor3 = repository.save(vendor3);
+
+        List<Long> ids = List.of(savedVendor1.getId(), savedVendor2.getId());
+
+        // act
+        repository.batchDelete(ids);
+
+        // assert
+        List<Vendor> vendors = repository.findAll();
+
+        assertThat(vendors).hasSize(1);
+        assertThat(vendors.get(0)).isEqualTo(savedVendor3);
+    }
+
 }

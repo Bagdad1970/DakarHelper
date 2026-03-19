@@ -1,5 +1,6 @@
 import type {Subcategory} from "../types/subcategory/Subcategory.ts";
 import apiClient from "./ApiClient.ts";
+import type {BatchDeleteRequest} from "../types/BatchDeleteRequest.ts";
 
 export default class SubcategoryManager  {
 
@@ -53,6 +54,16 @@ export default class SubcategoryManager  {
         }
         catch (error) {
             console.error("Error deleting Subcategory:", error);
+            throw error;
+        }
+    }
+
+    async batchDelete(ids: BatchDeleteRequest): Promise<void> {
+        try {
+            await apiClient.post(`header-cells/batch-delete`, ids);
+        }
+        catch (error) {
+            console.error("Error deleting subcategories:", error);
             throw error;
         }
     }

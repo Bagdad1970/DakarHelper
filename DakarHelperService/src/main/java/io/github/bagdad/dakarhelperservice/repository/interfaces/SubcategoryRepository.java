@@ -14,10 +14,12 @@ public interface SubcategoryRepository {
 
     List<Subcategory> findAll();
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     Optional<Subcategory> findById(Long id);
 
     List<Subcategory> findAllByCategory(Category category);
+
+    void batchDelete(List<Long> ids);
 
 }

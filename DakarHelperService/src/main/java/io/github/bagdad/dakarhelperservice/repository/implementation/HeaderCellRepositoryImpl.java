@@ -211,7 +211,7 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = """
             DELETE FROM header_cells
             WHERE id = ?
@@ -225,6 +225,32 @@ public class HeaderCellRepositoryImpl implements HeaderCellRepository {
         if (count == 0) {
             throw new HeaderCellNotFoundException(id);
         }
+
+        return count;
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        String sql = """
+            DELETE FROM header_cells
+            WHERE id = ?
+        """;
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setLong(1, ids.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return ids.size();
+            }
+        });
     }
 
 }

@@ -77,8 +77,8 @@ public class HeaderCellServiceImpl implements HeaderCellService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    public int deleteById(Long id) {
+        return repository.deleteById(id);
     }
 
     @Override
@@ -89,6 +89,11 @@ public class HeaderCellServiceImpl implements HeaderCellService {
     @Override
     public List<HeaderCell> findAllByCategory(Category category) {
         return repository.findAllByCategory(category);
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        repository.batchDelete(ids);
     }
 
 }

@@ -2,8 +2,10 @@ package io.github.bagdad.dakarhelperservice.controller;
 
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.service.interfaces.SubcategoryService;
+import io.github.bagdad.models.request.BatchDeleteRequest;
 import io.github.bagdad.models.request.subcategory.SubcategoryCreateRequest;
 import io.github.bagdad.models.request.subcategory.SubcategoryUpdateRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +67,11 @@ public class SubcategoryController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         service.deleteById(id);
+    }
+
+    @PostMapping("/batch-delete")
+    public void batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+        service.batchDelete(request.getIds());
     }
 
 }

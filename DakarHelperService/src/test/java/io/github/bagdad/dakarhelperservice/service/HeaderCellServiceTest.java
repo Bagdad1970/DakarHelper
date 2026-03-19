@@ -297,8 +297,12 @@ public class HeaderCellServiceTest {
 
     @Test
     void Deleting_header_cell_by_id_must_delete_specified_header_cell() {
-        service.deleteById(1L);
+        Mockito.when(repository.deleteById(1L))
+                .thenReturn(1);
 
+        int result = service.deleteById(1L);
+
+        assertThat(result).isEqualTo(1);
         Mockito.verify(repository, times(1))
                 .deleteById(1L);
     }

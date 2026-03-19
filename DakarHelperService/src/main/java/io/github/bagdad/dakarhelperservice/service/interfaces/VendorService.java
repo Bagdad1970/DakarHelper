@@ -18,8 +18,10 @@ public interface VendorService {
 
     Optional<Vendor> findById(Long id);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     List<VendorWithMaxFileDateTime> findVendorsWithLastFileDate();
+
+    void batchDelete(List<Long> ids);
 
 }

@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true) // Разрешить отправку куки и авторизационных данных
-                .maxAge(3600); // Время кэширования preflight запросов (в секундах)
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

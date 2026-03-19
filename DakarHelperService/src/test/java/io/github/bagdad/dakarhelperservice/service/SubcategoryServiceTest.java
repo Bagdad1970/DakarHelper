@@ -110,9 +110,13 @@ public class SubcategoryServiceTest {
     }
 
     @Test
-    void deleteById() {
-        service.deleteById(1L);
+    void Deleting_subcategory_by_id_must_delete_specified_subcategory() {
+        Mockito.when(repository.deleteById(1L))
+                .thenReturn(1);
 
+        int result = service.deleteById(1L);
+
+        assertThat(result).isEqualTo(1);
         Mockito.verify(repository, times(1))
                 .deleteById(1L);
     }

@@ -46,8 +46,8 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    public int deleteById(Long id) {
+        return repository.deleteById(id);
     }
 
     @Override
@@ -55,5 +55,9 @@ public class SubcategoryServiceImpl implements SubcategoryService {
         return repository.findAllByCategory(category);
     }
 
+    @Override
+    public void batchDelete(List<Long> ids) {
+        repository.batchDelete(ids);
+    }
 
 }

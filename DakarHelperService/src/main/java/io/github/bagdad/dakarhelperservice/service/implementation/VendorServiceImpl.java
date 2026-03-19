@@ -50,13 +50,18 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    public int deleteById(Long id) {
+        return repository.deleteById(id);
     }
 
     @Override
     public List<VendorWithMaxFileDateTime> findVendorsWithLastFileDate() {
         return repository.findVendorsWithLastFileTimestamp();
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        repository.batchDelete(ids);
     }
 
 }

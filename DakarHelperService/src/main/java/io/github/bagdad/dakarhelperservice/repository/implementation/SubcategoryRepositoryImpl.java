@@ -6,9 +6,12 @@ import io.github.bagdad.dakarhelperservice.repository.interfaces.SubcategoryRepo
 import io.github.bagdad.dakarhelperservice.repository.mapper.SubcategoryMapper;
 import io.github.bagdad.models.excelparser.Category;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -128,17 +131,43 @@ public class SubcategoryRepositoryImpl implements SubcategoryRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM subcategories WHERE id = ?";
 
         int count = jdbcTemplate.update(
-                sql,
-                id
+            sql,
+            id
         );
 
         if (count == 0) {
             throw new SubcategoryNotFoundException(id);
         }
+
+        return count;
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        String sql = """
+            DELETE FROM subcategories
+            WHERE id = ?
+        """;
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setLong(1, ids.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return ids.size();
+            }
+        });
     }
     
 }
