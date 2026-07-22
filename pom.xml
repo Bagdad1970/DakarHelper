@@ -14,6 +14,7 @@
         <module>ExcelParser</module>
         <module>DakarHelperService</module>
         <module>FileHandler</module>
+        <module>Common</module>
     </modules>
 
     <properties>

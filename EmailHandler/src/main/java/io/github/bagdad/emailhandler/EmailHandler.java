@@ -1,5 +1,7 @@
 package io.github.bagdad.emailhandler;
 
+import io.github.bagdad.common.ConfigManager;
+import io.github.bagdad.emailhandler.config.EmailConfig;
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import jakarta.mail.*;
@@ -14,50 +16,53 @@ import java.util.Properties;
 @Slf4j
 public class EmailHandler {
 
-    private final EmailConfig config;
-
     private final List<VendorWithMaxFileDateTime> vendors;
 
     private Folder folder;
 
-    public EmailHandler(EmailConfig config, List<VendorWithMaxFileDateTime> vendors) {
-        this.config = config;
+    static {
+        ConfigManager.loadConfig("EmailHandler/src/main/resources/config/email.json", EmailConfig.class);
+    }
+
+    public EmailHandler(List<VendorWithMaxFileDateTime> vendors) {
         this.vendors = vendors;
     }
 
     private void initConnection() {
+        log.info("Connecting to email");
+
         Properties props = new Properties();
-        props.put("mail.store.protocol", config.getProtocol());
-        props.put("mail.host", config.getHost());
+        props.put("mail.store.protocol", ConfigManager.getConfig(EmailConfig.class).getProtocol());
+        props.put("mail.host", ConfigManager.getConfig(EmailConfig.class).getHost());
 
         try {
             Session session = Session.getDefaultInstance(props);
             Store store = session.getStore();
-            store.connect(config.getLogin(), config.getPassword());
-            log.info("Connected to IMAP store at {}", config.getHost());
+            store.connect(
+                    ConfigManager.getConfig(EmailConfig.class).getLogin(),
+                    ConfigManager.getConfig(EmailConfig.class).getPassword()
+            );
 
-            folder = store.getFolder(config.getFolderName());
+            folder = store.getFolder(ConfigManager.getConfig(EmailConfig.class).getFolderName());
             folder.open(Folder.READ_ONLY);
-            log.info("Folder '{}' opened in READ_ONLY mode", config.getFolderName());
         }
         catch (MessagingException e) {
             log.error("Email connection failed", e);
             throw new RuntimeException("Email connection failed", e);
         }
-        catch (Exception e) {
-            log.error("Unexpected error during IMAP connection init", e);
-        }
     }
 
     public List<VendorWithFilepathes> readEmail() {
+        log.info("Reading files from email");
+
         initConnection();
 
+        List<VendorWithFilepathes> vendorsWithFilepathes = new ArrayList<>();
+
         try {
-            List<VendorWithFilepathes> vendorsWithFilepathes = new ArrayList<>();
+            Message[] messages = folder.search(new FromStringTerm(ConfigManager.getConfig(EmailConfig.class).getFromTerm()));
 
-            Message[] messages = folder.search(new FromStringTerm(config.getFromTerm()));
-
-            MessageHandler messageHandler = new MessageHandler(vendors, config);
+            MessageHandler messageHandler = new MessageHandler(vendors);
             messageHandler.processMessages(messages);
 
             if (messageHandler.getVendorFilepathes().isEmpty()) {
@@ -77,36 +82,27 @@ public class EmailHandler {
                 }
             }
 
-            log.info("Final vendor filepathes: {}", vendorsWithFilepathes);
-
-            return vendorsWithFilepathes;
-
         }
         catch (MessagingException e) {
             log.error("Error while searching/fetching messages", e);
-        }
-        catch (Exception e) {
-            log.error("Unexpected error: ", e);
         }
         finally {
             close();
         }
 
-        return Collections.emptyList();
+        return vendorsWithFilepathes;
     }
 
     public void close() {
+        log.info("Closing folder and store");
+
         if (folder != null && folder.isOpen()) {
             try {
                 folder.close(false);
                 folder.getStore().close();
-                log.info("IMAP folder and store closed successfully");
             }
             catch (MessagingException e) {
                 log.error("Error closing folder/store", e);
-            }
-            catch (Exception e) {
-                log.error("Unexpected error during close()", e);
             }
         }
     }

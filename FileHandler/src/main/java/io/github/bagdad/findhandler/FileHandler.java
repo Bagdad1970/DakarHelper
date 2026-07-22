@@ -1,5 +1,8 @@
 package io.github.bagdad.findhandler;
 
+import io.github.bagdad.common.ConfigManager;
+import io.github.bagdad.findhandler.config.FileHandlerConfig;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileOutputStream;
@@ -10,15 +13,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Slf4j
+@NoArgsConstructor
 public class FileHandler {
 
-    private final Path saveDir;
-
-    public FileHandler(Path saveDir) {
-        this.saveDir = saveDir;
+    static {
+        ConfigManager.loadConfig("FileHandler/src/main/resources/config/file-handler.json", FileHandlerConfig.class);
     }
 
-    public Path saveVendorFile(String vendorTitle, String filename, InputStream inputStream) {
+    public static Path saveVendorFile(String vendorTitle, String filename, InputStream inputStream) {
         Path createdVendorDirectory = createDirectory(vendorTitle);
 
         Path filepath = createdVendorDirectory.resolve(filename);
@@ -26,30 +28,28 @@ public class FileHandler {
         return filepath;
     }
 
-    public Path createDirectory(String vendorTitle) {
-        Path vendorDiriectoryPath = saveDir.resolve(vendorTitle);
+    public static Path createDirectory(String vendorTitle) {
+        log.info("Creating directory for vendor {}", vendorTitle);
+
+        Path vendorDirectoryPath = ConfigManager.getConfig(FileHandlerConfig.class).getSaveDir()
+                .resolve(vendorTitle);
 
         try {
-            Path createdVendorDirPath = Files.createDirectories(saveDir.resolve(vendorTitle));
-            log.info("Directory created for vendor '{}': {}", vendorTitle, createdVendorDirPath);
-            return createdVendorDirPath;
+            return Files.createDirectories(vendorDirectoryPath);
         }
         catch (FileAlreadyExistsException e) {
-            log.error("Directory already exists for vendor '{}': {}", vendorTitle, vendorDiriectoryPath);
+            log.error("Directory already exists for vendor '{}': {}", vendorTitle, vendorDirectoryPath);
             throw new RuntimeException("Failed to create vendor directory", e);
         }
         catch (IOException e) {
-            log.error("Failed to create directory for vendor '{}': {}", vendorTitle, vendorDiriectoryPath);
-            throw new RuntimeException("Failed to create vendor directory", e);
-        }
-        catch (Exception e) {
-            log.error("Unhandled exception when creating vendor directory '{}': {}", vendorTitle, vendorDiriectoryPath);
+            log.error("Failed to create directory for vendor '{}': {}", vendorTitle, vendorDirectoryPath);
             throw new RuntimeException("Failed to create vendor directory", e);
         }
     }
 
     private static void saveFile(Path filepath, InputStream inputStream) {
-        log.info("Saving Excel file: {}", filepath);
+        log.info("Saving file: {}", filepath);
+
         try (inputStream;
              FileOutputStream fileOutput = new FileOutputStream(filepath.toFile())) {
 
@@ -58,26 +58,21 @@ public class FileHandler {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 fileOutput.write(buffer, 0, bytesRead);
             }
-            log.info("Saved file: {}", filepath);
         }
         catch (IOException e) {
             log.error("Saving file failed for {}", filepath, e);
             throw new RuntimeException("Saving file failed", e);
         }
-        catch (Exception e) {
-            log.error("Unexpected error saving file: {}", filepath, e);
-        }
     }
 
     public static void deleteFile(Path filepath) {
+        log.info("Deleting file: {}", filepath);
+
         try {
             Files.deleteIfExists(filepath);
         }
         catch (IOException e) {
             log.error("Failed to delete the file: {}", filepath);
-        }
-        catch (Exception e) {
-            log.error("Unhandled exception when deleting: {}", filepath);
         }
     }
 

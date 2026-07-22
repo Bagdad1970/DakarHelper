@@ -30,14 +30,11 @@ public class MessageHandler {
 
     private final List<VendorWithMaxFileDateTime> vendors;
 
-    private final FileHandler fileHandler;
-
     @Getter
     private final Map<String, List<String>> vendorFilepathes;
 
-    public MessageHandler(List<VendorWithMaxFileDateTime> vendors, EmailConfig config) {
+    public MessageHandler(List<VendorWithMaxFileDateTime> vendors) {
         this.vendors = vendors;
-        this.fileHandler = new FileHandler(config.getSaveDir());
         this.vendorFilepathes = new HashMap<>();
         this.vendorVisits = new HashMap<>();
         initVendorVisits();
@@ -50,13 +47,14 @@ public class MessageHandler {
     }
 
     public void processMessages(Message[] messages) {
+        log.info("Processing {} messages", messages.length);
+
         if (messages.length == 0) {
-            log.info("No messages to process");
+            return;
         }
 
         List<Message> reversedMessages = Arrays.asList(messages);
         Collections.reverse(reversedMessages);
-        log.info("Processing {} messages", reversedMessages.size());
 
         for (int i = 0; i < reversedMessages.size() && hasUnvisitedCompanies(); i++) {
             processMessage(reversedMessages.get(i));
@@ -68,6 +66,8 @@ public class MessageHandler {
     }
 
     private void processMessage(Message message) {
+        log.info("Processing message");
+
         try {
             String subject = message.getSubject();
             VendorWithMaxFileDateTime vendor = findVendorInText(subject);
@@ -88,16 +88,13 @@ public class MessageHandler {
         catch (IOException | MessagingException e) {
             log.error("Error extracting message content", e);
         }
-        catch (Exception e) {
-            log.error("Unexpected error: ", e);
-        }
     }
 
     private void processMultipartInMessage(VendorWithMaxFileDateTime vendor, Multipart multipart) {
         String vendorTitle = vendor.getTitle();
 
         if (vendorTitle.isEmpty()) {
-            VendorWithMaxFileDateTime vendorFromBody = findVendorInBody(multipart);
+            VendorWithMaxFileDateTime vendorFromBody = findVendorInMessageBody(multipart);
             vendorTitle = vendorFromBody.getTitle();
         }
 
@@ -108,7 +105,9 @@ public class MessageHandler {
         }
     }
 
-    private VendorWithMaxFileDateTime findVendorInBody(Multipart multipart) {
+    private VendorWithMaxFileDateTime findVendorInMessageBody(Multipart multipart) {
+        log.info("Finding vendor title in message body");
+
         BodyPart textBodyPart = MessageHandlerUtils.extractTextBodyPart(multipart);
 
         if (textBodyPart == null) {
@@ -122,9 +121,7 @@ public class MessageHandler {
         catch (IOException | MessagingException e) {
             log.error("Error during multipart processing", e);
         }
-        catch (Exception e) {
-            log.error("Unexpected error: ", e);
-        }
+
         return new VendorWithMaxFileDateTime("");
     }
 
@@ -138,9 +135,6 @@ public class MessageHandler {
         catch (MessagingException e) {
             log.error("Error iterating multipart parts", e);
         }
-        catch (Exception e) {
-            log.error("Unhandled exception when saving excel files");
-        }
     }
 
     private void processExcelBodyPart(String vendorTitle, BodyPart bodyPart) {
@@ -150,7 +144,7 @@ public class MessageHandler {
                 String filename = MimeUtility.decodeText(encodedFilename);
 
                 if (MessageHandlerUtils.isExcelFile(filename)) {
-                    Path filepath = fileHandler.saveVendorFile(vendorTitle, filename, bodyPart.getInputStream());
+                    Path filepath = FileHandler.saveVendorFile(vendorTitle, filename, bodyPart.getInputStream());
                     vendorFilepathes.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
                 }
             }
@@ -158,15 +152,14 @@ public class MessageHandler {
         catch (UnsupportedEncodingException e) {
             log.error("Failed to decode filename", e);
         }
-        catch (MessagingException e) {
+        catch (MessagingException | IOException e) {
             log.error("Error accessing body part", e);
-        }
-        catch (Exception e) {
-            log.error("Unexpected error: ", e);
         }
     }
 
-    VendorWithMaxFileDateTime findVendorInText(String text) {
+    private VendorWithMaxFileDateTime findVendorInText(String text) {
+        log.info("Finding vendor title in text");
+
         if (text == null || text.isBlank()) {
             return new VendorWithMaxFileDateTime("");
         }

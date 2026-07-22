@@ -1,11 +1,9 @@
-package io.github.bagdad.emailhandler;
+package io.github.bagdad.emailhandler.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.nio.file.Path;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +22,5 @@ public class EmailConfig {
     private String folderName;
 
     private String fromTerm;
-
-    private Path saveDir;
 
 }

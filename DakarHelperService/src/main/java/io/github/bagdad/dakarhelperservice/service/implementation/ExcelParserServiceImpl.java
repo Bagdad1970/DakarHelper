@@ -11,7 +11,7 @@ import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.SubcategoryService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorFileService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.VendorService;
-import io.github.bagdad.emailhandler.EmailConfig;
+import io.github.bagdad.emailhandler.config.EmailConfig;
 import io.github.bagdad.emailhandler.EmailHandler;
 import io.github.bagdad.dakarhelperservice.helper.EmailHelper;
 import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
@@ -27,20 +27,14 @@ import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ExcelParserServiceImpl implements ParserService {
-
-    private final EmailConfig emailConfig;
 
     private final VendorService vendorService;
 
@@ -52,14 +46,12 @@ public class ExcelParserServiceImpl implements ParserService {
 
     private final SubcategoryService subcategoryService;
 
-    public ExcelParserServiceImpl(EmailConfig emailConfig,
-                                  VendorService vendorService,
+    public ExcelParserServiceImpl(VendorService vendorService,
                                   VendorFileService vendorFileService,
                                   HeaderCellService headerCellService,
                                   ProductService productService,
                                   SubcategoryService subcategoryService
     ) {
-        this.emailConfig = emailConfig;
         this.vendorService = vendorService;
         this.vendorFileService = vendorFileService;
         this.headerCellService = headerCellService;
@@ -103,7 +95,7 @@ public class ExcelParserServiceImpl implements ParserService {
             return;
         }
 
-        EmailHandler emailHandler = new EmailHandler(emailConfig, vendorsWithLastFileTimestamp);
+        EmailHandler emailHandler = new EmailHandler(vendorsWithLastFileTimestamp);
 
         List<VendorWithFilepathes> vendorsWithFilepathes = emailHandler.readEmail();
 

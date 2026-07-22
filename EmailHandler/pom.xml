@@ -35,6 +35,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.bagdad</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <!-- Email -->
 

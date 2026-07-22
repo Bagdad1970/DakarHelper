@@ -14,19 +14,6 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
 
-
-app:
-  email:
-    login: ${EMAIL_LOGIN}
-    password: ${EMAIL_PASSWORD}
-    protocol: ${EMAIL_PROTOCOL}
-    host: ${EMAIL_HOST}
-    folder-name: ${EMAIL_FOLDER_NAME}
-    from-term: ${EMAIL_FROM_TERM}
-    save-dir: ${SAVE_DIR}
-
-
 logging:
   level:
     root: INFO
-

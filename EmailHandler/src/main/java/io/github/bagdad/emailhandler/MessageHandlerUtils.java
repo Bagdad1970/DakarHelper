@@ -22,6 +22,8 @@ public class MessageHandlerUtils {
 
     private static final String MESSAGE_SENT_DATE_HEADER = "Date";
 
+    private static final String TEXT_MIME = "text/plain";
+
     static BodyPart extractTextBodyPart(Multipart multipart) {
         if (multipart == null) {
             return null;
@@ -35,20 +37,21 @@ public class MessageHandlerUtils {
                     Multipart nestedMultipart = (Multipart) bodyPart.getContent();
                     for (int j = 0; j < nestedMultipart.getCount(); j++) {
                         BodyPart nestedPart = nestedMultipart.getBodyPart(j);
-                        if (nestedPart.getContentType().contains("text/plain")) {
+                        if (nestedPart.getContentType().contains(TEXT_MIME)) {
                             return nestedPart;
                         }
                     }
                 }
             }
         }
-        catch (Exception e) {
-            log.error("Error while extracting text body part", e);
+        catch (IOException | MessagingException e) {
+            log.error("Error while extracting message content", e);
         }
+
         return null;
     }
 
-    static OffsetDateTime getSentOffsetDateTime(Message message) {
+    public static OffsetDateTime getSentOffsetDateTime(Message message) {
         try {
             String[] dateHeaders = message.getHeader(MESSAGE_SENT_DATE_HEADER);
             if (dateHeaders == null || dateHeaders.length == 0) {
@@ -71,7 +74,7 @@ public class MessageHandlerUtils {
         }
     }
 
-    static boolean isExcelFile(String filename) {
+    public static boolean isExcelFile(String filename) {
         return EXCEL_EXTENSIONS.stream()
                 .anyMatch(filename::endsWith);
     }
