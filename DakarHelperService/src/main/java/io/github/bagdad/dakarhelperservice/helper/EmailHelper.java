@@ -4,6 +4,7 @@ import io.github.bagdad.dakarhelperservice.model.VendorFile;
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class EmailHelper {
 
                 VendorFile vendorFile = VendorFile.builder()
                         .vendorId(vendor.getId())
-                        .filepath(filepath.trim())
+                        .filepath(Path.of(filepath.trim()))
                         .build();
 
                 vendorFiles.add(vendorFile);

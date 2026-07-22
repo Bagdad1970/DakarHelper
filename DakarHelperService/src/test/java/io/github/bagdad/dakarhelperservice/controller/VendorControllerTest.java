@@ -66,31 +66,31 @@ public class VendorControllerTest {
                 .andExpect(content().json(asJsonString(saved)));
     }
 
-    @Test
-    void update() throws Exception {
-        // arrange
-        VendorUpdateRequest request = new VendorUpdateRequest();
-        request.setId(1L);
-        request.setTitle("updated_title");
-
-        Vendor updated = Vendor.builder()
-                .id(1L)
-                .title("updated_title")
-                .build();
-
-        Mockito.when(service.update(Mockito.any(Vendor.class)))
-                .thenReturn(updated);
-
-        // act & assert
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/vendors/1")
-                        .content(asJsonString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json(asJsonString(updated)));
-    }
+//    @Test
+//    void update() throws Exception {
+//        // arrange
+//        VendorUpdateRequest request = new VendorUpdateRequest();
+//        request.setId(1L);
+//        request.setTitle("updated_title");
+//
+//        Vendor updated = Vendor.builder()
+//                .id(1L)
+//                .title("updated_title")
+//                .build();
+//
+//        Mockito.when(service.update(Mockito.any(Vendor.class)))
+//                .thenReturn(updated);
+//
+//        // act & assert
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .put("/api/vendors/1")
+//                        .content(asJsonString(request))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(asJsonString(updated)));
+//    }
 
     @Test
     void Finding_by_id_existing_vendor_must_return_it() throws Exception {

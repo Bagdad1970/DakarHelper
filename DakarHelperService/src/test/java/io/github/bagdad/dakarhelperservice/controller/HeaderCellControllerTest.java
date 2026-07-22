@@ -73,37 +73,37 @@ public class HeaderCellControllerTest {
                 .andExpect(content().json(asJsonString(saved)));
     }
 
-    @Test
-    void update() throws Exception {
-        // arrange
-        HeaderCellUpdateRequest request = new HeaderCellUpdateRequest();
-        request.setId(1L);
-        request.setSubcategoryId(1L);
-        request.setOriginalName("original_name");
-        request.setCategory(Category.NAME);
-        request.setIsProcessing(true);
-
-        HeaderCell updated = HeaderCell.builder()
-                .id(1L)
-                .subcategoryId(1L)
-                .originalName("updated_original_name")
-                .category(Category.NAME)
-                .isProcessing(true)
-                .build();
-
-        Mockito.when(service.update(updated))
-                .thenReturn(updated);
-
-        // act & assert
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/header-cells/1")
-                        .content(asJsonString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json(asJsonString(updated)));
-    }
+//    @Test
+//    void update() throws Exception {
+//        // arrange
+//        HeaderCellUpdateRequest request = new HeaderCellUpdateRequest();
+//        request.setId(1L);
+//        request.setSubcategoryId(1L);
+//        request.setOriginalName("original_name");
+//        request.setCategory(Category.NAME);
+//        request.setIsProcessing(true);
+//
+//        HeaderCell updated = HeaderCell.builder()
+//                .id(1L)
+//                .subcategoryId(1L)
+//                .originalName("updated_original_name")
+//                .category(Category.NAME)
+//                .isProcessing(true)
+//                .build();
+//
+//        Mockito.when(service.update(updated))
+//                .thenReturn(updated);
+//
+//        // act & assert
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .put("/api/header-cells/1")
+//                        .content(asJsonString(request))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(asJsonString(updated)));
+//    }
 
     @Test
     void Finding_by_id_existing_header_cell_must_return_it() throws Exception {

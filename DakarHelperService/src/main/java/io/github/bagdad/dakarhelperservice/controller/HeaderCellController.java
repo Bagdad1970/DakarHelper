@@ -7,6 +7,8 @@ import io.github.bagdad.models.request.BatchDeleteRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellCreateRequest;
 import io.github.bagdad.models.request.headercell.HeaderCellUpdateRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ public class HeaderCellController {
     }
 
     @PostMapping
-    public ResponseEntity<HeaderCell> create(@RequestBody HeaderCellCreateRequest request) {
+    public ResponseEntity<@NonNull HeaderCell> create(@RequestBody HeaderCellCreateRequest request) {
         HeaderCell headerCell = HeaderCell.builder()
                 .subcategoryId(request.getSubcategoryId())
                 .originalName(request.getOriginalName())
@@ -39,9 +41,9 @@ public class HeaderCellController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HeaderCell> update(@PathVariable Long id, @RequestBody HeaderCellUpdateRequest request) {
+    public ResponseEntity<@NonNull HeaderCell> update(@PathVariable Long id, @RequestBody HeaderCellUpdateRequest request) {
         HeaderCell headerCell = HeaderCell.builder()
-                .id(request.getId())
+                .id(id)
                 .subcategoryId(request.getSubcategoryId())
                 .originalName(request.getOriginalName())
                 .category(request.getCategory())
@@ -54,7 +56,7 @@ public class HeaderCellController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HeaderCell> findById(@PathVariable Long id) {
+    public ResponseEntity<@NonNull HeaderCell> findById(@PathVariable Long id) {
         HeaderCell headerCell = service.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "HeaderCell not found with id: " + id

@@ -150,7 +150,7 @@ public class MessageHandler {
                 String filename = MimeUtility.decodeText(encodedFilename);
 
                 if (MessageHandlerUtils.isExcelFile(filename)) {
-                    Path filepath = fileHandler.saveExcelFile(vendorTitle, filename, bodyPart.getInputStream());
+                    Path filepath = fileHandler.saveVendorFile(vendorTitle, filename, bodyPart.getInputStream());
                     vendorFilepathes.computeIfAbsent(vendorTitle, _ -> new ArrayList<>()).add(filepath.toString());
                 }
             }

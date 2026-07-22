@@ -6,6 +6,7 @@ import io.github.bagdad.models.request.BatchDeleteRequest;
 import io.github.bagdad.models.request.subcategory.SubcategoryCreateRequest;
 import io.github.bagdad.models.request.subcategory.SubcategoryUpdateRequest;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class SubcategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Subcategory> create(@RequestBody SubcategoryCreateRequest request) {
+    public ResponseEntity<@NonNull Subcategory> create(@RequestBody SubcategoryCreateRequest request) {
         Subcategory subcategory = Subcategory.builder()
                 .category(request.getCategory())
                 .name(request.getName())
@@ -36,7 +37,7 @@ public class SubcategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Subcategory> findById(@PathVariable Long id) {
+    public ResponseEntity<@NonNull Subcategory> findById(@PathVariable Long id) {
         Subcategory subcategory = service.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -52,9 +53,9 @@ public class SubcategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Subcategory> update(@PathVariable Long id, @RequestBody SubcategoryUpdateRequest request) {
+    public ResponseEntity<@NonNull Subcategory> update(@PathVariable Long id, @RequestBody SubcategoryUpdateRequest request) {
         Subcategory subcategory = Subcategory.builder()
-                .id(request.getId())
+                .id(id)
                 .category(request.getCategory())
                 .name(request.getName())
                 .build();

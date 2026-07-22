@@ -36,6 +36,9 @@ public class Product {
     @EqualsAndHashCode.Exclude
     private Long vendorId;
 
+    @Field(name="article")
+    private String article;
+
     @Field(name="name")
     @Indexed(unique = false)
     private String name;

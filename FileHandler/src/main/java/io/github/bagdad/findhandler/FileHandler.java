@@ -18,7 +18,7 @@ public class FileHandler {
         this.saveDir = saveDir;
     }
 
-    public Path saveExcelFile(String vendorTitle, String filename, InputStream inputStream) {
+    public Path saveVendorFile(String vendorTitle, String filename, InputStream inputStream) {
         Path createdVendorDirectory = createDirectory(vendorTitle);
 
         Path filepath = createdVendorDirectory.resolve(filename);
@@ -69,9 +69,9 @@ public class FileHandler {
         }
     }
 
-    public static void deleteFile(String filepath) {
+    public static void deleteFile(Path filepath) {
         try {
-            Files.deleteIfExists(Path.of(filepath));
+            Files.deleteIfExists(filepath);
         }
         catch (IOException e) {
             log.error("Failed to delete the file: {}", filepath);

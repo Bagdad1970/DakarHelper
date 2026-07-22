@@ -4,8 +4,8 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.HeaderCellWithSubcategory;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
-import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
-import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
+import io.github.bagdad.excelparser.model.ExcelProduct;
+import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 
 import java.util.ArrayList;

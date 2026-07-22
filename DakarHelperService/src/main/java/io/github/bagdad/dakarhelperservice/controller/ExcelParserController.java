@@ -1,6 +1,6 @@
 package io.github.bagdad.dakarhelperservice.controller;
 
-import io.github.bagdad.dakarhelperservice.service.interfaces.ExcelParserService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.ParserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ExcelParserController {
 
-    private final ExcelParserService excelParserService;
+    private final ParserService excelParserService;
 
-    ExcelParserController(ExcelParserService excelParserService) {
+    ExcelParserController(ParserService excelParserService) {
         this.excelParserService = excelParserService;
     }
 
     @PostMapping("/parse")
     public void parseExcelFiles() {
-        excelParserService.runExcelParser();
+        excelParserService.parse();
     }
 
 }

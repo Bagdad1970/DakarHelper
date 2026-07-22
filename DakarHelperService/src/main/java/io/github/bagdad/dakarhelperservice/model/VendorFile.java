@@ -3,6 +3,7 @@ package io.github.bagdad.dakarhelperservice.model;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
+import java.nio.file.Path;
 import java.time.OffsetDateTime;
 
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class VendorFile {
 
     private Long vendorId;
 
-    private String filepath;
+    private Path filepath;
 
     private FileStatus fileStatus;
 

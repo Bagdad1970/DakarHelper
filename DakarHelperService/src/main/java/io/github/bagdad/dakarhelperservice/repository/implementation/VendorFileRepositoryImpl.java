@@ -46,7 +46,7 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                 sql,
                 VENDOR_FILE_MAPPER,
                 vendorFile.getVendorId(),
-                vendorFile.getFilepath(),
+                vendorFile.getFilepath().toString(),
                 vendorFile.getFileStatus().name(),
                 vendorFile.getUpdatedAt()
         );
@@ -73,7 +73,7 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 VendorFile vendorFile = vendorFiles.get(i);
                 ps.setLong(1, vendorFile.getVendorId());
-                ps.setString(2, vendorFile.getFilepath());
+                ps.setString(2, vendorFile.getFilepath().toString());
                 ps.setString(3, vendorFile.getFileStatus() != null ? vendorFile.getFileStatus().name() : null);
                 ps.setObject(4, vendorFile.getUpdatedAt());
             }
@@ -100,7 +100,7 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 VendorFile vendorFile = vendorFiles.get(i);
                 ps.setLong(1, vendorFile.getVendorId());
-                ps.setString(2, vendorFile.getFilepath());
+                ps.setString(2, vendorFile.getFilepath().toString());
                 ps.setString(3, vendorFile.getFileStatus() != null ? vendorFile.getFileStatus().name() : null);
                 ps.setObject(4, vendorFile.getUpdatedAt());
             }
@@ -134,7 +134,7 @@ public class VendorFileRepositoryImpl implements VendorFileRepository {
                     sql,
                     VENDOR_FILE_MAPPER,
                     vendorFile.getVendorId(),
-                    vendorFile.getFilepath(),
+                    vendorFile.getFilepath().toString(),
                     vendorFile.getFileStatus().name(),
                     vendorFile.getUpdatedAt(),
                     vendorFile.getId()

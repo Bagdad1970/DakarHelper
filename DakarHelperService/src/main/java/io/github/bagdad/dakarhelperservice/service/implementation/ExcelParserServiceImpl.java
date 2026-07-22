@@ -5,7 +5,7 @@ import io.github.bagdad.dakarhelperservice.model.HeaderCell;
 import io.github.bagdad.dakarhelperservice.model.Product;
 import io.github.bagdad.dakarhelperservice.model.Subcategory;
 import io.github.bagdad.dakarhelperservice.model.VendorFile;
-import io.github.bagdad.dakarhelperservice.service.interfaces.ExcelParserService;
+import io.github.bagdad.dakarhelperservice.service.interfaces.ParserService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.HeaderCellService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.ProductService;
 import io.github.bagdad.dakarhelperservice.service.interfaces.SubcategoryService;
@@ -15,25 +15,30 @@ import io.github.bagdad.emailhandler.EmailConfig;
 import io.github.bagdad.emailhandler.EmailHandler;
 import io.github.bagdad.dakarhelperservice.helper.EmailHelper;
 import io.github.bagdad.dakarhelperservice.helper.ExcelParserHelper;
-import io.github.bagdad.excelparser.headerparser.ExcelParser;
-import io.github.bagdad.excelparser.headerparser.model.ExcelProduct;
-import io.github.bagdad.excelparser.headerparser.headerparser.ParserFactory;
-import io.github.bagdad.excelparser.headerparser.utils.SubcategoryMapping;
+import io.github.bagdad.excelparser.ExcelParser;
+import io.github.bagdad.excelparser.model.ExcelProduct;
+import io.github.bagdad.excelparser.headerparser.ParserFactory;
+import io.github.bagdad.excelparser.utils.ExcelWorkbookReader;
+import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.findhandler.FileHandler;
 import io.github.bagdad.models.emailhandler.VendorWithFilepathes;
 import io.github.bagdad.models.emailhandler.VendorWithMaxFileDateTime;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
-import io.github.bagdad.excelparser.headerparser.utils.ExcelHeaderCellsHandler;
+import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ExcelParserServiceImpl implements ExcelParserService {
+public class ExcelParserServiceImpl implements ParserService {
 
     private final EmailConfig emailConfig;
 
@@ -63,7 +68,7 @@ public class ExcelParserServiceImpl implements ExcelParserService {
     }
 
     @Override
-    public void runExcelParser() {
+    public void parse() {
         synchronizeExcelFiles();
 
         parseExcelFiles();
@@ -115,13 +120,22 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         List<HeaderCell> headerCellsWithNameCategory = headerCellService.findAllByCategory(Category.NAME);
         List<HeaderCell> headerCellsWithPriceCategory = headerCellService.findAllByCategory(Category.PRICE);
         List<HeaderCell> headerCellsWithQuantityCategory = headerCellService.findAllByCategory(Category.QUANTITY);
+        List<HeaderCell> headerCellsWithArticleCategory = headerCellService.findAllByCategory(Category.ARTICLE);
 
         List<Subcategory> excelHeaderSubcategories = subcategoryService.findAll();
 
+        ParserFactory parserFactory = new ParserFactory();
         SubcategoryMapping nameMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithNameCategory, excelHeaderSubcategories);
         SubcategoryMapping priceMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithPriceCategory, excelHeaderSubcategories);
         SubcategoryMapping quantityMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithQuantityCategory, excelHeaderSubcategories);
-        return new ParserFactory(nameMapping, priceMapping, quantityMapping);
+        SubcategoryMapping articleMapping = ExcelParserHelper.createCategoryMapping(headerCellsWithArticleCategory, excelHeaderSubcategories);
+
+        parserFactory.addMapping(Category.NAME, nameMapping);
+        parserFactory.addMapping(Category.PRICE, priceMapping);
+        parserFactory.addMapping(Category.QUANTITY, quantityMapping);
+        parserFactory.addMapping(Category.ARTICLE, articleMapping);
+
+        return parserFactory;
     }
 
     private ExcelHeaderCellsHandler createExcelHeaderCellsHandler() {
@@ -140,13 +154,11 @@ public class ExcelParserServiceImpl implements ExcelParserService {
                 .collect(Collectors.groupingBy(VendorFile::getVendorId));
 
         for (List<VendorFile> vendorFileGroup : vendorFilesByVendorId.values()) {
-            parseFileGroup(vendorFileGroup, excelHeaderCellsHandler, parserFactory);
+            parseFileGroupOfVendor(vendorFileGroup, excelHeaderCellsHandler, parserFactory);
         }
-
-        log.info("Parsing ended");
     }
 
-    public void parseFileGroup(List<VendorFile> vendorFileGroup, ExcelHeaderCellsHandler excelHeaderCellsHandler, ParserFactory parserFactory) {
+    public void parseFileGroupOfVendor(List<VendorFile> vendorFileGroup, ExcelHeaderCellsHandler excelHeaderCellsHandler, ParserFactory parserFactory) {
         if (vendorFileGroup.isEmpty()) {
             return;
         }
@@ -155,34 +167,35 @@ public class ExcelParserServiceImpl implements ExcelParserService {
         for (VendorFile vendorFile : vendorFileGroup) {
             log.info("Parsing file: {}", vendorFile.getFilepath());
 
-            ExcelParser excelParser = new ExcelParser(vendorFile.getFilepath(), excelHeaderCellsHandler, parserFactory);
+            try (ExcelWorkbookReader excelWorkbookReader = new ExcelWorkbookReader(vendorFile.getFilepath())) {
+                ExcelParser excelParser = new ExcelParser(excelWorkbookReader.getFirstSheet(), excelHeaderCellsHandler, parserFactory);
 
-            boolean containsUnprocessableHeaderCells = excelParser.tryToParse();
+                boolean containsUnprocessableHeaderCells = excelParser.tryToParse();
 
-            if (containsUnprocessableHeaderCells) {
-                List<HeaderCellDto> unprocessableHeaderCellDtos = excelParser.getUnprocessableHeaderCells();
-                if (!unprocessableHeaderCellDtos.isEmpty()) {
-                    List<HeaderCell> unprocessableHeaderCells = ExcelParserHelper.mapToHeaderCells(unprocessableHeaderCellDtos);
+                if (containsUnprocessableHeaderCells) {
+                    List<HeaderCellDto> unprocessableHeaderCellDtos = excelParser.getUnprocessableHeaderCells();
+                    if (!unprocessableHeaderCellDtos.isEmpty()) {
+                        List<HeaderCell> unprocessableHeaderCells = ExcelParserHelper.mapToHeaderCells(unprocessableHeaderCellDtos);
 
-                    headerCellService.batchInsert(unprocessableHeaderCells);
+                        headerCellService.batchInsert(unprocessableHeaderCells);
 
-                    // send to a user
+                        // send to a user
 
-                    // get answers by user and update the DB
+                        // get answers by user and update the DB
 
-                    // get new headerCells and set them into the ExcelHeaderCells table
+                        // get new headerCells and set them into the ExcelHeaderCells table
+                    }
+
+                    excelParser.processUnprocessedCells();
                 }
 
-                excelParser.processUnprocessedCells();
-            }
+                List<ExcelProduct> foundProducts = excelParser.parse();
 
-            List<ExcelProduct> foundProducts = excelParser.parse();
+                if (!foundProducts.isEmpty()) {
+                    List<Product> products = ExcelParserHelper.mapToProducts(vendorFile.getVendorId(), foundProducts);
 
-            if (!foundProducts.isEmpty()) {
-                Long vendorId = vendorFile.getVendorId();
-                List<Product> products = ExcelParserHelper.mapToProducts(vendorId, foundProducts);
-
-                uniqueProducts.addAll(products);
+                    uniqueProducts.addAll(products);
+                }
             }
         }
 

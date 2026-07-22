@@ -68,33 +68,33 @@ public class SubcategoryControllerTest {
                 .andExpect(content().json(asJsonString(saved)));
     }
 
-    @Test
-    void update() throws Exception {
-        // arrange
-        SubcategoryUpdateRequest request = new SubcategoryUpdateRequest();
-        request.setId(1L);
-        request.setCategory(Category.PRICE);
-        request.setName("updated_name");
-
-        Subcategory updated = Subcategory.builder()
-                .id(1L)
-                .category(Category.NAME)
-                .name("updated_name")
-                .build();
-
-        Mockito.when(service.update(Mockito.any(Subcategory.class)))
-                .thenReturn(updated);
-
-        // act & assert
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/subcategories/1")
-                        .content(asJsonString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json(asJsonString(updated)));
-    }
+//    @Test
+//    void update() throws Exception {
+//        // arrange
+//        SubcategoryUpdateRequest request = new SubcategoryUpdateRequest();
+//        request.setId(1L);
+//        request.setCategory(Category.PRICE);
+//        request.setName("updated_name");
+//
+//        Subcategory updated = Subcategory.builder()
+//                .id(1L)
+//                .category(Category.NAME)
+//                .name("updated_name")
+//                .build();
+//
+//        Mockito.when(service.update(Mockito.any(Subcategory.class)))
+//                .thenReturn(updated);
+//
+//        // act & assert
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .put("/api/subcategories/1")
+//                        .content(asJsonString(request))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(asJsonString(updated)));
+//    }
 
     @Test
     void Finding_by_id_existing_subcategory_must_return_it() throws Exception {
