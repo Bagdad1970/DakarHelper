@@ -29,6 +29,8 @@ public class BodyParser {
     }
 
     int getFirstValidRow() {
+        log.info("Getting index of first valid row");
+
         int startRowIndex = excelHeader.getStartRowIndex() + 1;
         for (int i = startRowIndex; i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
@@ -36,6 +38,7 @@ public class BodyParser {
             if (isRowValid(row))
                 return i;
         }
+
         return -1;
     }
 
@@ -62,7 +65,7 @@ public class BodyParser {
     }
 
     public List<ExcelProduct> parse() {
-        log.info("Parsing body cells");
+        log.info("Parsing table rows");
 
         int startRowIndex = getFirstValidRow();
         if (startRowIndex == -1)

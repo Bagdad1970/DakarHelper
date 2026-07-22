@@ -20,8 +20,6 @@ public class PriceParser implements Parser {
 
     private final SubcategoryMapping subcategoryMapping;
 
-    private static final String DEFAULT_COLUMN_NAME = "цена";
-
     @Override
     public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
         log.info("Parsing price columns");

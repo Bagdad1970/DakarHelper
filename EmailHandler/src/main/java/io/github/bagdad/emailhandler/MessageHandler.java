@@ -41,6 +41,8 @@ public class MessageHandler {
     }
 
     private void initVendorVisits() {
+        log.info("Initializing vendor visits");
+
         for (VendorWithMaxFileDateTime vendor : vendors) {
             vendorVisits.put(vendor.getTitle(), false);
         }
@@ -91,6 +93,8 @@ public class MessageHandler {
     }
 
     private void processMultipartInMessage(VendorWithMaxFileDateTime vendor, Multipart multipart) {
+        log.info("Processing multipart in message for vendor {}", vendor.getTitle());
+
         String vendorTitle = vendor.getTitle();
 
         if (vendorTitle.isEmpty()) {
@@ -99,8 +103,7 @@ public class MessageHandler {
         }
 
         if (!vendorTitle.isEmpty() && !vendorVisits.get(vendorTitle)) {
-            log.info("Processing first message for vendor: {}", vendorTitle);
-            saveExcelFiles(vendorTitle, multipart);
+            saveExcelFilesFromMessage(vendorTitle, multipart);
             vendorVisits.put(vendorTitle, true);
         }
     }
@@ -125,7 +128,9 @@ public class MessageHandler {
         return new VendorWithMaxFileDateTime("");
     }
 
-    private void saveExcelFiles(String vendorTitle, Multipart multipart) {
+    private void saveExcelFilesFromMessage(String vendorTitle, Multipart multipart) {
+        log.info("Saving excel files for {} from message", vendorTitle);
+
         try {
             for (int i = 0; i < multipart.getCount(); i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
@@ -133,7 +138,7 @@ public class MessageHandler {
             }
         }
         catch (MessagingException e) {
-            log.error("Error iterating multipart parts", e);
+            log.error("Error while iterating multipart parts", e);
         }
     }
 
@@ -158,7 +163,7 @@ public class MessageHandler {
     }
 
     private VendorWithMaxFileDateTime findVendorInText(String text) {
-        log.info("Finding vendor title in text");
+        log.info("Finding what vendor title contains in text");
 
         if (text == null || text.isBlank()) {
             return new VendorWithMaxFileDateTime("");

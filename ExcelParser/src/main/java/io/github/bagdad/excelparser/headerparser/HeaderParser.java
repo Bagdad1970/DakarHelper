@@ -46,6 +46,8 @@ public class HeaderParser {
     }
 
     public void tryToFindHeaderCells() {
+        log.info("Trying to find header cells in excel sheet");
+
         List<Row> header = headerExtractor.extractHeader();
 
         for (Row row : header) {
@@ -54,7 +56,7 @@ public class HeaderParser {
 
                 if (cellValue.isEmpty()) continue;
 
-                CellFindStatus cellFindStatus = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
+                CellFindStatus cellFindStatus = excelHeaderCellsHandler.specifyCellFindStatus(cellValue);
 
                 switch (cellFindStatus) {
                     case STARTS -> {
@@ -87,7 +89,7 @@ public class HeaderParser {
 
             if (cellValue.isEmpty()) continue;
 
-            CellFindStatus cellFindStatus = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
+            CellFindStatus cellFindStatus = excelHeaderCellsHandler.specifyCellFindStatus(cellValue);
 
             if (cellFindStatus == CellFindStatus.STARTS) {
                 Category category = excelHeaderCellsHandler.findHeaderCellCategory(cellValue);
@@ -109,14 +111,14 @@ public class HeaderParser {
 
         Map<Category, Integer> maxRowIndexForCategories = HeaderParserUtils.findMaxRowIndexInGroups(cellsGroupedByCategory);
 
-        Map<Category, Map<Integer, List<Cell>>> cellGroupsWithMaxRow = HeaderParserUtils.removeGroupsWithoutMaxRow(maxRowIndexForCategories, cellsGroupedByColumn);
+        Map<Category, Map<Integer, List<Cell>>> cellGroupsOnlyWithMaxRow = HeaderParserUtils.removeGroupsWithoutMaxRow(maxRowIndexForCategories, cellsGroupedByColumn);
 
         int maxRowIndex = HeaderParserUtils.findMaxRowIndex(maxRowIndexForCategories);
 
         ExcelHeader excelHeader = new ExcelHeader(maxRowIndex + 1);
-        for (Category category : cellGroupsWithMaxRow.keySet()) {
+        for (Category category : cellGroupsOnlyWithMaxRow.keySet()) {
             var parser = parserFactory.getParserByCategory(category);
-            Set<Column> headerColumns = parser.parseColumns(cellGroupsWithMaxRow.get(category));
+            Set<Column> headerColumns = parser.parseColumns(cellGroupsOnlyWithMaxRow.get(category));
             excelHeader.putAllHeaderColumns(category, headerColumns);
         }
 

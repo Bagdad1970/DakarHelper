@@ -20,7 +20,7 @@ public class ExcelHeaderCellsHandler {
         this.headerCellDtos = headerCellDtos;
     }
 
-    public CellFindStatus findHeaderCellFindStatus(String cellValue) {
+    public CellFindStatus specifyCellFindStatus(String cellValue) {
         if (cellValue.isEmpty()) {
             return CellFindStatus.ABSENTS;
         }
@@ -34,6 +34,7 @@ public class ExcelHeaderCellsHandler {
                 }
                 return CellFindStatus.STARTS;
             }
+
             if (cellValue.contains(originName)) {
                 if (!dto.getIsProcessing()) {
                     return CellFindStatus.ABSENTS;
@@ -41,6 +42,7 @@ public class ExcelHeaderCellsHandler {
                 return CellFindStatus.CONTAINS;
             }
         }
+
         return CellFindStatus.ABSENTS;
     }
 

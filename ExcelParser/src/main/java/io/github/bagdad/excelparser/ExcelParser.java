@@ -29,6 +29,8 @@ public class ExcelParser {
     }
 
     public boolean tryToParse() {
+        log.info("Trying to parse excel sheet");
+
         headerParser.tryToFindHeaderCells();
 
         return !headerParser.getUnprocessableHeaderCells().isEmpty();

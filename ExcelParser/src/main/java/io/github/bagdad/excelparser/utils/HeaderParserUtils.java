@@ -1,6 +1,7 @@
 package io.github.bagdad.excelparser.utils;
 
 import io.github.bagdad.models.excelparser.Category;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.HashMap;
@@ -8,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class HeaderParserUtils {
 
     private static final List<Category> categoriesToValidateHeader = List.of(Category.NAME, Category.PRICE, Category.QUANTITY);
 
     public static boolean isHeaderValid(Map<Category, List<Cell>> groupedCells) {
+        log.info("Checking is header valid");
+
         for (Category category : categoriesToValidateHeader) {
             if (!groupedCells.containsKey(category)) {
                 return false;
@@ -23,6 +27,8 @@ public class HeaderParserUtils {
     }
 
     public static Map<Category, Integer> findMaxRowIndexInGroups(Map<Category, List<Cell>> cells) {
+        log.info("Finding max row index for each category");
+
         if (cells.isEmpty()) {
             return Map.of();
         }
@@ -41,12 +47,16 @@ public class HeaderParserUtils {
     }
 
     public static int findMaxRowIndex(Map<Category, Integer> maxRowIndexForCategories) {
+        log.info("Finding max row index among all categories");
+
         return maxRowIndexForCategories.values().stream()
                 .max(Integer::compareTo)
                 .orElse(-1);
     }
 
     public static int findMaxRowIndexInCells(List<Cell> cells) {
+        log.info("Finding max row index among cells of one category");
+
         return cells.stream()
                 .mapToInt(Cell::getRowIndex)
                 .max()
@@ -54,6 +64,8 @@ public class HeaderParserUtils {
     }
 
     public static Map<Category, Map<Integer, List<Cell>>> groupByColumn(Map<Category, List<Cell>> cellsGroupedByCategory) {
+        log.info("Grouping cells by column index");
+
         if (cellsGroupedByCategory.isEmpty()) {
             return new HashMap<>();
         }
@@ -72,6 +84,8 @@ public class HeaderParserUtils {
             Map<Category, Integer> maxRowIndexForCategories,
             Map<Category, Map<Integer, List<Cell>>> groupedCellsByColumn
     ) {
+        log.info("Removing groups of cells without cell with max row index");
+
         if (maxRowIndexForCategories.isEmpty()) {
             return new HashMap<>();
         }

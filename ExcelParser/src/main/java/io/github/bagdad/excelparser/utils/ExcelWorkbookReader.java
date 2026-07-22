@@ -23,6 +23,8 @@ public class ExcelWorkbookReader implements AutoCloseable {
     }
 
     public static Workbook loadWorkbook(Path filepath) {
+        log.info("Loading workbook of file {}", filepath);
+
         if (!Files.exists(filepath)) {
             log.error("{} does not exist", filepath);
             return null;

@@ -28,14 +28,14 @@ public class EmailHandler {
         this.vendors = vendors;
     }
 
-    private void initConnection() {
+    private void connectToEmailFolder() {
         log.info("Connecting to email");
 
-        Properties props = new Properties();
-        props.put("mail.store.protocol", ConfigManager.getConfig(EmailConfig.class).getProtocol());
-        props.put("mail.host", ConfigManager.getConfig(EmailConfig.class).getHost());
-
         try {
+            Properties props = new Properties();
+            props.put("mail.store.protocol", ConfigManager.getConfig(EmailConfig.class).getProtocol());
+            props.put("mail.host", ConfigManager.getConfig(EmailConfig.class).getHost());
+
             Session session = Session.getDefaultInstance(props);
             Store store = session.getStore();
             store.connect(
@@ -53,9 +53,9 @@ public class EmailHandler {
     }
 
     public List<VendorWithFilepathes> readEmail() {
-        log.info("Reading files from email");
+        log.info("Reading email");
 
-        initConnection();
+        connectToEmailFolder();
 
         List<VendorWithFilepathes> vendorsWithFilepathes = new ArrayList<>();
 
@@ -94,15 +94,34 @@ public class EmailHandler {
     }
 
     public void close() {
-        log.info("Closing folder and store");
+        closeFolder();
+        closeStore();
+    }
+
+    private void closeFolder() {
+        log.info("Closing folder");
 
         if (folder != null && folder.isOpen()) {
             try {
                 folder.close(false);
+            }
+            catch (MessagingException e) {
+                log.error("Error when closing folder", e);
+                throw new RuntimeException("Folder is not closed");
+            }
+        }
+    }
+
+    private void closeStore() {
+        log.info("Closing folder and store");
+
+        if (folder != null && folder.isOpen()) {
+            try {
                 folder.getStore().close();
             }
             catch (MessagingException e) {
-                log.error("Error closing folder/store", e);
+                log.error("Error closing store", e);
+                throw new RuntimeException("Store is not closed");
             }
         }
     }
