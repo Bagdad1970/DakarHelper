@@ -31,16 +31,21 @@ public class ExcelProduct {
         prices.put(key, price);
     }
 
-    public void computeMinPrice() {
+    private void computeMinPrice() {
         this.minPrice = prices.values().stream()
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.valueOf(Double.MAX_VALUE));
     }
 
-    public void computeTotalQuantity() {
+    private void computeTotalQuantity() {
         this.totalQuantity = quantities.values().stream()
                 .mapToInt(Integer::intValue)
                 .sum();
+    }
+
+    public void compute() {
+        computeMinPrice();
+        computeTotalQuantity();
     }
 
     public void addQuantity(String key, Integer quantity) {

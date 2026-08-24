@@ -31,7 +31,7 @@ public class BodyParser {
     int getFirstValidRow() {
         log.info("Getting index of first valid row");
 
-        int startRowIndex = excelHeader.getStartRowIndex() + 1;
+        int startRowIndex = excelHeader.getStartRowIndex();
         for (int i = startRowIndex; i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 
@@ -81,8 +81,7 @@ public class BodyParser {
 
             if (isRowValid(row)) {
                 ExcelProduct excelProduct = excelHeader.processRow(row);
-                excelProduct.computeMinPrice();
-                excelProduct.computeTotalQuantity();
+                excelProduct.compute();
                 
                 if (!excelProduct.isEmpty()) {
                     parsedExcelProducts.add(excelProduct);
