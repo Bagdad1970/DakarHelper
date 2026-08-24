@@ -1,5 +1,6 @@
-package io.github.bagdad.excelparser.headerparser.utils;
+package io.github.bagdad.excelparser.utils;
 
+import io.github.bagdad.excelparser.SheetTest;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,176 +9,80 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExcelCellUtilsTest {
+public class ExcelCellUtilsTest extends SheetTest {
 
-    private static Workbook workbook;
-    private static Sheet sheet;
+    @Test
+    void Checking_cell_value_for_emptiness_for_blank_value_must_return_true() {
+        String blankValue = "   ";
 
-    @BeforeAll
-    static void setupSheet() throws IOException {
-        workbook = WorkbookFactory.create(true);
-        sheet = workbook.createSheet();
+        boolean result = ExcelCellUtils.isCellValueEmpty(blankValue);
 
-        Row rowOfStringCellValues = sheet.createRow(0);
-        Row rowOfNumericCellValues = sheet.createRow(1);
-        Row rowOfNameCellValues = sheet.createRow(2);
-        Row rowOfPriceCellValues = sheet.createRow(3);
-        Row rowOfQuantityCellValues = sheet.createRow(4);
-
-        String[] stringCellValues = {null, "", "  ", "LDF 123/45 6.8"};
-        Double[] numericCellValues = {12.56, 12.0};
-        String[] nameCellValues = {null, "", "  ", "LDF 123/45 6.8", "   LDF 123/45 6.8   "};
-        String[] priceCellValues = {null, "", "    ", "12", "12.56", "   12.56   ", "0", "-1"};
-        String[] quantityCellValues = {null, "", "12", "12.56", "   12.56   ", "  >12  ",  "0", "-1"};
-        
-        for (int i = 0; i<stringCellValues.length; i++) {
-            CellUtil.createCell(rowOfStringCellValues, i, stringCellValues[i]);
-        }
-
-        for (int i = 0; i < numericCellValues.length; i++) {
-            CellUtil.createCell(rowOfNumericCellValues, i, "");
-            rowOfNumericCellValues.getCell(i).setCellValue(numericCellValues[i]);
-        }
-
-        for (int i = 0; i<nameCellValues.length; i++) {
-            CellUtil.createCell(rowOfNameCellValues, i, nameCellValues[i]);
-        }
-
-        for (int i = 0; i<priceCellValues.length; i++) {
-            CellUtil.createCell(rowOfPriceCellValues, i, priceCellValues[i]);
-        }
-
-        for (int i = 0; i<quantityCellValues.length; i++) {
-            CellUtil.createCell(rowOfQuantityCellValues, i, quantityCellValues[i]);
-        }
+        assertThat(result).isTrue();
     }
 
     @Test
-    void isCellValueEmpty() {
-        String cellValue1 = "   ";
-        String cellValue2 = "  NULL  ";
-        String cellValue3 = "12.56";
+    void Checking_cell_value_for_emptiness_for_value_that_contains_null_string_in_uppercase_must_return_true() {
+        String nullValue = "NULL";
 
-        boolean isCellValueEmpty1 = ExcelCellUtils.isCellValueEmpty(cellValue1);
-        boolean isCellValueEmpty2 = ExcelCellUtils.isCellValueEmpty(cellValue2);
-        boolean isCellValueEmpty3 = ExcelCellUtils.isCellValueEmpty(cellValue3);
+        boolean result = ExcelCellUtils.isCellValueEmpty(nullValue);
 
-        assertTrue(isCellValueEmpty1);
-        assertTrue(isCellValueEmpty2);
-        assertFalse(isCellValueEmpty3);
+        assertThat(result).isTrue();
     }
 
     @Test
-    void getRawCellValueForStringValues() {
-        Row rowOfNumericCellValues = CellUtil.getRow(0, sheet);
+    void Checking_cell_value_for_emptiness_for_value_that_contains_null_string_in_lowercase_must_return_true() {
+        String nullValue = "null";
 
-        String cellValue1 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(0));
-        String cellValue2 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(1));
-        String cellValue3 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(2));
-        String cellValue4 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(3));
+        boolean result = ExcelCellUtils.isCellValueEmpty(nullValue);
 
-        assertEquals("", cellValue1);
-        assertEquals("", cellValue2);
-        assertEquals("  ", cellValue3);
-        assertEquals("LDF 123/45 6.8", cellValue4);
+        assertThat(result).isTrue();
     }
 
     @Test
-    void getRawCellValueForNumericValues() {
-        Row rowOfNumericCellValues = CellUtil.getRow(1, sheet);
+    void Checking_cell_value_for_emptiness_for_valid_value_must_return_false() {
+        String blankValue = "some_value";
 
-        String cellValue1 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(0));
-        String cellValue2 = ExcelCellUtils.getRawCellValue(rowOfNumericCellValues.getCell(1));
+        boolean result = ExcelCellUtils.isCellValueEmpty(blankValue);
 
-        assertEquals("12.56", cellValue1);
-        assertEquals("12.0", cellValue2);
+        assertThat(result).isFalse();
     }
 
     @Test
-    void processEmptyNameCellValue() {
-        Row rowOfNameCellValues = CellUtil.getRow(2, sheet);
+    void Getting_raw_cell_value_for_null_cell_must_return_empty_string() {
+        String nullValue = null;
+        Sheet sheet = createSheet(nullValue);
+        Row row = sheet.getRow(0);
 
-        String processedValue1 = ExcelCellUtils.processNameCell(CellUtil.getCell(rowOfNameCellValues, 0));
-        String processedValue2 = ExcelCellUtils.processNameCell(CellUtil.getCell(rowOfNameCellValues, 1));
-        String processedValue3 = ExcelCellUtils.processNameCell(CellUtil.getCell(rowOfNameCellValues, 2));
+        String nullCellValue = ExcelCellUtils.getRawCellValue(row.getCell(0));
 
-        assertNull(processedValue1);
-        assertNull(processedValue2);
-        assertNull(processedValue3);
+        assertEquals("", nullCellValue);
     }
 
     @Test
-    void processNameCellValueWithValue() {
-        Row rowOfNameCellValues = CellUtil.getRow(2, sheet);
+    void Getting_raw_cell_value_for_cell_with_empty_string_must_return_empty_string() {
+        String emptyValue = "";
+        Sheet sheet = createSheet(emptyValue);
+        Row row = CellUtil.getRow(0, sheet);
 
-        String processedValue1 = ExcelCellUtils.processNameCell(CellUtil.getCell(rowOfNameCellValues, 3));
-        String processedValue2 = ExcelCellUtils.processNameCell(CellUtil.getCell(rowOfNameCellValues, 4));
+        String nullCellValue = ExcelCellUtils.getRawCellValue(row.getCell(0));
 
-        assertEquals("LDF 123/45 6.8", processedValue1);
-        assertEquals("LDF 123/45 6.8", processedValue2);
+        assertEquals("", nullCellValue);
     }
 
     @Test
-    void processEmptyPriceCellValue() {
-        Row rowOfPriceCellValues = CellUtil.getRow(3, sheet);
+    void Getting_raw_cell_value_for_numeric_cell_must_return_string_value() {
+        Sheet sheet = createSheet(1);
+        double cellValue = 12.56;
+        sheet.getRow(0).getCell(0).setCellValue(cellValue);
 
-        BigDecimal processedValue1 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 0));
-        BigDecimal processedValue2 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 1));
-        BigDecimal processedValue3 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 2));
+        Row row = CellUtil.getRow(0, sheet);
 
-        assertNull(processedValue1);
-        assertNull(processedValue2);
-        assertNull(processedValue3);
-    }
+        String nullCellValue = ExcelCellUtils.getRawCellValue(row.getCell(0));
 
-    @Test
-    void processPriceCellValueWithValue() {
-        Row rowOfPriceCellValues = CellUtil.getRow(3, sheet);
-
-        BigDecimal processedValue1 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 3));
-        BigDecimal processedValue2 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 4));
-        BigDecimal processedValue3 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 5));
-        BigDecimal processedValue4 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 6));
-        BigDecimal processedValue5 = ExcelCellUtils.processPriceCell(CellUtil.getCell(rowOfPriceCellValues, 6));
-
-        assertEquals(BigDecimal.valueOf(12.0), processedValue1);
-        assertEquals(BigDecimal.valueOf(12.56), processedValue2);
-        assertEquals(BigDecimal.valueOf(12.56), processedValue3);
-        assertNull(processedValue4);
-        assertNull(processedValue5);
-    }
-
-    @Test
-    void processEmptyQuantityCellValue() {
-        Row rowOfQuantityCellValues = CellUtil.getRow(4, sheet);
-
-        Integer processedValue1 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 0));
-        Integer processedValue2 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 1));
-
-        assertNull(processedValue1);
-        assertNull(processedValue2);
-    }
-
-    @Test
-    void processQuantityCellWithValue() {
-        Row rowOfQuantityCellValues = CellUtil.getRow(4, sheet);
-
-        Integer processedValue1 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 2));
-        Integer processedValue2 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 3));
-        Integer processedValue3 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 4));
-        Integer processedValue4 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 5));
-        Integer processedValue5 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 6));
-        Integer processedValue6 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 7));
-
-
-        assertEquals(12, processedValue1);
-        assertEquals(12, processedValue2);
-        assertEquals(12, processedValue3);
-        assertEquals(13, processedValue4);
-        assertEquals(0, processedValue5);
-        assertEquals(0, processedValue6);
+        assertEquals("12.56", nullCellValue);
     }
 
 }

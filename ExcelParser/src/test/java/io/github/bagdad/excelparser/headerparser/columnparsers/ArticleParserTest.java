@@ -1,11 +1,11 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.SheetTest;
+import io.github.bagdad.excelparser.headerparser.columns.ArticleColumn;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
-import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
-import org.apache.poi.ss.usermodel.*;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class NameParserTest extends SheetTest {
+public class ArticleParserTest extends SheetTest {
 
     @Test
     void parseColumns() {
@@ -22,23 +22,23 @@ public class NameParserTest extends SheetTest {
         Sheet sheet = createSheet(keywords);
 
         Map<String, List<String>> mapping = Map.of(
-                "номенклатура", List.of("номенклатура")
+                "артикул", List.of("артикул")
         );
-        SubcategoryMapping nameMapping = new SubcategoryMapping(mapping);
+        SubcategoryMapping articleMapping = new SubcategoryMapping(mapping);
 
         Map<Integer, List<Cell>> columns = Map.of(
                 0, List.of(sheet.getRow(0).getCell(0)),
                 1, List.of(sheet.getRow(0).getCell(1))
         );
 
-        NameParser sut = new NameParser(nameMapping);
-        Set<Column> headerColumns = sut.parseColumns(columns);
+        ArticleParser sut = new ArticleParser(articleMapping);
+        Set<Column> result = sut.parseColumns(columns);
 
         Set<Column> expected = Set.of(
-                new NameColumn(1, "номенклатура")
+                new ArticleColumn(0, "артикул")
         );
 
-        assertThat(headerColumns).isEqualTo(expected);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class NameParserTest extends SheetTest {
         Sheet sheet = createSheet(value);
         Cell cell = sheet.getRow(0).getCell(0);
 
-        String result = NameParser.processCell(cell);
+        String result = ArticleParser.processCell(cell);
 
         assertThat(result).isNull();
     }
@@ -58,7 +58,7 @@ public class NameParserTest extends SheetTest {
         Sheet sheet = createSheet(value);
         Cell cell = sheet.getRow(0).getCell(0);
 
-        String result = NameParser.processCell(cell);
+        String result = ArticleParser.processCell(cell);
 
         assertThat(result).isNull();
     }
@@ -69,31 +69,31 @@ public class NameParserTest extends SheetTest {
         Sheet sheet = createSheet(value);
         Cell cell = sheet.getRow(0).getCell(0);
 
-        String result = NameParser.processCell(cell);
+        String result = ArticleParser.processCell(cell);
 
         assertThat(result).isNull();
     }
 
     @Test
     void Processing_valid_cell_must_return_its_string() {
-        String value = "some_name";
+        String value = "some_article";
         Sheet sheet = createSheet(value);
         Cell cell = sheet.getRow(0).getCell(0);
 
-        String result = NameParser.processCell(cell);
+        String result = ArticleParser.processCell(cell);
 
-        assertThat(result).isEqualTo("some_name");
+        assertThat(result).isEqualTo("some_article");
     }
 
     @Test
     void Processing_valid_cell_with_whitespaces_must_return_its_string_without_whitespaces() {
-        String value = "  some_name  ";
+        String value = "  some_article  ";
         Sheet sheet = createSheet(value);
         Cell cell = sheet.getRow(0).getCell(0);
 
-        String result = NameParser.processCell(cell);
+        String result = ArticleParser.processCell(cell);
 
-        assertThat(result).isEqualTo("some_name");
+        assertThat(result).isEqualTo("some_article");
     }
 
 }

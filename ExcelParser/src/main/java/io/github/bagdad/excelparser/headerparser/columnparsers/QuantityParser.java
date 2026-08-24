@@ -21,7 +21,36 @@ import java.util.Set;
 @AllArgsConstructor
 public class QuantityParser implements Parser {
 
+    private static final String MORE_QUANTITY_WORD = "более";
+
+    private static final String MORE_QUANTITY_SYMBOL = ">";
+
     private final SubcategoryMapping subcategoryMapping;
+
+    public static Integer processCell(Cell cell) {
+        String cellValue = ExcelCellUtils.getNormalizedCellValue(cell);
+        if (ExcelCellUtils.isCellValueEmpty(cellValue))
+            return null;
+
+        try {
+            int result;
+
+            // what if will be "1>23". it is 123 or 23?
+            if (cellValue.contains(MORE_QUANTITY_SYMBOL) || cellValue.contains(MORE_QUANTITY_WORD)) {
+                String numericValue = cellValue.replaceAll("\\D+", "");
+                result = (int) Double.parseDouble(numericValue) + 1;
+            }
+            else {
+                result = (int) Double.parseDouble(cellValue);
+            }
+
+            return Math.max(result, 0);
+        }
+        catch (NumberFormatException e) {
+            return 0;
+        }
+
+    }
 
     @Override
     public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
@@ -92,4 +121,21 @@ public class QuantityParser implements Parser {
 
         return columns;
     }
+
+    private String createKey(String key) {
+        return key + 1;
+    }
+
+    private String createKey(String key, int number) {
+        return key + number;
+    }
+
+    private String createStorage(String name) {
+        return name + 1;
+    }
+
+    private String createStorage(String name, int number) {
+        return name + number;
+    }
+
 }

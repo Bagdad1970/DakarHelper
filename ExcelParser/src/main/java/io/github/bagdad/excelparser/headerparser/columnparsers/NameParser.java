@@ -1,5 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
+import io.github.bagdad.excelparser.exception.UnableProcessCellException;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
@@ -20,6 +21,15 @@ public class NameParser implements Parser {
 
     public NameParser(SubcategoryMapping subcategoryMapping) {
         this.subcategoryMapping = subcategoryMapping;
+    }
+
+    public static String processCell(Cell cell) {
+        String cellValue = ExcelCellUtils.getRawCellValue(cell);
+
+        if (ExcelCellUtils.isCellValueEmpty(cellValue))
+            return null;
+
+        return cellValue.trim();
     }
 
     @Override
@@ -45,4 +55,5 @@ public class NameParser implements Parser {
 
         return columns;
     }
+
 }

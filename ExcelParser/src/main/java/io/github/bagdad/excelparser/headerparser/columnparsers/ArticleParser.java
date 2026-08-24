@@ -22,9 +22,18 @@ public class ArticleParser implements Parser {
         this.subcategoryMapping = subcategoryMapping;
     }
 
+    public static String processCell(Cell cell) {
+        String cellValue = ExcelCellUtils.getRawCellValue(cell);
+
+        if (ExcelCellUtils.isCellValueEmpty(cellValue))
+            return null;
+
+        return cellValue.trim();
+    }
+
     @Override
     public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
-        log.info("Parsing name columns");
+        log.info("Parsing article columns");
 
         if (cellsByClass.isEmpty()) {
             return Collections.emptySet();

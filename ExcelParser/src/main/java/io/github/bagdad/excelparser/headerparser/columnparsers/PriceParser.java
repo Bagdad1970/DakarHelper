@@ -1,5 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
+import io.github.bagdad.excelparser.exception.UnableProcessCellException;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,20 @@ import java.util.Set;
 public class PriceParser implements Parser {
 
     private final SubcategoryMapping subcategoryMapping;
+
+    public static BigDecimal processCell(Cell cell) {
+        String cellValue = ExcelCellUtils.getRawCellValue(cell);
+        if (ExcelCellUtils.isCellValueEmpty(cellValue))
+            return null;
+
+        try {
+            double value = Double.parseDouble(cellValue);
+            return value > 0 ? BigDecimal.valueOf(value) : null;
+        }
+        catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
     @Override
     public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
@@ -36,6 +52,7 @@ public class PriceParser implements Parser {
             for (Cell cell : columnCells) {
                 String cellValue = ExcelCellUtils.getNormalizedCellValue(cell);
                 String foundColumnName = subcategoryMapping.getKeyByValue(cellValue);
+
                 if (foundColumnName != null) {
                     columnName = foundColumnName;
                 }
@@ -46,4 +63,5 @@ public class PriceParser implements Parser {
 
         return columns;
     }
+
 }

@@ -1,9 +1,12 @@
 package io.github.bagdad.excelparser.headerparser;
 
+import io.github.bagdad.excelparser.headerparser.columnparsers.ArticleParser;
+import io.github.bagdad.excelparser.headerparser.columnparsers.NameParser;
+import io.github.bagdad.excelparser.headerparser.columnparsers.PriceParser;
+import io.github.bagdad.excelparser.headerparser.columnparsers.QuantityParser;
 import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
-import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.models.excelparser.Category;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,25 +48,25 @@ public class ExcelHeader {
                 Cell cell = row.getCell(column.getColumnIndex());
 
                 if (category == Category.ARTICLE) {
-                    String value = ExcelCellUtils.processArticleCell(cell);
+                    String value = ArticleParser.processCell(cell);
                     if (value != null) {
                         excelProduct.setArticle(value);
                     }
                 }
                 else if (category == Category.NAME) {
-                    String value = ExcelCellUtils.processNameCell(cell);
+                    String value = NameParser.processCell(cell);
                     if (value != null) {
                         excelProduct.setName(value);
                     }
                 }
                 else if (category == Category.PRICE) {
-                    BigDecimal value = ExcelCellUtils.processPriceCell(cell);
+                    BigDecimal value = PriceParser.processCell(cell);
                     if (value != null) {
                         excelProduct.addPrice(column.getColumnKey(), value);
                     }
                 }
                 else if (category == Category.QUANTITY) {
-                    Integer value = ExcelCellUtils.processQuantityCell(cell);
+                    Integer value = QuantityParser.processCell(cell);
                     if (value != null) {
                         excelProduct.addQuantity(column.getColumnKey(), value);
                     }
