@@ -32,7 +32,7 @@ public class BodyParser {
         log.info("Getting index of first valid row");
 
         int startRowIndex = excelHeader.getStartRowIndex();
-        for (int i = startRowIndex; i < sheet.getLastRowNum(); i++) {
+        for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 
             if (isRowValid(row))
@@ -75,17 +75,15 @@ public class BodyParser {
         for (int i = startRowIndex; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
 
-            if (row == null) {
+            if (row == null || isRowValid(row)) {
                 continue;
             }
 
-            if (isRowValid(row)) {
-                ExcelProduct excelProduct = excelHeader.processRow(row);
-                excelProduct.compute();
-                
-                if (!excelProduct.isEmpty()) {
-                    parsedExcelProducts.add(excelProduct);
-                }
+            ExcelProduct excelProduct = excelHeader.processRow(row);
+            excelProduct.compute();
+
+            if (!excelProduct.isEmpty()) {
+                parsedExcelProducts.add(excelProduct);
             }
         }
 

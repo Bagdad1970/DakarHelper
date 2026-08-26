@@ -1,50 +1,30 @@
-package io.github.bagdad.excelparser.headerparser.bodyparser;
+package io.github.bagdad.excelparser.bodyparser;
 
-import io.github.bagdad.excelparser.headerparser.headerparser.ExcelHeader;
-import io.github.bagdad.excelparser.headerparser.model.Storage;
-import io.github.bagdad.excelparser.headerparser.headerparser.columns.Column;
-import io.github.bagdad.excelparser.headerparser.headerparser.columns.NameColumn;
-import io.github.bagdad.excelparser.headerparser.headerparser.columns.PriceColumn;
-import io.github.bagdad.excelparser.headerparser.headerparser.columns.QuantityColumn;
+import io.github.bagdad.excelparser.SheetTest;
+import io.github.bagdad.excelparser.headerparser.ExcelHeader;
+import io.github.bagdad.excelparser.model.Storage;
+import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
+import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
+import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
 import io.github.bagdad.models.excelparser.Category;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.util.CellUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BodyParserTest {
+public class BodyParserTest extends SheetTest {
 
-    private static Workbook workbook;
-    private static Sheet sheet;
-    private static BodyParser sut;
+    private static ExcelHeader excelHeader;
 
     @BeforeAll
-    static void setupSheet() throws IOException {
-        workbook = WorkbookFactory.create(true);
-        sheet = workbook.createSheet();
-
-        String[][] cells = {
-                {"",      "",           "",        ""},
-                {"name1", "wholesale1", "",        "count1"},
-                {"name2", "wholesale2", "retail2", "count2"},
-        };
-
-        for (int i = 0; i < cells.length; i++) {
-            Row currentRow = sheet.createRow(i);
-            for (int j = 0; j < cells[i].length; j++) {
-                CellUtil.createCell(currentRow, j, cells[i][j]);
-            }
-        }
-
+    static void setup() {
         Map<Category, Set<Column>> headerColumns = Map.of(
                 Category.NAME, Set.of(new NameColumn(0, "name")),
                 Category.PRICE, Set.of(
@@ -54,23 +34,29 @@ public class BodyParserTest {
                 Category.QUANTITY, Set.of(new QuantityColumn(3, "count",
                         new Storage("storage1", "storage 1")))
         );
-        ExcelHeader excelHeader = new ExcelHeader(1, headerColumns);
-        sut = new BodyParser(sheet, excelHeader);
+
+        excelHeader = new ExcelHeader(1, headerColumns);
     }
 
     @Test
     void Validation_with_an_empty_row_is_false() {
+        String[] emptyRow = {"", "", "", ""};
+        Sheet sheet = createSheet(emptyRow);
         Row row = sheet.getRow(0);
 
+        BodyParser sut = new BodyParser(sheet, excelHeader);
         boolean result = sut.isRowValid(row);
 
         assertFalse(result);
     }
 
     @Test
-    void Validation_with_a_not_full_row_is_true() {
-        Row row = sheet.getRow(1);
+    void Validation_with_not_full_row_is_true() {
+        String[] notFullRow = {"name", "wholesale", "", "count"};
+        Sheet sheet = createSheet(notFullRow);
+        Row row = sheet.getRow(0);
 
+        BodyParser sut = new BodyParser(sheet, excelHeader);
         boolean result = sut.isRowValid(row);
 
         assertTrue(result);
@@ -78,11 +64,42 @@ public class BodyParserTest {
 
     @Test
     void Validation_with_a_full_row_is_true() {
-        Row row = sheet.getRow(2);
+        String[] fullRow = {"name", "wholesale", "retail", "count"};
+        Sheet sheet = createSheet(fullRow);
+        Row row = sheet.getRow(0);
 
+        BodyParser sut = new BodyParser(sheet, excelHeader);
         boolean result = sut.isRowValid(row);
 
         assertTrue(result);
+    }
+
+    @Test
+    void Getting_first_valid_row_for_sheet_with_header_and_body_must_return_first_body_row_index() {
+        String[][] cells = {
+                {"name", "wholesale", "retail", "count"},
+                {"some_name", "123.45", "134.56", "10"}
+        };
+        Sheet sheet = createSheet(cells);
+
+        BodyParser sut = new BodyParser(sheet, excelHeader);
+        int result = sut.getFirstValidRow();
+
+        assertThat(result).isEqualTo(1);
+    }
+
+    @Test
+    void Getting_first_valid_row_for_sheet_with_header_and_empty_body_must_return_minus_one() {
+        String[][] cells = {
+                {"name", "wholesale", "retail", "count"},
+                {"", "", "", ""}
+        };
+        Sheet sheet = createSheet(cells);
+
+        BodyParser sut = new BodyParser(sheet, excelHeader);
+        int result = sut.getFirstValidRow();
+
+        assertThat(result).isEqualTo(-1);
     }
 
 }
