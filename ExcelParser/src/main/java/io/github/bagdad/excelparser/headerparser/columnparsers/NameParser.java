@@ -1,6 +1,5 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
-import io.github.bagdad.excelparser.exception.UnableProcessCellException;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
@@ -15,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class NameParser implements Parser {
-
-    private final SubcategoryMapping subcategoryMapping;
+public class NameParser extends CategoryParser {
 
     public NameParser(SubcategoryMapping subcategoryMapping) {
-        this.subcategoryMapping = subcategoryMapping;
+        super(subcategoryMapping);
     }
 
     public static String processCell(Cell cell) {

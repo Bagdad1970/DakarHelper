@@ -1,7 +1,7 @@
 package io.github.bagdad.excelparser.headerparser;
 
 import io.github.bagdad.excelparser.headerparser.columnparsers.ArticleParser;
-import io.github.bagdad.excelparser.headerparser.columnparsers.Parser;
+import io.github.bagdad.excelparser.headerparser.columnparsers.CategoryParser;
 import io.github.bagdad.excelparser.headerparser.columnparsers.NameParser;
 import io.github.bagdad.excelparser.headerparser.columnparsers.PriceParser;
 import io.github.bagdad.excelparser.headerparser.columnparsers.QuantityParser;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ParserFactory {
 
-    private final Map<Category, Parser> parserMap;
+    private final Map<Category, CategoryParser> parserMap;
 
     public ParserFactory() {
         this.parserMap = new HashMap<>();
@@ -32,7 +32,7 @@ public class ParserFactory {
         }
     }
 
-    public Parser getParserByCategory(Category category) {
+    public CategoryParser getParserByCategory(Category category) {
         return parserMap.get(category);
     }
 

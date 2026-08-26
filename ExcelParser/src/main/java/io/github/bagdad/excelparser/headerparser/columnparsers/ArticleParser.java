@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class ArticleParser implements Parser {
-
-    private final SubcategoryMapping subcategoryMapping;
+public class ArticleParser extends CategoryParser {
 
     public ArticleParser(SubcategoryMapping subcategoryMapping) {
-        this.subcategoryMapping = subcategoryMapping;
+        super(subcategoryMapping);
     }
 
     public static String processCell(Cell cell) {

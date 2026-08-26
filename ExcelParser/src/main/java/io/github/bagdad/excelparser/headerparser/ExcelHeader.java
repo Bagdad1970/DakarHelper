@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class ExcelHeader {
 
     private final Map<Category, Set<Column>> headerColumns;
+
     private final int startRowIndex;
 
     public ExcelHeader(int startRowIndex) {

@@ -18,14 +18,15 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@AllArgsConstructor
-public class QuantityParser implements Parser {
+public class QuantityParser extends CategoryParser {
 
     private static final String MORE_QUANTITY_WORD = "более";
 
     private static final String MORE_QUANTITY_SYMBOL = ">";
 
-    private final SubcategoryMapping subcategoryMapping;
+    public QuantityParser(SubcategoryMapping subcategoryMapping) {
+        super(subcategoryMapping);
+    }
 
     public static Integer processCell(Cell cell) {
         String cellValue = ExcelCellUtils.getNormalizedCellValue(cell);

@@ -1,12 +1,10 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
-import io.github.bagdad.excelparser.exception.UnableProcessCellException;
 import io.github.bagdad.excelparser.headerparser.columns.Column;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.models.excelparser.Category;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -17,10 +15,11 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@AllArgsConstructor
-public class PriceParser implements Parser {
+public class PriceParser extends CategoryParser {
 
-    private final SubcategoryMapping subcategoryMapping;
+    public PriceParser(SubcategoryMapping subcategoryMapping) {
+        super(subcategoryMapping);
+    }
 
     public static BigDecimal processCell(Cell cell) {
         String cellValue = ExcelCellUtils.getRawCellValue(cell);
