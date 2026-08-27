@@ -3,10 +3,12 @@ package io.github.bagdad.excelparser.headerparser.columns;
 import io.github.bagdad.excelparser.model.Storage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class QuantityColumn extends Column {
+@ToString(callSuper = true)
+public class QuantityColumn extends CategoryColumn {
 
     @EqualsAndHashCode.Include
     private final Storage storage;

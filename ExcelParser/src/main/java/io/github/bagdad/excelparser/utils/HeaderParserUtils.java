@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HeaderParserUtils {
 
-    private static final List<Category> categoriesToValidateHeader = List.of(Category.NAME, Category.PRICE, Category.QUANTITY);
+    private static final List<Category> CATEGORIES_IN_VALID_HEADER = List.of(Category.NAME, Category.PRICE, Category.QUANTITY);
 
     public static boolean isHeaderValid(Map<Category, List<Cell>> groupedCells) {
         log.info("Checking is header valid");
 
-        for (Category category : categoriesToValidateHeader) {
+        for (Category category : CATEGORIES_IN_VALID_HEADER) {
             if (!groupedCells.containsKey(category)) {
                 return false;
             }

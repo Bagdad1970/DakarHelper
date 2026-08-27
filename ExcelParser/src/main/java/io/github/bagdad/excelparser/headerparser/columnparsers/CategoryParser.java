@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -17,6 +17,6 @@ public abstract class CategoryParser {
         this.subcategoryMapping = subcategoryMapping;
     }
 
-    public abstract Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass);
+    public abstract Set<CategoryColumn> parseColumns(Map<Integer, List<Cell>> cellsByClass);
 
 }

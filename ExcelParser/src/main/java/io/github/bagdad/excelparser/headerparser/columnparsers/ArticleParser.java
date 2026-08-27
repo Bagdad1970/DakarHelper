@@ -1,7 +1,7 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.headerparser.columns.ArticleColumn;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +30,14 @@ public class ArticleParser extends CategoryParser {
     }
 
     @Override
-    public Set<Column> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
+    public Set<CategoryColumn> parseColumns(Map<Integer, List<Cell>> cellsByClass) {
         log.info("Parsing article columns");
 
         if (cellsByClass.isEmpty()) {
             return Collections.emptySet();
         }
 
-        Set<Column> columns = new HashSet<>();
+        Set<CategoryColumn> columns = new HashSet<>();
         for (int columnIndex : cellsByClass.keySet()) {
             List<Cell> columnCells = cellsByClass.get(columnIndex);
 

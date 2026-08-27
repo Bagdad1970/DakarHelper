@@ -1,6 +1,6 @@
 package io.github.bagdad.excelparser.headerparser;
 
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.model.CellFindStatus;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.excelparser.utils.ExcelHeaderCellsHandler;
@@ -118,7 +118,7 @@ public class HeaderParser {
         ExcelHeader excelHeader = new ExcelHeader(maxRowIndex + 1);
         for (Category category : cellGroupsOnlyWithMaxRow.keySet()) {
             var parser = parserFactory.getParserByCategory(category);
-            Set<Column> headerColumns = parser.parseColumns(cellGroupsOnlyWithMaxRow.get(category));
+            Set<CategoryColumn> headerColumns = parser.parseColumns(cellGroupsOnlyWithMaxRow.get(category));
             excelHeader.putAllHeaderColumns(category, headerColumns);
         }
 

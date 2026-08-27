@@ -1,7 +1,7 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.SheetTest;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import org.apache.poi.ss.usermodel.*;
@@ -31,9 +31,9 @@ public class PriceParserTest extends SheetTest {
         Map<Integer, List<Cell>> columns = createColumns(cells);
 
         PriceParser sut = new PriceParser(priceMapping);
-        Set<Column> result = sut.parseColumns(columns);
+        Set<CategoryColumn> result = sut.parseColumns(columns);
 
-        Set<Column> expected = Set.of(
+        Set<CategoryColumn> expected = Set.of(
             new PriceColumn(0, "опт"),
             new PriceColumn(1, "розница"),
             new PriceColumn(2, "интернет")

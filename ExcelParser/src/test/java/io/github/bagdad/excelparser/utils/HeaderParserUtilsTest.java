@@ -1,4 +1,4 @@
-package io.github.bagdad.excelparser.headerparser.utils;
+package io.github.bagdad.excelparser.utils;
 
 import io.github.bagdad.models.excelparser.Category;
 import org.apache.poi.ss.usermodel.*;

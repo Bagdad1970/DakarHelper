@@ -1,7 +1,7 @@
 package io.github.bagdad.excelparser.bodyparser;
 
 import io.github.bagdad.excelparser.headerparser.ExcelHeader;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.model.ExcelProduct;
 import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.models.excelparser.Category;
@@ -43,7 +43,7 @@ public class BodyParser {
     }
 
     boolean isRowValid(Row row) {
-        Map<Category, Set<Column>> headerColumns = excelHeader.getHeaderColumns();
+        Map<Category, Set<CategoryColumn>> headerColumns = excelHeader.getHeaderColumns();
 
         if (headerColumns.isEmpty()) {
             return false;
@@ -51,7 +51,7 @@ public class BodyParser {
 
         int providedCategoryCounter = 0;
         for (Category category : headerColumns.keySet()) {
-            for (Column column : headerColumns.get(category)) {
+            for (CategoryColumn column : headerColumns.get(category)) {
                 int columnIndex = column.getColumnIndex();
                 Cell cell = row.getCell(columnIndex);
                 if (ExcelCellUtils.isCellValid(cell)) {

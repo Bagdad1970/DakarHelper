@@ -1,11 +1,10 @@
 package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.SheetTest;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import org.apache.poi.ss.usermodel.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,9 +31,9 @@ public class NameParserTest extends SheetTest {
         );
 
         NameParser sut = new NameParser(nameMapping);
-        Set<Column> headerColumns = sut.parseColumns(columns);
+        Set<CategoryColumn> headerColumns = sut.parseColumns(columns);
 
-        Set<Column> expected = Set.of(
+        Set<CategoryColumn> expected = Set.of(
                 new NameColumn(1, "номенклатура")
         );
 

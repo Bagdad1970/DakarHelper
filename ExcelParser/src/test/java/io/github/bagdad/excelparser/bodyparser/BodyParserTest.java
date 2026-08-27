@@ -3,7 +3,7 @@ package io.github.bagdad.excelparser.bodyparser;
 import io.github.bagdad.excelparser.SheetTest;
 import io.github.bagdad.excelparser.headerparser.ExcelHeader;
 import io.github.bagdad.excelparser.model.Storage;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.headerparser.columns.NameColumn;
 import io.github.bagdad.excelparser.headerparser.columns.PriceColumn;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
@@ -25,7 +25,7 @@ public class BodyParserTest extends SheetTest {
 
     @BeforeAll
     static void setup() {
-        Map<Category, Set<Column>> headerColumns = Map.of(
+        Map<Category, Set<CategoryColumn>> headerColumns = Map.of(
                 Category.NAME, Set.of(new NameColumn(0, "name")),
                 Category.PRICE, Set.of(
                         new PriceColumn(1, "wholesale"),

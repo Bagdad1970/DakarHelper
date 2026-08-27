@@ -2,134 +2,126 @@ package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.SheetTest;
 import io.github.bagdad.excelparser.model.Storage;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
-import io.github.bagdad.excelparser.utils.ExcelCellUtils;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QuantityParserTest extends SheetTest {
+    
+    private static SubcategoryMapping quantityMapping;
 
-//    @BeforeAll
-//    static void setupSheet() throws IOException {
-//        String[][] quantityHeaderCells = {
-//                {"Основной склад", "Склад 2", "Магазин"},
-//                {"остаток", "остаток", "остаток"}
-//        };
-//
-//
-//        SubcategoryMapping quantityMapping = createQuantitySubcategoryMapping();
-//
-//        quantityParser = new QuantityParser(quantityMapping);
-//    }
-//
-//    private SubcategoryMapping createQuantitySubcategoryMapping() {
-//        Map<String, List<String>> mapping = Map.of(
-//                "склад", List.of("склад"),
-//                "магазин", List.of("магазин")
-//        );
-//
-//        return new SubcategoryMapping(mapping);
-//    }
-//
-//    @Test
-//    void groupCellsBySubcategory() {
-//        Map<Integer, List<Cell>> cellsByClass = Map.of(
-//                0, List.of(sheet.getRow(0).getCell(0)),
-//                1, List.of(sheet.getRow(0).getCell(1)),
-//                2, List.of(sheet.getRow(0).getCell(2))
-//        );
-//
-//        Map<String, List<Cell>> res = quantityParser.groupCellsBySubcategory(cellsByClass);
-//
-//        Map<String, List<Cell>> expected = Map.of(
-//                "склад", List.of(sheet.getRow(0).getCell(0), sheet.getRow(0).getCell(1)),
-//                "магазин", List.of(sheet.getRow(0).getCell(2))
-//        );
-//        assertThat(res)
-//                .usingRecursiveComparison()
-//                .ignoringCollectionOrder()
-//                .isEqualTo(expected);
-//    }
-//
-//    @Test
-//    void arrangeSubcategoryValuesWithOneCell() {
-//        List<Cell> cells = new ArrayList<>();
-//        cells.add(sheet.getRow(0).getCell(2));
-//
-//        Set<Column> res = quantityParser.arrangeSubcategoryValues("магазин", cells);
-//
-//        Set<Column> expected = Set.of(
-//                new QuantityColumn(2, "магазин1", new Storage("магазин1", "магазин 1"))
-//        );
-//
-//        assertEquals(expected, res);
-//    }
-//
-//    @Test
-//    void arrangeSubcategoryValuesWithSeveralCells() {
-//        List<Cell> cells = new ArrayList<>();
-//        cells.add(sheet.getRow(0).getCell(0));
-//        cells.add(sheet.getRow(0).getCell(1));
-//
-//        Set<Column> res = quantityParser.arrangeSubcategoryValues("склад", cells);
-//
-//        Set<Column> expected = Set.of(
-//                new QuantityColumn(0, "склад1", new Storage("склад1", "склад 1")),
-//                new QuantityColumn(1, "склад2", new Storage("склад2", "склад 2"))
-//        );
-//
-//        assertEquals(expected, res);
-//    }
-//
-//    @Test
-//    void parseColumns() {
-//        Map<Integer, List<Cell>> columns = Map.of(
-//                0, Arrays.asList(sheet.getRow(0).getCell(0), sheet.getRow(1).getCell(0)),
-//                1, Arrays.asList(sheet.getRow(0).getCell(1), sheet.getRow(1).getCell(1)),
-//                2, Arrays.asList(sheet.getRow(0).getCell(2), sheet.getRow(1).getCell(2))
-//        );
-//
-//        Set<Column> res = quantityParser.parseColumns(columns);
-//
-//        Set<Column> expected = new HashSet<>();
-//        expected.add(new QuantityColumn(0, "склад1", new Storage("склад1", "склад 1")));
-//        expected.add(new QuantityColumn(1, "склад2", new Storage("склад2", "склад 2")));
-//        expected.add(new QuantityColumn(2, "магазин1", new Storage("магазин1", "магазин 1")));
-//
-//        assertEquals(expected, res);
-//    }
+    @BeforeAll
+    static void setup() {
+        Map<String, List<String>> mapping = Map.of(
+                "storage", List.of("storage"),
+                "shop", List.of("shop")
+        );
+        quantityMapping = new SubcategoryMapping(mapping);
+    }
 
+    @Test
+    void Grouping_valid_cells_by_subcategory_must_return_groups_by_subcategory() {
+        String[][] headerCells = {
+                {"Main storage", "Storage 2", "Shop"},
+                {"count",        "count",     "count"}
+        };
+        Sheet sheet = createSheet(headerCells);
+        Map<Integer, List<Cell>> cellsByClass = Map.of(
+                0, List.of(sheet.getRow(0).getCell(0)),
+                1, List.of(sheet.getRow(0).getCell(1)),
+                2, List.of(sheet.getRow(0).getCell(2))
+        );
 
-//    @Test
-//    void processQuantityCellWithValue() {
-//        Row rowOfQuantityCellValues = CellUtil.getRow(4, sheet);
-//
-//        Integer processedValue1 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 2));
-//        Integer processedValue2 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 3));
-//        Integer processedValue3 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 4));
-//        Integer processedValue4 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 5));
-//        Integer processedValue5 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 6));
-//        Integer processedValue6 = ExcelCellUtils.processQuantityCell(CellUtil.getCell(rowOfQuantityCellValues, 7));
-//
-//
-//        assertEquals(12, processedValue1);
-//        assertEquals(12, processedValue2);
-//        assertEquals(12, processedValue3);
-//        assertEquals(13, processedValue4);
-//        assertEquals(0, processedValue5);
-//        assertEquals(0, processedValue6);
-//    }
+        QuantityParser sut = new QuantityParser(quantityMapping);
+        Map<String, List<Cell>> result = sut.groupCellsBySubcategory(cellsByClass);
+
+        Map<String, List<Cell>> expected = Map.of(
+                "storage", List.of(sheet.getRow(0).getCell(0), sheet.getRow(0).getCell(1)),
+                "shop", List.of(sheet.getRow(0).getCell(2))
+        );
+        assertThat(result)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    void Arranging_valid_subcategory_values_only_with_one_cell_must_return_valid_column() {
+        String[][] headerCells = {
+                {"Shop"},
+                {"count"}
+        };
+        Sheet sheet = createSheet(headerCells);
+
+        List<Cell> cells = new ArrayList<>();
+        cells.add(sheet.getRow(0).getCell(0));
+
+        QuantityParser sut = new QuantityParser(quantityMapping);
+        Set<CategoryColumn> result = sut.arrangeSubcategoriesByNumber("shop", cells);
+
+        Set<CategoryColumn> expected = Set.of(
+                new QuantityColumn(0, "shop1", new Storage("shop1", "shop 1"))
+        );
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void Arranging_valid_subcategory_values_with_several_cells_must_return_valid_columns() {
+        String[][] headerCells = {
+                {"Main storage", "Storage 2"},
+                {"count",        "count"}
+        };
+        Sheet sheet = createSheet(headerCells);
+
+        List<Cell> cells = new ArrayList<>();
+        cells.add(sheet.getRow(0).getCell(0));
+        cells.add(sheet.getRow(0).getCell(1));
+
+        QuantityParser sut = new QuantityParser(quantityMapping);
+        Set<CategoryColumn> result = sut.arrangeSubcategoriesByNumber("storage", cells);
+
+        Set<CategoryColumn> expected = Set.of(
+                new QuantityColumn(0, "storage1", new Storage("storage1", "storage 1")),
+                new QuantityColumn(1, "storage2", new Storage("storage2", "storage 2"))
+        );
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void parseColumns() {
+        String[][] headerCells = {
+                {"Main storage", "Storage 2", "Shop"},
+                {"count",        "count",     "count"}
+        };
+        Sheet sheet = createSheet(headerCells);
+
+        Map<Integer, List<Cell>> columns = Map.of(
+                0, Arrays.asList(sheet.getRow(0).getCell(0), sheet.getRow(1).getCell(0)),
+                1, Arrays.asList(sheet.getRow(0).getCell(1), sheet.getRow(1).getCell(1)),
+                2, Arrays.asList(sheet.getRow(0).getCell(2), sheet.getRow(1).getCell(2))
+        );
+
+        QuantityParser sut = new QuantityParser(quantityMapping);
+        Set<CategoryColumn> result= sut.parseColumns(columns);
+
+        Set<CategoryColumn> expected = new HashSet<>();
+        expected.add(new QuantityColumn(0, "storage1", new Storage("storage1", "storage 1")));
+        expected.add(new QuantityColumn(1, "storage2", new Storage("storage2", "storage 2")));
+        expected.add(new QuantityColumn(2, "shop1", new Storage("shop1", "shop 1")));
+
+        assertThat(result).isEqualTo(expected);
+    }
+
 
     @Test
     void Processing_null_cell_must_return_null() {

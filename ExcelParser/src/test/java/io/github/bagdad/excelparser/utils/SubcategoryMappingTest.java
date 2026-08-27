@@ -1,4 +1,4 @@
-package io.github.bagdad.excelparser.headerparser.utils;
+package io.github.bagdad.excelparser.utils;
 
 import org.junit.jupiter.api.Test;
 

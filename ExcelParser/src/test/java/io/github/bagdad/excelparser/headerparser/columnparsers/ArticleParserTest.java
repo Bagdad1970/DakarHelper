@@ -2,7 +2,7 @@ package io.github.bagdad.excelparser.headerparser.columnparsers;
 
 import io.github.bagdad.excelparser.SheetTest;
 import io.github.bagdad.excelparser.headerparser.columns.ArticleColumn;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.utils.SubcategoryMapping;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,9 +32,9 @@ public class ArticleParserTest extends SheetTest {
         );
 
         ArticleParser sut = new ArticleParser(articleMapping);
-        Set<Column> result = sut.parseColumns(columns);
+        Set<CategoryColumn> result = sut.parseColumns(columns);
 
-        Set<Column> expected = Set.of(
+        Set<CategoryColumn> expected = Set.of(
                 new ArticleColumn(0, "артикул")
         );
 

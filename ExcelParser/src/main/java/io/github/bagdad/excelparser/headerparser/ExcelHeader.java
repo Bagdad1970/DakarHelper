@@ -5,7 +5,7 @@ import io.github.bagdad.excelparser.headerparser.columnparsers.NameParser;
 import io.github.bagdad.excelparser.headerparser.columnparsers.PriceParser;
 import io.github.bagdad.excelparser.headerparser.columnparsers.QuantityParser;
 import io.github.bagdad.excelparser.model.ExcelProduct;
-import io.github.bagdad.excelparser.headerparser.columns.Column;
+import io.github.bagdad.excelparser.headerparser.columns.CategoryColumn;
 import io.github.bagdad.excelparser.headerparser.columns.QuantityColumn;
 import io.github.bagdad.models.excelparser.Category;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Getter
 public class ExcelHeader {
 
-    private final Map<Category, Set<Column>> headerColumns;
+    private final Map<Category, Set<CategoryColumn>> headerColumns;
 
     private final int startRowIndex;
 
@@ -30,7 +30,7 @@ public class ExcelHeader {
         this.headerColumns = new HashMap<>();
     }
 
-    public ExcelHeader(int startRowIndex, Map<Category, Set<Column>> headerColumns) {
+    public ExcelHeader(int startRowIndex, Map<Category, Set<CategoryColumn>> headerColumns) {
         this.startRowIndex = startRowIndex;
         this.headerColumns = headerColumns;
     }
@@ -39,13 +39,13 @@ public class ExcelHeader {
         ExcelProduct excelProduct = new ExcelProduct();
 
         for (Category category : headerColumns.keySet()) {
-            Set<Column> columnsByCategory = headerColumns.get(category);
+            Set<CategoryColumn> columnsByCategory = headerColumns.get(category);
 
             if (columnsByCategory == null || columnsByCategory.isEmpty()) {
                 return null;
             }
 
-            for (Column column : columnsByCategory) {
+            for (CategoryColumn column : columnsByCategory) {
                 Cell cell = row.getCell(column.getColumnIndex());
 
                 if (category == Category.ARTICLE) {
@@ -88,7 +88,7 @@ public class ExcelHeader {
                 ));
     }
 
-    public void putAllHeaderColumns(Category category, Set<Column> headerColumnsByCategory) {
+    public void putAllHeaderColumns(Category category, Set<CategoryColumn> headerColumnsByCategory) {
         headerColumns.computeIfAbsent(category, _ -> new HashSet<>()).addAll(headerColumnsByCategory);
     }
 

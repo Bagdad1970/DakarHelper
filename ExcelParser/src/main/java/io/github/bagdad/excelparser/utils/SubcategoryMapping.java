@@ -12,7 +12,7 @@ public class SubcategoryMapping {
     }
 
     public String getKeyByValue(String value) {
-        if (value == null || value.isEmpty()) {
+        if (value == null) {
             return null;
         }
 
