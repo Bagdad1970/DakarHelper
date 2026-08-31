@@ -1,6 +1,6 @@
-package io.github.bagdad.excelparser.headerparser.utils;
+package io.github.bagdad.excelparser.utils;
 
-import io.github.bagdad.excelparser.headerparser.model.CellFindStatus;
+import io.github.bagdad.excelparser.model.CellFindStatus;
 import io.github.bagdad.models.excelparser.Category;
 import io.github.bagdad.models.excelparser.HeaderCellDto;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +31,7 @@ public class ExcelHeaderCellsHandlerTest {
     void Cell_value_that_starts_with_processed_header_must_return_STARTS_status() {
         String cellValue = "startswith";
 
-        CellFindStatus res = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
+        CellFindStatus res = excelHeaderCellsHandler.specifyCellFindStatus(cellValue);
 
         assertThat(res).isEqualTo(CellFindStatus.STARTS);
     }
@@ -40,7 +40,7 @@ public class ExcelHeaderCellsHandlerTest {
     void Cell_value_that_contains_processed_header_must_return_CONTAINS_status() {
         String cellValue = "some contains";
 
-        CellFindStatus res = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
+        CellFindStatus res = excelHeaderCellsHandler.specifyCellFindStatus(cellValue);
 
         assertThat(res).isEqualTo(CellFindStatus.CONTAINS);
     }
@@ -67,7 +67,7 @@ public class ExcelHeaderCellsHandlerTest {
     void Cell_value_that_does_not_match_any_header_must_return_ABSENTS_status() {
         String cellValue = "absents";
 
-        CellFindStatus res = excelHeaderCellsHandler.findHeaderCellFindStatus(cellValue);
+        CellFindStatus res = excelHeaderCellsHandler.specifyCellFindStatus(cellValue);
 
         assertThat(res).isEqualTo(CellFindStatus.ABSENTS);
     }
