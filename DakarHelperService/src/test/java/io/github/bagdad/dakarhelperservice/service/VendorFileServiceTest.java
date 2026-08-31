@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class VendorFileServiceTest {
         VendorFile vendorFile1 = VendorFile.builder()
                 .id(1L)
                 .vendorId(1L)
-                .filepath("filepath1")
+                .filepath(Paths.get("filepath1"))
                 .fileStatus(FileStatus.CREATED)
                 .updatedAt(now)
                 .build();
@@ -43,7 +44,7 @@ public class VendorFileServiceTest {
         VendorFile vendorFile2 = VendorFile.builder()
                 .id(2L)
                 .vendorId(2L)
-                .filepath("filepath2")
+                .filepath(Paths.get("filepath2"))
                 .fileStatus(FileStatus.CREATED)
                 .updatedAt(now)
                 .build();
@@ -70,7 +71,7 @@ public class VendorFileServiceTest {
         VendorFile existingVendorFile = VendorFile.builder()
                 .id(1L)
                 .vendorId(1L)
-                .filepath("filepath1")
+                .filepath(Paths.get("filepath1"))
                 .fileStatus(FileStatus.CREATED)
                 .updatedAt(now)
                 .build();
@@ -78,7 +79,7 @@ public class VendorFileServiceTest {
         VendorFile updatedVendorFile = VendorFile.builder()
                 .id(1L)
                 .vendorId(2L)
-                .filepath("filepath2")
+                .filepath(Paths.get("filepath2"))
                 .fileStatus(FileStatus.PARSED)
                 .build();
 
@@ -108,13 +109,13 @@ public class VendorFileServiceTest {
         // arrange
         VendorFile vendorFile1 = VendorFile.builder()
                 .vendorId(1L)
-                .filepath("filepath1")
+                .filepath(Paths.get("filepath1"))
                 .fileStatus(FileStatus.CREATED)
                 .build();
 
         VendorFile vendorFile2 = VendorFile.builder()
                 .vendorId(2L)
-                .filepath("filepath2")
+                .filepath(Paths.get("filepath2"))
                 .fileStatus(FileStatus.CREATED)
                 .build();
 

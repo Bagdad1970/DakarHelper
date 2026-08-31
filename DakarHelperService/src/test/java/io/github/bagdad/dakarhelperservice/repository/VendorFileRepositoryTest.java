@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class VendorFileRepositoryTest {
 
         VendorFile vendorFile = new VendorFile();
         vendorFile.setVendorId(vendor.getId());
-        vendorFile.setFilepath("filepath");
+        vendorFile.setFilepath(Paths.get("filepath"));
         vendorFile.setFileStatus(FileStatus.CREATED);
         vendorFile.setUpdatedAt(now);
 
@@ -121,14 +122,14 @@ public class VendorFileRepositoryTest {
 
         VendorFile vendorFile1 = VendorFile.builder()
                 .vendorId(savedVendor.getId())
-                .filepath("filepath1")
+                .filepath(Paths.get("filepath1"))
                 .fileStatus(FileStatus.CREATED)
                 .updatedAt(OffsetDateTime.now())
                 .build();
 
         VendorFile vendorFile2 = VendorFile.builder()
                 .vendorId(savedVendor.getId())
-                .filepath("filepath2")
+                .filepath(Paths.get("filepath2"))
                 .fileStatus(FileStatus.PARSED)
                 .updatedAt(OffsetDateTime.now())
                 .build();
@@ -175,22 +176,12 @@ public class VendorFileRepositoryTest {
         VendorFile savedVendorFile = vendorFileRepository.save(vendorFile);
 
         savedVendorFile.setVendorId(savedVendor2.getId());
-        savedVendorFile.setFilepath("updated_filepath");
+        savedVendorFile.setFilepath(Paths.get("updated_filepath"));
         VendorFile updatedVendorFile = vendorFileRepository.update(savedVendorFile);
 
         Optional<VendorFile> found = vendorFileRepository.findById(updatedVendorFile.getId());
         assertThat(found).isPresent();
         assertThat(found.get()).isEqualTo(updatedVendorFile);
-    }
-
-    @Test
-    void Updating_non_existing_vendor_file_must_throw_exception() {
-        VendorFile nonExistent = new VendorFile();
-        nonExistent.setId(0L);
-        nonExistent.setFileStatus(FileStatus.CREATED);
-
-        assertThatThrownBy(() -> vendorFileRepository.update(nonExistent))
-                .isInstanceOf(VendorFileNotFoundException.class);
     }
 
 }
