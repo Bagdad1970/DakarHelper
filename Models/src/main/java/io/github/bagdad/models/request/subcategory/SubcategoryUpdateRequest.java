@@ -8,8 +8,6 @@ import lombok.*;
 @Data
 public class SubcategoryUpdateRequest {
 
-    private Long id;
-
     private Category category;
 
     private String name;

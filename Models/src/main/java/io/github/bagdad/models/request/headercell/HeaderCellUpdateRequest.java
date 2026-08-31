@@ -10,8 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class HeaderCellUpdateRequest {
 
-    private Long id;
-
     private Long subcategoryId;
 
     @NotBlank(message = "Original name cannot be blank")
